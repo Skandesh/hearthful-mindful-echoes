@@ -5,11 +5,19 @@ import { Card } from "@/components/ui/card";
 import { SendHorizonal, Mic, MicOff, Volume2, VolumeX } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { motion } from "framer-motion";
 
 type Message = {
   type: 'user' | 'ai';
   content: string;
   audio?: string;
+};
+
+type AffirmationSession = {
+  isActive: boolean;
+  currentAffirmation: string;
+  affirmations: string[];
+  index: number;
 };
 
 export default function Chat() {
@@ -18,6 +26,13 @@ export default function Chat() {
   const [isRecording, setIsRecording] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [affirmationSession, setAffirmationSession] = useState<AffirmationSession>({
+    isActive: false,
+    currentAffirmation: "",
+    affirmations: [],
+    index: 0
+  });
+  
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -31,6 +46,64 @@ export default function Chat() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  const startAffirmationSession = async (mood: string) => {
+    const affirmations = await generateAffirmations(mood);
+    setAffirmationSession({
+      isActive: true,
+      currentAffirmation: affirmations[0],
+      affirmations,
+      index: 0
+    });
+    
+    // Play first affirmation
+    const response = await generateAIResponse(affirmations[0]);
+    const aiMessage = { type: 'ai' as const, content: response };
+    setMessages(prev => [...prev, aiMessage]);
+  };
+
+  const generateAffirmations = async (mood: string) => {
+    const { data, error } = await supabase.functions.invoke('generate-response', {
+      body: { 
+        message: `Generate 5 short, powerful affirmations for someone feeling ${mood}. 
+                 Make them personal and empowering. Just return the affirmations separated by |`,
+      }
+    });
+
+    if (error) throw error;
+    return data.response.split('|').map((a: string) => a.trim());
+  };
+
+  const handleAffirmationComplete = async () => {
+    const nextIndex = affirmationSession.index + 1;
+    if (nextIndex < affirmationSession.affirmations.length) {
+      const nextAffirmation = affirmationSession.affirmations[nextIndex];
+      setAffirmationSession(prev => ({
+        ...prev,
+        currentAffirmation: nextAffirmation,
+        index: nextIndex
+      }));
+      
+      // Play next affirmation
+      const response = await generateAIResponse(nextAffirmation);
+      const aiMessage = { type: 'ai' as const, content: response };
+      setMessages(prev => [...prev, aiMessage]);
+    } else {
+      // Session complete
+      setAffirmationSession({
+        isActive: false,
+        currentAffirmation: "",
+        affirmations: [],
+        index: 0
+      });
+      
+      const finalMessage = { 
+        type: 'ai' as const, 
+        content: "Great job completing your affirmation session! How do you feel now?" 
+      };
+      setMessages(prev => [...prev, finalMessage]);
+    }
+  };
 
   const playAudio = async (message: Message) => {
     if (!message.audio) {
@@ -95,6 +168,13 @@ export default function Chat() {
     });
 
     if (error) throw error;
+    
+    // Check if the response should trigger an affirmation session
+    if (!affirmationSession.isActive && data.response.toLowerCase().includes("positive")) {
+      const askForSession = "\n\nWould you like to start an affirmation session to enhance these positive feelings?";
+      return data.response + askForSession;
+    }
+    
     return data.response;
   };
 
@@ -104,38 +184,38 @@ export default function Chat() {
 
     setLoading(true);
     try {
-      // Add user message
       const userMessage = { type: 'user' as const, content: message };
       setMessages(prev => [...prev, userMessage]);
-      setMessage(""); // Clear input immediately
-      
-      // Generate AI response
+      setMessage("");
+
+      // Check if user wants to start affirmation session
+      if (!affirmationSession.isActive && 
+          message.toLowerCase().includes("yes") && 
+          messages[messages.length - 1]?.content.includes("affirmation session")) {
+        await startAffirmationSession("positive");
+        setLoading(false);
+        return;
+      }
+
+      // Handle ongoing affirmation session
+      if (affirmationSession.isActive) {
+        if (message.toLowerCase().includes(affirmationSession.currentAffirmation.toLowerCase())) {
+          await handleAffirmationComplete();
+        } else {
+          const aiMessage = { 
+            type: 'ai' as const, 
+            content: "Try repeating the affirmation exactly as shown. Take a deep breath and try again." 
+          };
+          setMessages(prev => [...prev, aiMessage]);
+        }
+        setLoading(false);
+        return;
+      }
+
+      // Normal chat flow
       const aiResponse = await generateAIResponse(message);
       const aiMessage = { type: 'ai' as const, content: aiResponse };
-      
-      // Add AI message and generate speech
       setMessages(prev => [...prev, aiMessage]);
-      
-      // Get text-to-speech for AI response
-      const { data: ttsData, error: ttsError } = await supabase.functions.invoke('text-to-speech', {
-        body: { text: aiResponse }
-      });
-
-      if (ttsError) throw ttsError;
-
-      if (ttsData?.audio) {
-        // Update AI message with audio
-        setMessages(prev => prev.map(msg => 
-          msg === aiMessage ? { ...msg, audio: ttsData.audio } : msg
-        ));
-        
-        // Play the audio
-        const audio = new Audio(`data:audio/mpeg;base64,${ttsData.audio}`);
-        audioRef.current = audio;
-        audio.onended = () => setIsPlaying(false);
-        await audio.play();
-        setIsPlaying(true);
-      }
 
     } catch (error: any) {
       console.error('Error:', error);
@@ -247,22 +327,48 @@ export default function Chat() {
 
   return (
     <div className="max-w-2xl mx-auto p-4 min-h-[calc(100vh-4rem)]">
-      <Card className="p-8 w-full bg-white/50 backdrop-blur-sm shadow-xl">
+      <div 
+        className="fixed inset-0 -z-10"
+        style={{
+          background: "linear-gradient(180deg, #000000 0%, #1a237e 100%)",
+          overflow: "hidden"
+        }}
+      >
+        <motion.div
+          className="absolute inset-0"
+          style={{
+            background: "radial-gradient(circle at center, #304ffe 0%, transparent 70%)",
+            filter: "blur(60px)",
+          }}
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.3, 0.5, 0.3],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+      </div>
+
+      <Card className="p-8 w-full bg-black/30 backdrop-blur-xl shadow-xl border-white/10">
         <div className="max-w-md mx-auto">
-          <h2 className="text-2xl font-bold mb-6 text-center text-foreground">
-            How are you feeling today?
+          <h2 className="text-2xl font-bold mb-6 text-center text-white">
+            {affirmationSession.isActive 
+              ? "Repeat this affirmation:" 
+              : "How are you feeling today?"}
           </h2>
           
-          {/* Conversation History */}
           <div className="mb-6 space-y-4 max-h-[400px] overflow-y-auto">
             {messages.map((msg, index) => (
               <div
                 key={index}
                 className={`p-3 rounded-lg ${
                   msg.type === 'user'
-                    ? 'bg-accent/10 ml-8'
-                    : 'bg-accent text-white mr-8'
-                }`}
+                    ? 'bg-white/10 ml-8'
+                    : 'bg-white/20 mr-8'
+                } text-white`}
               >
                 <div className="flex justify-between items-start mb-1">
                   <span className="text-xs opacity-70">
@@ -272,7 +378,7 @@ export default function Chat() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-6 w-6"
+                      className="h-6 w-6 text-white hover:text-white/80"
                       onClick={() => isPlaying ? stopAudio() : playAudio(msg)}
                     >
                       {isPlaying ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
@@ -285,9 +391,9 @@ export default function Chat() {
             {loading && (
               <div className="flex items-center justify-center p-4">
                 <div className="flex space-x-1">
-                  <div className="w-2 h-2 bg-accent rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                  <div className="w-2 h-2 bg-accent rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                  <div className="w-2 h-2 bg-accent rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                  <div className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                  <div className="w-2 h-2 bg-white rounded-full animate-bounce"></div>
                 </div>
               </div>
             )}
@@ -297,17 +403,19 @@ export default function Chat() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="flex gap-3">
               <Textarea
-                placeholder="Share your thoughts and feelings..."
+                placeholder={affirmationSession.isActive 
+                  ? "Repeat the affirmation..." 
+                  : "Share your thoughts and feelings..."}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                className="min-h-[120px] bg-white/70 backdrop-blur-sm shadow-inner border-accent/20 focus:border-accent"
+                className="min-h-[120px] bg-white/5 backdrop-blur-sm border-white/10 focus:border-white/20 text-white placeholder:text-white/50"
               />
               <Button
                 type="button"
                 variant={isRecording ? "destructive" : "outline"}
                 onClick={isRecording ? stopRecording : startRecording}
                 className={`flex-shrink-0 transition-all duration-300 hover:scale-105 ${
-                  isRecording ? 'bg-red-500 hover:bg-red-600 text-white' : 'hover:bg-accent hover:text-accent-foreground'
+                  isRecording ? 'bg-red-500 hover:bg-red-600 text-white' : 'border-white/10 text-white hover:bg-white/10'
                 }`}
               >
                 {isRecording ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
@@ -316,10 +424,10 @@ export default function Chat() {
             <Button 
               type="submit" 
               disabled={loading || !message.trim()}
-              className="w-full bg-accent hover:bg-accent/90 text-accent-foreground transition-all duration-300 hover:scale-[1.02]"
+              className="w-full bg-white/10 hover:bg-white/20 text-white transition-all duration-300 hover:scale-[1.02]"
             >
               <SendHorizonal className="mr-2 h-5 w-5" />
-              Share
+              {affirmationSession.isActive ? "Submit Affirmation" : "Share"}
             </Button>
           </form>
         </div>

@@ -1,14 +1,18 @@
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
-import { SendHorizonal } from "lucide-react";
+import { SendHorizonal, Mic, MicOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Chat() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -17,7 +21,6 @@ export default function Chat() {
 
     setLoading(true);
     try {
-      // Here we'll store the message in Supabase (we'll implement this later)
       toast({
         title: "Message sent!",
         description: "Thank you for sharing how you feel.",
@@ -34,17 +37,84 @@ export default function Chat() {
     }
   };
 
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      chunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) {
+          chunksRef.current.push(e.data);
+        }
+      };
+
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(chunksRef.current, { type: 'audio/webm' });
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+          const base64Audio = (reader.result as string).split(',')[1];
+          try {
+            const { data, error } = await supabase.functions.invoke('transcribe-audio', {
+              body: { audio: base64Audio },
+            });
+            
+            if (error) throw error;
+            if (data.text) {
+              setMessage(prev => prev + (prev ? '\n' : '') + data.text);
+            }
+          } catch (error: any) {
+            toast({
+              variant: "destructive",
+              title: "Transcription failed",
+              description: error.message,
+            });
+          }
+        };
+        reader.readAsDataURL(audioBlob);
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Could not access microphone: " + error.message,
+      });
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+      setIsRecording(false);
+    }
+  };
+
   return (
     <div className="max-w-2xl mx-auto p-4">
       <Card className="p-6">
         <h2 className="text-2xl font-bold mb-4">How are you feeling today?</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <Textarea
-            placeholder="Share your thoughts and feelings..."
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            className="min-h-[120px]"
-          />
+          <div className="flex gap-2">
+            <Textarea
+              placeholder="Share your thoughts and feelings..."
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              className="min-h-[120px]"
+            />
+            <Button
+              type="button"
+              variant={isRecording ? "destructive" : "outline"}
+              onClick={isRecording ? stopRecording : startRecording}
+              className="flex-shrink-0"
+            >
+              {isRecording ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+            </Button>
+          </div>
           <Button 
             type="submit" 
             disabled={loading || !message.trim()}

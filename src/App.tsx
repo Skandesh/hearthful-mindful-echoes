@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import Chat from "./components/Chat";
+import Navigation from "./components/Navigation";
 
 const queryClient = new QueryClient();
 
@@ -36,7 +37,12 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     return <Navigate to="/auth" replace />;
   }
 
-  return children;
+  return (
+    <>
+      <Navigation />
+      {children}
+    </>
+  );
 };
 
 const App = () => (

@@ -12,35 +12,6 @@ type Message = {
   audio?: string;
 };
 
-const generateAIResponse = (userMessage: string) => {
-  // Convert message to lowercase for easier matching
-  const msg = userMessage.toLowerCase();
-  
-  // Check for various emotional states and keywords
-  if (msg.includes('anxious') || msg.includes('anxiety') || msg.includes('worried')) {
-    return "I can hear that you're feeling anxious right now. That's a challenging feeling to sit with. Would you like to try some calming affirmations together? We can start with something gentle like: 'I am safe in this moment, and this feeling will pass.'";
-  }
-  
-  if (msg.includes('feeling low') || msg.includes('sad') || msg.includes('depressed') || msg.includes('down')) {
-    return "I hear you, and I want you to know that it's completely okay to feel low. Your feelings are valid. Would you like to work through some affirmations together? We can begin with acknowledging where you are and gently moving toward hope.";
-  }
-  
-  if (msg.includes('stressed') || msg.includes('overwhelmed') || msg.includes('too much')) {
-    return "Being stressed and overwhelmed can feel really heavy. Let's take a moment together. Would you like to try some grounding affirmations? We can start with: 'I can take things one step at a time. Each breath brings me clarity.'";
-  }
-  
-  if (msg.includes('yes') || msg.includes('sure') || msg.includes('okay') || msg.includes('let\'s try')) {
-    return "That's wonderful that you're open to this. Let's begin with something simple. Take a gentle breath and repeat after me: 'I acknowledge my feelings without judgment. I am worthy of peace and healing. Each moment is a new opportunity.'";
-  }
-  
-  if (msg.includes('thank') || msg.includes('helped') || msg.includes('better')) {
-    return "I'm so glad we could work through this together. Remember, you have incredible strength within you. Would you like to try another affirmation to carry with you today?";
-  }
-  
-  // Default response for any other input
-  return "I'm here with you, and I hear that you're going through something. Would you like to share more about what you're feeling? We can work through some affirmations together that might help support you in this moment.";
-};
-
 export default function Chat() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -118,6 +89,15 @@ export default function Chat() {
     }
   };
 
+  const generateAIResponse = async (userInput: string) => {
+    const { data, error } = await supabase.functions.invoke('generate-response', {
+      body: { message: userInput }
+    });
+
+    if (error) throw error;
+    return data.response;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim()) return;
@@ -130,7 +110,7 @@ export default function Chat() {
       setMessage(""); // Clear input immediately
       
       // Generate AI response
-      const aiResponse = generateAIResponse(message);
+      const aiResponse = await generateAIResponse(message);
       const aiMessage = { type: 'ai' as const, content: aiResponse };
       
       // Add AI message and generate speech
@@ -184,7 +164,7 @@ export default function Chat() {
         setMessages(prev => [...prev, userMessage]);
 
         // Generate AI response
-        const aiResponse = generateAIResponse(transcriptionData.text);
+        const aiResponse = await generateAIResponse(transcriptionData.text);
         const aiMessage = { type: 'ai' as const, content: aiResponse };
 
         // Add AI message and generate speech

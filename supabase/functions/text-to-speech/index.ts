@@ -18,8 +18,13 @@ serve(async (req) => {
       throw new Error('Text is required')
     }
 
+    // Use Charlie's voice ID
+    const VOICE_ID = "IKne3meq5aSn9XLyUdCD";
+
+    console.log("Making request to ElevenLabs API with text:", text);
+
     const response = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/Charlie`,
+      `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}`,
       {
         method: 'POST',
         headers: {
@@ -39,10 +44,12 @@ serve(async (req) => {
     )
 
     if (!response.ok) {
-      const error = await response.json();
-      console.error("ElevenLabs API Error:", error);
-      throw new Error(error.detail?.message || 'Failed to generate speech');
+      const errorData = await response.json();
+      console.error("ElevenLabs API Error Response:", errorData);
+      throw new Error(errorData.detail?.message || 'Failed to generate speech');
     }
+
+    console.log("Successfully received audio response");
 
     const audioArrayBuffer = await response.arrayBuffer()
     const audioBase64 = btoa(String.fromCharCode(...new Uint8Array(audioArrayBuffer)))
@@ -56,7 +63,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ error: error.message }),
       { 
-        status: 400,
+        status: 500, // Changed from 400 to 500 since this is a server error
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
     )

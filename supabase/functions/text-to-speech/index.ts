@@ -7,105 +7,126 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return new Response(null, { 
+      status: 200,
+      headers: corsHeaders 
+    })
   }
 
   try {
     const { text } = await req.json()
 
-    if (!text) {
-      throw new Error('The text parameter is required for text-to-speech conversion')
-    }
-
-    if (typeof text !== 'string') {
-      throw new Error('The text parameter must be a string')
-    }
-
-    if (text.length > 2500) {
-      throw new Error('Text length exceeds the maximum limit of 2500 characters')
-    }
-
-    // Use Charlie's voice ID - professional male voice
-    const VOICE_ID = "IKne3meq5aSn9XLyUdCD";
-    const XI_API_KEY = Deno.env.get('ELEVEN_LABS_API_KEY');
-
-    if (!XI_API_KEY) {
-      throw new Error('ElevenLabs API key is not configured')
-    }
-
-    console.log(`Converting text to speech: "${text.slice(0, 50)}${text.length > 50 ? '...' : ''}"`);
-
-    const response = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}`,
-      {
-        method: 'POST',
-        headers: {
-          'Accept': 'audio/mpeg',
-          'Content-Type': 'application/json',
-          'xi-api-key': XI_API_KEY,
-        },
-        body: JSON.stringify({
-          text,
-          model_id: "eleven_monolingual_v1",
-          voice_settings: {
-            stability: 0.5,
-            similarity_boost: 0.75,
-            style: 0.0,
-            use_speaker_boost: true
-          },
+    // Input validation
+    if (!text || typeof text !== 'string') {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Invalid input: text must be a non-empty string' 
         }),
-      }
-    )
+        { 
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      )
+    }
 
+    const XI_API_KEY = Deno.env.get('ELEVEN_LABS_API_KEY')
+    if (!XI_API_KEY) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Server configuration error: Missing API key' 
+        }),
+        { 
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      )
+    }
+
+    // Using Charlie's voice
+    const VOICE_ID = "IKne3meq5aSn9XLyUdCD"
+    const url = `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}/stream`
+
+    console.log('Making request to ElevenLabs API...')
+    
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Accept': 'audio/mpeg',
+        'Content-Type': 'application/json',
+        'xi-api-key': XI_API_KEY,
+      },
+      body: JSON.stringify({
+        text,
+        model_id: "eleven_monolingual_v1",
+        voice_settings: {
+          stability: 0.5,
+          similarity_boost: 0.75,
+        }
+      }),
+    })
+
+    // Handle API errors
     if (!response.ok) {
-      let errorMessage: string;
+      let errorMessage = 'Text-to-speech conversion failed'
+      
       try {
-        const errorData = await response.json();
-        console.error("ElevenLabs API Error Response:", errorData);
+        const errorData = await response.json()
+        console.error('ElevenLabs API error:', errorData)
         
-        // Map specific ElevenLabs error codes to user-friendly messages
-        switch(errorData.status) {
-          case 'error':
-            errorMessage = errorData.detail?.message || 'ElevenLabs API error';
-            break;
-          case 401:
-            errorMessage = 'Invalid ElevenLabs API key';
-            break;
-          case 422:
-            errorMessage = 'Invalid request parameters. Please check the text content.';
-            break;
-          case 429:
-            errorMessage = 'Character quota exceeded. Please try again later.';
-            break;
-          default:
-            errorMessage = `ElevenLabs API error: ${errorData.detail?.message || 'Unknown error'}`;
+        if (errorData.detail) {
+          errorMessage = errorData.detail.message || errorData.detail
         }
       } catch {
-        errorMessage = `ElevenLabs API error: ${response.status} ${response.statusText}`;
+        errorMessage = `Server returned ${response.status}: ${response.statusText}`
       }
-      throw new Error(errorMessage);
+
+      return new Response(
+        JSON.stringify({ error: errorMessage }),
+        { 
+          status: response.status,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      )
     }
 
-    if (response.headers.get('content-type') !== 'audio/mpeg') {
-      throw new Error('Unexpected response format from ElevenLabs API')
+    // Verify we received audio data
+    const contentType = response.headers.get('content-type')
+    if (!contentType || !contentType.includes('audio/')) {
+      console.error('Unexpected content type:', contentType)
+      return new Response(
+        JSON.stringify({ 
+          error: 'Invalid response format from TTS service' 
+        }),
+        { 
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      )
     }
 
-    console.log("Successfully received audio response");
+    // Convert audio to base64
+    const arrayBuffer = await response.arrayBuffer()
+    const base64Audio = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)))
 
-    const audioArrayBuffer = await response.arrayBuffer()
-    const audioBase64 = btoa(String.fromCharCode(...new Uint8Array(audioArrayBuffer)))
+    console.log('Successfully generated audio')
 
     return new Response(
-      JSON.stringify({ audio: audioBase64 }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      JSON.stringify({ audio: base64Audio }),
+      { 
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      }
     )
+
   } catch (error) {
-    console.error("Text-to-speech error:", error);
+    console.error('Unexpected error:', error)
+    
     return new Response(
       JSON.stringify({ 
-        error: error.message,
-        details: error.stack 
+        error: 'An unexpected error occurred while processing your request',
+        details: error.message
       }),
       { 
         status: 500,

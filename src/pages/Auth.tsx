@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Mail, Google } from "lucide-react";
+import { Mail } from "lucide-react";
 
 export default function Auth() {
   const [email, setEmail] = useState("");
@@ -124,7 +124,7 @@ export default function Auth() {
             onClick={handleGoogleAuth}
             disabled={loading}
           >
-            <Google className="mr-2 h-4 w-4" />
+            <Mail className="mr-2 h-4 w-4" />
             Google
           </Button>
         </div>

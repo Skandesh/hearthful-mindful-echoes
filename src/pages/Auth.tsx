@@ -5,8 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast";
-import { Mail } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { Mail, Google } from "lucide-react";
 
 export default function Auth() {
   const [email, setEmail] = useState("");
@@ -19,7 +19,13 @@ export default function Auth() {
     try {
       setLoading(true);
       const { error } = isSignUp 
-        ? await supabase.auth.signUp({ email, password })
+        ? await supabase.auth.signUp({ 
+            email, 
+            password,
+            options: {
+              emailRedirectTo: `${window.location.origin}/app`
+            }
+          })
         : await supabase.auth.signInWithPassword({ email, password });
 
       if (error) throw error;
@@ -31,7 +37,7 @@ export default function Auth() {
           : "You've successfully signed in.",
       });
 
-      navigate("/app");
+      if (!isSignUp) navigate("/app");
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -48,7 +54,7 @@ export default function Auth() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.origin + '/app'
+          redirectTo: `${window.location.origin}/app`
         }
       });
       if (error) throw error;
@@ -106,7 +112,7 @@ export default function Auth() {
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
+              <span className="bg-white/80 px-2 text-muted-foreground">
                 Or continue with
               </span>
             </div>
@@ -118,7 +124,7 @@ export default function Auth() {
             onClick={handleGoogleAuth}
             disabled={loading}
           >
-            <Mail className="mr-2 h-4 w-4" />
+            <Google className="mr-2 h-4 w-4" />
             Google
           </Button>
         </div>

@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,13 +13,32 @@ type Message = {
 };
 
 const generateAIResponse = (userMessage: string) => {
-  if (userMessage.toLowerCase().includes('feeling low') || userMessage.toLowerCase().includes('sad')) {
-    return "I hear that you're feeling low today. That must be difficult, and it's completely okay to feel this way. Would you like to try some gentle affirmations together? We can start with some simple ones that might help lift your spirit.";
+  // Convert message to lowercase for easier matching
+  const msg = userMessage.toLowerCase();
+  
+  // Check for various emotional states and keywords
+  if (msg.includes('anxious') || msg.includes('anxiety') || msg.includes('worried')) {
+    return "I can hear that you're feeling anxious right now. That's a challenging feeling to sit with. Would you like to try some calming affirmations together? We can start with something gentle like: 'I am safe in this moment, and this feeling will pass.'";
   }
-  if (userMessage.toLowerCase().includes('yes') || userMessage.toLowerCase().includes('sure') || userMessage.toLowerCase().includes('okay')) {
-    return "Great! Let's begin with something simple. Take a deep breath and repeat after me: 'I acknowledge my feelings, and I know that they will pass. I am stronger than I think.'";
+  
+  if (msg.includes('feeling low') || msg.includes('sad') || msg.includes('depressed') || msg.includes('down')) {
+    return "I hear you, and I want you to know that it's completely okay to feel low. Your feelings are valid. Would you like to work through some affirmations together? We can begin with acknowledging where you are and gently moving toward hope.";
   }
-  return "I'm here to listen and support you. Would you like to share more about how you're feeling?";
+  
+  if (msg.includes('stressed') || msg.includes('overwhelmed') || msg.includes('too much')) {
+    return "Being stressed and overwhelmed can feel really heavy. Let's take a moment together. Would you like to try some grounding affirmations? We can start with: 'I can take things one step at a time. Each breath brings me clarity.'";
+  }
+  
+  if (msg.includes('yes') || msg.includes('sure') || msg.includes('okay') || msg.includes('let\'s try')) {
+    return "That's wonderful that you're open to this. Let's begin with something simple. Take a gentle breath and repeat after me: 'I acknowledge my feelings without judgment. I am worthy of peace and healing. Each moment is a new opportunity.'";
+  }
+  
+  if (msg.includes('thank') || msg.includes('helped') || msg.includes('better')) {
+    return "I'm so glad we could work through this together. Remember, you have incredible strength within you. Would you like to try another affirmation to carry with you today?";
+  }
+  
+  // Default response for any other input
+  return "I'm here with you, and I hear that you're going through something. Would you like to share more about what you're feeling? We can work through some affirmations together that might help support you in this moment.";
 };
 
 export default function Chat() {

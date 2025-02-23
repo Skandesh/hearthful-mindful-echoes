@@ -95,35 +95,41 @@ export default function Chat() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
-      <Card className="p-6">
-        <h2 className="text-2xl font-bold mb-4">How are you feeling today?</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex gap-2">
-            <Textarea
-              placeholder="Share your thoughts and feelings..."
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              className="min-h-[120px]"
-            />
-            <Button
-              type="button"
-              variant={isRecording ? "destructive" : "outline"}
-              onClick={isRecording ? stopRecording : startRecording}
-              className="flex-shrink-0"
+    <div className="max-w-2xl mx-auto p-4 min-h-[calc(100vh-4rem)] flex items-center">
+      <Card className="p-8 w-full bg-white/50 backdrop-blur-sm shadow-xl">
+        <div className="max-w-md mx-auto">
+          <h2 className="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+            How are you feeling today?
+          </h2>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="flex gap-3">
+              <Textarea
+                placeholder="Share your thoughts and feelings..."
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                className="min-h-[160px] bg-white/70 backdrop-blur-sm shadow-inner border-accent/20 focus:border-accent"
+              />
+              <Button
+                type="button"
+                variant={isRecording ? "destructive" : "outline"}
+                onClick={isRecording ? stopRecording : startRecording}
+                className={`flex-shrink-0 transition-all duration-300 hover:scale-105 ${
+                  isRecording ? 'bg-red-500 hover:bg-red-600 text-white' : 'hover:bg-accent hover:text-accent-foreground'
+                }`}
+              >
+                {isRecording ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+              </Button>
+            </div>
+            <Button 
+              type="submit" 
+              disabled={loading || !message.trim()}
+              className="w-full bg-accent hover:bg-accent/90 text-accent-foreground transition-all duration-300 hover:scale-[1.02]"
             >
-              {isRecording ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+              <SendHorizonal className="mr-2 h-5 w-5" />
+              Share
             </Button>
-          </div>
-          <Button 
-            type="submit" 
-            disabled={loading || !message.trim()}
-            className="w-full"
-          >
-            <SendHorizonal className="mr-2 h-4 w-4" />
-            Send
-          </Button>
-        </form>
+          </form>
+        </div>
       </Card>
     </div>
   );

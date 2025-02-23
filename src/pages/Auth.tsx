@@ -23,7 +23,7 @@ export default function Auth() {
             email, 
             password,
             options: {
-              emailRedirectTo: `${window.location.origin}/app`
+              emailRedirectTo: 'https://preview--hearthful-mindful-echoes.lovable.app/app'
             }
           })
         : await supabase.auth.signInWithPassword({ email, password });
@@ -54,7 +54,7 @@ export default function Auth() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/app`
+          redirectTo: 'https://preview--hearthful-mindful-echoes.lovable.app/app'
         }
       });
       if (error) throw error;

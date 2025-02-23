@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import Chat from "./components/Chat";
 
 const queryClient = new QueryClient();
 
@@ -49,7 +50,7 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/app" element={
             <ProtectedRoute>
-              <div>App Dashboard (Protected Route)</div>
+              <Chat />
             </ProtectedRoute>
           } />
           <Route path="*" element={<NotFound />} />

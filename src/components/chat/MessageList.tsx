@@ -25,9 +25,9 @@ export function MessageList({
           key={index}
           className={`p-3 rounded-lg ${
             msg.type === 'user'
-              ? 'bg-white/10 ml-8'
-              : 'bg-white/20 mr-8'
-          } text-white`}
+              ? 'bg-white/50 ml-8 border border-primary/10'
+              : 'bg-primary/10 mr-8'
+          } text-primary-foreground`}
         >
           <div className="flex justify-between items-start mb-1">
             <span className="text-xs opacity-70">
@@ -37,7 +37,7 @@ export function MessageList({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-6 w-6 text-white hover:text-white/80"
+                className="h-6 w-6 text-primary-foreground hover:text-primary"
                 onClick={() => isPlaying ? onStopAudio() : onPlayAudio(msg)}
               >
                 {isPlaying ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
@@ -50,9 +50,9 @@ export function MessageList({
       {loading && (
         <div className="flex items-center justify-center p-4">
           <div className="flex space-x-1">
-            <div className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-            <div className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-            <div className="w-2 h-2 bg-white rounded-full animate-bounce"></div>
+            <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+            <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+            <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
           </div>
         </div>
       )}

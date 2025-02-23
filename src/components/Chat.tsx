@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -18,7 +17,7 @@ export default function Chat() {
   
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const { toast } = useToast();
 
   const { isPlaying, playAudio, stopAudio } = useAudio();
@@ -201,13 +200,40 @@ export default function Chat() {
     }
   };
 
+  const startAffirmationSession = async (mood: string) => {
+    const affirmations = await generateAffirmations(mood);
+    setAffirmationSession({
+      isActive: true,
+      currentAffirmation: affirmations[0],
+      affirmations,
+      index: 0
+    });
+    
+    toast({
+      title: "Affirmation Session Started",
+      description: "Let's begin your healing journey with some positive affirmations.",
+      className: "bg-primary text-white",
+    });
+    
+    const firstAffirmation = await generateAIResponse(affirmations[0]);
+    return firstAffirmation;
+  };
+
   return (
     <div className="max-w-2xl mx-auto p-4 min-h-[calc(100vh-4rem)]">
       <WavyBackground />
 
-      <Card className="p-8 w-full bg-black/30 backdrop-blur-xl shadow-xl border-white/10">
+      <Card className="p-8 w-full bg-white/70 backdrop-blur-xl shadow-xl border-primary/20">
         <div className="max-w-md mx-auto">
-          <h2 className="text-2xl font-bold mb-6 text-center text-white">
+          {affirmationSession.isActive && (
+            <div className="mb-4 p-3 bg-primary/10 rounded-lg text-center">
+              <p className="text-sm text-primary-foreground">
+                Affirmation Session in Progress - {affirmationSession.index + 1} of {affirmationSession.affirmations.length}
+              </p>
+            </div>
+          )}
+          
+          <h2 className="text-2xl font-bold mb-6 text-center text-primary-foreground">
             {affirmationSession.isActive 
               ? "Repeat this affirmation:" 
               : "How are you feeling today?"}

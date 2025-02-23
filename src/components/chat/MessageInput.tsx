@@ -33,14 +33,14 @@ export function MessageInput({
             : "Share your thoughts and feelings..."}
           value={message}
           onChange={(e) => onMessageChange(e.target.value)}
-          className="min-h-[120px] bg-white/5 backdrop-blur-sm border-white/10 focus:border-white/20 text-white placeholder:text-white/50"
+          className="min-h-[120px] bg-white/80 backdrop-blur-sm border-primary/20 focus:border-primary text-primary-foreground placeholder:text-primary-foreground/50"
         />
         <Button
           type="button"
-          variant={isRecording ? "destructive" : "outline"}
+          variant="outline"
           onClick={isRecording ? onStopRecording : onStartRecording}
           className={`flex-shrink-0 transition-all duration-300 hover:scale-105 ${
-            isRecording ? 'bg-red-500 hover:bg-red-600 text-white' : 'border-white/10 text-white hover:bg-white/10'
+            isRecording ? 'bg-destructive hover:bg-destructive/90 text-white' : 'border-primary/20 bg-white/80 text-primary-foreground hover:bg-primary/10'
           }`}
         >
           {isRecording ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
@@ -49,7 +49,7 @@ export function MessageInput({
       <Button 
         type="submit" 
         disabled={loading || !message.trim()}
-        className="w-full bg-white/10 hover:bg-white/20 text-white transition-all duration-300 hover:scale-[1.02]"
+        className="w-full bg-primary hover:bg-primary/90 text-white transition-all duration-300 hover:scale-[1.02]"
       >
         <SendHorizonal className="mr-2 h-5 w-5" />
         {isAffirmationSession ? "Submit Affirmation" : "Share"}

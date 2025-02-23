@@ -1,4 +1,3 @@
-
 import { 
   Heart, 
   ChevronRight, 
@@ -82,14 +81,25 @@ const Index = () => {
       {/* Hero Section */}
       <header className="container-custom py-24">
         <div className="text-center max-w-4xl mx-auto space-y-6">
-          <div className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 text-primary-foreground mb-4 animate-fade-in">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 text-primary-foreground mb-4 hover-lift"
+          >
             <Heart className="w-4 h-4 mr-2" />
             <span className="text-sm font-medium">Begin Your Healing Journey</span>
-          </div>
+          </motion.div>
           
-          <h1 className="text-4xl md:text-6xl font-bold text-primary-foreground leading-tight animate-fade-up">
-            Transform Your Mind with AI-Powered Affirmations
-          </h1>
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-4xl md:text-6xl font-bold text-primary-foreground leading-tight"
+          >
+            Transform Your Mind with{" "}
+            <span className="gradient-text">AI-Powered Affirmations</span>
+          </motion.h1>
           
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto animate-fade-up" style={{ animationDelay: "0.1s" }}>
             Experience personalized emotional healing through AI-generated affirmations, 
@@ -127,13 +137,16 @@ const Index = () => {
 
         <div className="grid md:grid-cols-2 gap-8 mb-16">
           {features.map((feature, index) => (
-            <div 
+            <motion.div 
               key={feature.title}
-              className="glass-card p-6 rounded-xl animate-fade-up"
-              style={{ animationDelay: `${0.1 * (index + 1)}s` }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="glass-card p-6 rounded-xl hover:bg-white/60"
             >
               <div className="flex items-center gap-4 mb-4">
-                <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                <div className="feature-icon p-2 rounded-lg bg-primary/10 text-primary">
                   {feature.icon}
                 </div>
                 <h3 className="text-xl font-semibold text-primary-foreground">
@@ -143,7 +156,7 @@ const Index = () => {
               <p className="text-muted-foreground">
                 {feature.description}
               </p>
-            </div>
+            </motion.div>
           ))}
         </div>
       </section>
@@ -161,12 +174,15 @@ const Index = () => {
 
         <div className="grid md:grid-cols-3 gap-8">
           {pricingPlans.map((plan, index) => (
-            <div 
+            <motion.div 
               key={plan.name}
-              className={`glass-card p-6 rounded-xl animate-fade-up ${
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className={`glass-card p-6 rounded-xl ${
                 plan.name === "Pro" ? "border-primary/30 ring-1 ring-primary/30" : ""
               }`}
-              style={{ animationDelay: `${0.1 * (index + 1)}s` }}
             >
               {plan.name === "Pro" && (
                 <div className="flex items-center justify-center gap-2 text-primary text-sm font-medium mb-4">
@@ -202,14 +218,19 @@ const Index = () => {
               >
                 Get Started
               </a>
-            </div>
+            </motion.div>
           ))}
         </div>
       </section>
 
       {/* CTA Section */}
       <section className="container-custom py-24">
-        <div className="glass-card rounded-2xl p-8 md:p-12 text-center">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          className="glass-card rounded-2xl p-8 md:p-12 text-center"
+        >
           <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-primary-foreground">
             Start Your Healing Journey Today
           </h2>
@@ -224,7 +245,7 @@ const Index = () => {
             Begin Free Trial
             <ChevronRight className="ml-2 w-4 h-4" />
           </a>
-        </div>
+        </motion.div>
       </section>
 
       {/* Footer */}

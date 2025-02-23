@@ -40,10 +40,13 @@ export function MessageInput({
           variant="outline"
           onClick={isRecording ? onStopRecording : onStartRecording}
           className={`flex-shrink-0 transition-all duration-300 hover:scale-105 ${
-            isRecording ? 'bg-destructive hover:bg-destructive/90 text-white' : 'border-primary/20 bg-white/80 text-primary-foreground hover:bg-primary/10'
+            isRecording ? 'bg-red-50 border-red-200 text-red-500 hover:bg-red-100' : 'border-primary/20 bg-white/80 text-primary-foreground hover:bg-primary/10'
           }`}
         >
-          {isRecording ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+          {isRecording ? 
+            <MicOff className="h-5 w-5 text-red-500" /> : 
+            <Mic className="h-5 w-5" />
+          }
         </Button>
       </div>
       <Button 

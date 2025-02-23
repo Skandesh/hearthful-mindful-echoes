@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -17,7 +18,7 @@ export default function Chat() {
   
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
   const { isPlaying, playAudio, stopAudio } = useAudio();
@@ -198,25 +199,6 @@ export default function Chat() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const startAffirmationSession = async (mood: string) => {
-    const affirmations = await generateAffirmations(mood);
-    setAffirmationSession({
-      isActive: true,
-      currentAffirmation: affirmations[0],
-      affirmations,
-      index: 0
-    });
-    
-    toast({
-      title: "Affirmation Session Started",
-      description: "Let's begin your healing journey with some positive affirmations.",
-      className: "bg-primary text-white",
-    });
-    
-    const firstAffirmation = await generateAIResponse(affirmations[0]);
-    return firstAffirmation;
   };
 
   return (

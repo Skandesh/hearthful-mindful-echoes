@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -160,19 +159,17 @@ export default function Chat() {
             
             if (error) throw error;
             if (data.text) {
-              // Add user's transcribed message
+              // First, add the transcribed user message
               const userMessage = { type: 'user' as const, content: data.text };
               setMessages(prev => [...prev, userMessage]);
               
-              // Generate and add AI response
-              const aiResponse = generateAIResponse(data.text);
-              const aiMessage = { type: 'ai' as const, content: aiResponse };
-              setMessages(prev => [...prev, aiMessage]);
-              
-              // Play AI response
+              // Then, after a short delay, add and play the AI response
               setTimeout(() => {
+                const aiResponse = generateAIResponse(data.text);
+                const aiMessage = { type: 'ai' as const, content: aiResponse };
+                setMessages(prev => [...prev, aiMessage]);
                 playAudio(aiMessage);
-              }, 500);
+              }, 1000); // Delay AI response by 1 second to make the flow more natural
             }
           } catch (error: any) {
             toast({

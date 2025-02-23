@@ -12,14 +12,14 @@ serve(async (req) => {
   }
 
   try {
-    const { text, voice = "Charlie" } = await req.json()
+    const { text } = await req.json()
 
     if (!text) {
       throw new Error('Text is required')
     }
 
     const response = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/${voice}`,
+      `https://api.elevenlabs.io/v1/text-to-speech/Charlie`,
       {
         method: 'POST',
         headers: {
@@ -39,7 +39,9 @@ serve(async (req) => {
     )
 
     if (!response.ok) {
-      throw new Error('Failed to generate speech')
+      const error = await response.json();
+      console.error("ElevenLabs API Error:", error);
+      throw new Error(error.detail?.message || 'Failed to generate speech');
     }
 
     const audioArrayBuffer = await response.arrayBuffer()
@@ -50,6 +52,7 @@ serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (error) {
+    console.error("TTS Error:", error);
     return new Response(
       JSON.stringify({ error: error.message }),
       { 

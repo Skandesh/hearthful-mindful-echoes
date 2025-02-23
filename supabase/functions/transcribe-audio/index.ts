@@ -48,14 +48,17 @@ serve(async (req) => {
       throw new Error('No audio data provided')
     }
 
-    // First, get the transcription
+    // Process audio in chunks
     const binaryAudio = processBase64Chunks(audio)
+    
+    // Prepare form data
     const formData = new FormData()
     const blob = new Blob([binaryAudio], { type: 'audio/webm' })
     formData.append('file', blob, 'audio.webm')
     formData.append('model', 'whisper-1')
 
-    const transcriptionResponse = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+    // Send to OpenAI
+    const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
@@ -63,41 +66,14 @@ serve(async (req) => {
       body: formData,
     })
 
-    if (!transcriptionResponse.ok) {
-      throw new Error(`OpenAI Transcription API error: ${await transcriptionResponse.text()}`)
+    if (!response.ok) {
+      throw new Error(`OpenAI API error: ${await response.text()}`)
     }
 
-    const transcriptionResult = await transcriptionResponse.json()
-    const transcribedText = transcriptionResult.text
-
-    // Now, analyze the emotion and provide supportive response
-    const completion = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are an empathetic listener focused on understanding emotions and providing supportive responses. Analyze the speaker\'s emotional state and respond with validation and gentle encouragement. Keep responses concise and warm.'
-          },
-          {
-            role: 'user',
-            content: transcribedText
-          }
-        ],
-        max_tokens: 150
-      })
-    })
-
-    const analysisResult = await completion.json()
-    const supportiveResponse = analysisResult.choices[0].message.content
+    const result = await response.json()
 
     return new Response(
-      JSON.stringify({ text: supportiveResponse }),
+      JSON.stringify({ text: result.text }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
 

@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -108,21 +109,38 @@ export default function Chat() {
       // Add user message
       const userMessage = { type: 'user' as const, content: message };
       setMessages(prev => [...prev, userMessage]);
+      setMessage(""); // Clear input immediately
       
-      // Generate and add AI response
+      // Generate AI response
       const aiResponse = generateAIResponse(message);
       const aiMessage = { type: 'ai' as const, content: aiResponse };
+      
+      // Add AI message and generate speech
       setMessages(prev => [...prev, aiMessage]);
       
-      // Clear input
-      setMessage("");
-      
-      // Play AI response
-      setTimeout(() => {
-        playAudio(aiMessage);
-      }, 500);
+      // Get text-to-speech for AI response
+      const { data: ttsData, error: ttsError } = await supabase.functions.invoke('text-to-speech', {
+        body: { text: aiResponse }
+      });
+
+      if (ttsError) throw ttsError;
+
+      if (ttsData?.audio) {
+        // Update AI message with audio
+        setMessages(prev => prev.map(msg => 
+          msg === aiMessage ? { ...msg, audio: ttsData.audio } : msg
+        ));
+        
+        // Play the audio
+        const audio = new Audio(`data:audio/mpeg;base64,${ttsData.audio}`);
+        audioRef.current = audio;
+        audio.onended = () => setIsPlaying(false);
+        await audio.play();
+        setIsPlaying(true);
+      }
 
     } catch (error: any) {
+      console.error('Error:', error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -130,6 +148,58 @@ export default function Chat() {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleVoiceInput = async (audioBase64: string) => {
+    try {
+      // First, get the transcription
+      const { data: transcriptionData, error: transcriptionError } = await supabase.functions.invoke('transcribe-audio', {
+        body: { audio: audioBase64 }
+      });
+
+      if (transcriptionError) throw transcriptionError;
+
+      if (transcriptionData?.text) {
+        // Add user's transcribed message
+        const userMessage = { type: 'user' as const, content: transcriptionData.text };
+        setMessages(prev => [...prev, userMessage]);
+
+        // Generate AI response
+        const aiResponse = generateAIResponse(transcriptionData.text);
+        const aiMessage = { type: 'ai' as const, content: aiResponse };
+
+        // Add AI message and generate speech
+        setMessages(prev => [...prev, aiMessage]);
+
+        // Get text-to-speech for AI response
+        const { data: ttsData, error: ttsError } = await supabase.functions.invoke('text-to-speech', {
+          body: { text: aiResponse }
+        });
+
+        if (ttsError) throw ttsError;
+
+        if (ttsData?.audio) {
+          // Update AI message with audio
+          setMessages(prev => prev.map(msg => 
+            msg === aiMessage ? { ...msg, audio: ttsData.audio } : msg
+          ));
+          
+          // Play the audio
+          const audio = new Audio(`data:audio/mpeg;base64,${ttsData.audio}`);
+          audioRef.current = audio;
+          audio.onended = () => setIsPlaying(false);
+          await audio.play();
+          setIsPlaying(true);
+        }
+      }
+    } catch (error: any) {
+      console.error('Voice Input Error:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
     }
   };
 
@@ -152,34 +222,8 @@ export default function Chat() {
         const reader = new FileReader();
         reader.onloadend = async () => {
           const base64Audio = (reader.result as string).split(',')[1];
-          try {
-            const { data, error } = await supabase.functions.invoke('transcribe-audio', {
-              body: { audio: base64Audio },
-            });
-            
-            if (error) throw error;
-            if (data.text) {
-              // First, add the transcribed user message
-              const userMessage = { type: 'user' as const, content: data.text };
-              setMessages(prev => [...prev, userMessage]);
-              
-              // Then, after a short delay, add and play the AI response
-              setTimeout(() => {
-                const aiResponse = generateAIResponse(data.text);
-                const aiMessage = { type: 'ai' as const, content: aiResponse };
-                setMessages(prev => [...prev, aiMessage]);
-                playAudio(aiMessage);
-              }, 1000); // Delay AI response by 1 second to make the flow more natural
-            }
-          } catch (error: any) {
-            toast({
-              variant: "destructive",
-              title: "Transcription failed",
-              description: error.message,
-            });
-          } finally {
-            setLoading(false);
-          }
+          await handleVoiceInput(base64Audio);
+          setLoading(false);
         };
         reader.readAsDataURL(audioBlob);
       };

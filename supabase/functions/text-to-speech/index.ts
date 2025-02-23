@@ -1,5 +1,6 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { encode as base64Encode } from "https://deno.land/std@0.168.0/encoding/base64.ts"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -46,7 +47,7 @@ serve(async (req) => {
 
     // Using Charlie's voice
     const VOICE_ID = "IKne3meq5aSn9XLyUdCD"
-    const url = `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}/stream`
+    const url = `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}`
 
     console.log('Making request to ElevenLabs API...')
     
@@ -106,9 +107,9 @@ serve(async (req) => {
       )
     }
 
-    // Convert audio to base64
-    const arrayBuffer = await response.arrayBuffer()
-    const base64Audio = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)))
+    // Convert audio to base64 using the Deno standard library
+    const audioBytes = new Uint8Array(await response.arrayBuffer())
+    const base64Audio = base64Encode(audioBytes)
 
     console.log('Successfully generated audio')
 

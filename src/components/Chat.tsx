@@ -1,15 +1,15 @@
-
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
-import { SendHorizonal, Mic, MicOff } from "lucide-react";
+import { SendHorizonal, Mic, MicOff, Volume2, VolumeX } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
 type Message = {
   type: 'user' | 'ai';
   content: string;
+  audio?: string;
 };
 
 export default function Chat() {
@@ -17,9 +17,67 @@ export default function Chat() {
   const [loading, setLoading] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [isPlaying, setIsPlaying] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const playAudio = async (message: Message) => {
+    if (!message.audio) {
+      try {
+        const { data, error } = await supabase.functions.invoke('text-to-speech', {
+          body: { text: message.content },
+        });
+
+        if (error) throw error;
+
+        if (data.audio) {
+          // Update message with audio
+          setMessages(prev => prev.map(msg => 
+            msg === message ? { ...msg, audio: data.audio } : msg
+          ));
+          
+          // Play the audio
+          const audio = new Audio(`data:audio/mpeg;base64,${data.audio}`);
+          audioRef.current = audio;
+          audio.onended = () => setIsPlaying(false);
+          audio.play();
+          setIsPlaying(true);
+        }
+      } catch (error: any) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Could not generate speech: " + error.message,
+        });
+      }
+    } else {
+      // Play cached audio
+      const audio = new Audio(`data:audio/mpeg;base64,${message.audio}`);
+      audioRef.current = audio;
+      audio.onended = () => setIsPlaying(false);
+      audio.play();
+      setIsPlaying(true);
+    }
+  };
+
+  const stopAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsPlaying(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -126,8 +184,20 @@ export default function Chat() {
                     : 'bg-accent text-white mr-8'
                 }`}
               >
-                <div className="text-xs mb-1 opacity-70">
-                  {msg.type === 'user' ? 'You' : 'AI Assistant'}
+                <div className="flex justify-between items-start mb-1">
+                  <span className="text-xs opacity-70">
+                    {msg.type === 'user' ? 'You' : 'AI Assistant'}
+                  </span>
+                  {msg.type === 'ai' && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6"
+                      onClick={() => isPlaying ? stopAudio() : playAudio(msg)}
+                    >
+                      {isPlaying ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+                    </Button>
+                  )}
                 </div>
                 {msg.content}
               </div>
@@ -141,6 +211,7 @@ export default function Chat() {
                 </div>
               </div>
             )}
+            <div ref={messagesEndRef} />
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">

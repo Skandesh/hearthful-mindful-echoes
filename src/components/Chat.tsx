@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,6 +11,16 @@ type Message = {
   type: 'user' | 'ai';
   content: string;
   audio?: string;
+};
+
+const generateAIResponse = (userMessage: string) => {
+  if (userMessage.toLowerCase().includes('feeling low') || userMessage.toLowerCase().includes('sad')) {
+    return "I hear that you're feeling low today. That must be difficult, and it's completely okay to feel this way. Would you like to try some gentle affirmations together? We can start with some simple ones that might help lift your spirit.";
+  }
+  if (userMessage.toLowerCase().includes('yes') || userMessage.toLowerCase().includes('sure') || userMessage.toLowerCase().includes('okay')) {
+    return "Great! Let's begin with something simple. Take a deep breath and repeat after me: 'I acknowledge my feelings, and I know that they will pass. I am stronger than I think.'";
+  }
+  return "I'm here to listen and support you. Would you like to share more about how you're feeling?";
 };
 
 export default function Chat() {
@@ -51,10 +62,11 @@ export default function Chat() {
           const audio = new Audio(`data:audio/mpeg;base64,${data.audio}`);
           audioRef.current = audio;
           audio.onended = () => setIsPlaying(false);
-          audio.play();
+          await audio.play();
           setIsPlaying(true);
         }
       } catch (error: any) {
+        console.error("TTS Error:", error);
         toast({
           variant: "destructive",
           title: "Error",
@@ -63,11 +75,20 @@ export default function Chat() {
       }
     } else {
       // Play cached audio
-      const audio = new Audio(`data:audio/mpeg;base64,${message.audio}`);
-      audioRef.current = audio;
-      audio.onended = () => setIsPlaying(false);
-      audio.play();
-      setIsPlaying(true);
+      try {
+        const audio = new Audio(`data:audio/mpeg;base64,${message.audio}`);
+        audioRef.current = audio;
+        audio.onended = () => setIsPlaying(false);
+        await audio.play();
+        setIsPlaying(true);
+      } catch (error) {
+        console.error("Audio playback error:", error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Could not play audio",
+        });
+      }
     }
   };
 
@@ -85,12 +106,23 @@ export default function Chat() {
 
     setLoading(true);
     try {
-      setMessages(prev => [...prev, { type: 'user', content: message }]);
-      toast({
-        title: "Message sent!",
-        description: "Thank you for sharing how you feel.",
-      });
+      // Add user message
+      const userMessage = { type: 'user' as const, content: message };
+      setMessages(prev => [...prev, userMessage]);
+      
+      // Generate and add AI response
+      const aiResponse = generateAIResponse(message);
+      const aiMessage = { type: 'ai' as const, content: aiResponse };
+      setMessages(prev => [...prev, aiMessage]);
+      
+      // Clear input
       setMessage("");
+      
+      // Play AI response
+      setTimeout(() => {
+        playAudio(aiMessage);
+      }, 500);
+
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -128,10 +160,19 @@ export default function Chat() {
             
             if (error) throw error;
             if (data.text) {
-              setMessages(prev => [...prev, { 
-                type: 'ai', 
-                content: data.text 
-              }]);
+              // Add user's transcribed message
+              const userMessage = { type: 'user' as const, content: data.text };
+              setMessages(prev => [...prev, userMessage]);
+              
+              // Generate and add AI response
+              const aiResponse = generateAIResponse(data.text);
+              const aiMessage = { type: 'ai' as const, content: aiResponse };
+              setMessages(prev => [...prev, aiMessage]);
+              
+              // Play AI response
+              setTimeout(() => {
+                playAudio(aiMessage);
+              }, 500);
             }
           } catch (error: any) {
             toast({

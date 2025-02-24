@@ -1,7 +1,6 @@
 import { 
   Heart, 
   ChevronRight, 
-  Sparkles, 
   Brain, 
   Mic, 
   Clock, 
@@ -10,6 +9,8 @@ import {
   Check 
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { AuroraBackground } from "@/components/ui/aurora-background";
+import { Button } from "@/components/ui/button";
 
 const pricingPlans = [
   {
@@ -77,15 +78,15 @@ const features = [
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-warm-light to-warm">
+    <div className="min-h-screen">
       {/* Hero Section */}
-      <header className="container-custom py-24">
-        <div className="text-center max-w-4xl mx-auto space-y-6">
+      <AuroraBackground className="py-24">
+        <div className="text-center max-w-4xl mx-auto space-y-6 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 text-primary-foreground mb-4 hover-lift"
+            className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 backdrop-blur-md text-primary-foreground mb-4 hover-lift"
           >
             <Heart className="w-4 h-4 mr-2" />
             <span className="text-sm font-medium">Begin Your Healing Journey</span>
@@ -95,37 +96,52 @@ const Index = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-4xl md:text-6xl font-bold text-primary-foreground leading-tight"
+            className="text-4xl md:text-7xl font-bold leading-tight"
           >
             Transform Your Mind with{" "}
             <span className="gradient-text">AI-Powered Affirmations</span>
           </motion.h1>
           
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto animate-fade-up" style={{ animationDelay: "0.1s" }}>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto"
+          >
             Experience personalized emotional healing through AI-generated affirmations, 
             delivered in a soothing voice with perfect timing and rhythm.
-          </p>
+          </motion.p>
 
-          <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4 animate-fade-up" style={{ animationDelay: "0.2s" }}>
-            <a
-              href="/app"
-              className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition-colors"
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="flex flex-col sm:flex-row justify-center gap-4 pt-4"
+          >
+            <Button
+              asChild
+              className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-primary hover:bg-primary/90 text-white transition-all duration-300 hover:scale-105"
             >
-              Get Started Free
-              <ChevronRight className="ml-2 w-4 h-4" />
-            </a>
-            <a
-              href="#features"
-              className="inline-flex items-center justify-center px-6 py-3 rounded-lg border border-primary/20 hover:bg-primary/5 transition-colors"
+              <a href="/app">
+                Get Started Free
+                <ChevronRight className="ml-2 w-4 h-4" />
+              </a>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              className="inline-flex items-center justify-center px-6 py-3 rounded-lg border border-primary/20 hover:bg-primary/5 transition-all duration-300 hover:scale-105"
             >
-              See How It Works
-            </a>
-          </div>
+              <a href="#features">
+                See How It Works
+              </a>
+            </Button>
+          </motion.div>
         </div>
-      </header>
+      </AuroraBackground>
 
       {/* Features Section */}
-      <section id="features" className="container-custom py-24">
+      <section id="features" className="container-custom py-24 bg-white/80 backdrop-blur-xl">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4">
             Your Personal AI Healing Companion

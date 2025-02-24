@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -18,7 +17,7 @@ export default function Chat() {
   
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const { toast } = useToast();
 
   const { isPlaying, playAudio, stopAudio } = useAudio();
@@ -55,12 +54,12 @@ export default function Chat() {
       if (transcriptionError) throw transcriptionError;
 
       if (transcriptionData?.text) {
-        const userMessage = { type: 'user' as const, content: transcriptionData.text };
-        setMessages(prev => [...prev, userMessage]);
+        // Add user's transcribed message
+        setMessages(prev => [...prev, { type: 'user', content: transcriptionData.text }]);
 
+        // Generate AI response without TTS
         const aiResponse = await generateAIResponse(transcriptionData.text);
-        const aiMessage = { type: 'ai' as const, content: aiResponse };
-        setMessages(prev => [...prev, aiMessage]);
+        setMessages(prev => [...prev, { type: 'ai', content: aiResponse }]);
       }
     } catch (error: any) {
       console.error('Voice Input Error:', error);

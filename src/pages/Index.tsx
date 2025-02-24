@@ -1,4 +1,3 @@
-
 import { 
   Heart, 
   ChevronRight, 
@@ -87,9 +86,9 @@ const Index = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center px-4 py-2 rounded-full bg-accent-soft/30 backdrop-blur-md text-primary-foreground mb-4 hover-lift"
+            className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 backdrop-blur-md text-primary-foreground mb-4 hover-lift"
           >
-            <Heart className="w-4 h-4 mr-2 text-primary" />
+            <Heart className="w-4 h-4 mr-2" />
             <span className="text-sm font-medium">Begin Your Healing Journey</span>
           </motion.div>
           
@@ -97,26 +96,17 @@ const Index = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-4xl md:text-7xl font-bold leading-tight bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-secondary animate-gradient"
+            className="text-4xl md:text-7xl font-bold leading-tight"
           >
             Transform Your Mind with{" "}
-            <span className="text-primary">AI-Powered</span>{" "}
-            <span className="relative">
-              Affirmations
-              <motion.span
-                className="absolute -bottom-2 left-0 w-full h-1 bg-accent"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ delay: 0.5, duration: 0.8 }}
-              />
-            </span>
+            <span className="gradient-text">AI-Powered Affirmations</span>
           </motion.h1>
           
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto backdrop-blur-sm py-2"
+            className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto"
           >
             Experience personalized emotional healing through AI-generated affirmations, 
             delivered in a soothing voice with perfect timing and rhythm.
@@ -130,17 +120,17 @@ const Index = () => {
           >
             <Button
               asChild
-              className="inline-flex items-center justify-center px-8 py-4 rounded-lg bg-primary hover:bg-primary/90 text-white transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
+              className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-primary hover:bg-primary/90 text-white transition-all duration-300 hover:scale-105"
             >
               <a href="/app">
                 Get Started Free
-                <ChevronRight className="ml-2 w-5 h-5" />
+                <ChevronRight className="ml-2 w-4 h-4" />
               </a>
             </Button>
             <Button
               asChild
               variant="outline"
-              className="inline-flex items-center justify-center px-8 py-4 rounded-lg border-2 border-primary/20 hover:bg-primary/5 transition-all duration-300 hover:scale-105 backdrop-blur-sm"
+              className="inline-flex items-center justify-center px-6 py-3 rounded-lg border border-primary/20 hover:bg-primary/5 transition-all duration-300 hover:scale-105"
             >
               <a href="#features">
                 See How It Works
@@ -151,27 +141,14 @@ const Index = () => {
       </AuroraBackground>
 
       {/* Features Section */}
-      <section id="features" className="relative container-custom py-24">
-        <div className="absolute inset-0 bg-gradient-to-b from-accent-soft/20 to-warm-light/50 backdrop-blur-sm -z-10" />
+      <section id="features" className="container-custom py-24 bg-white/80 backdrop-blur-xl">
         <div className="text-center mb-16">
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4"
-          >
+          <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4">
             Your Personal AI Healing Companion
-          </motion.h2>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-lg text-muted-foreground"
-          >
+          </h2>
+          <p className="text-lg text-muted-foreground">
             Discover how Hearth helps you transform your emotional wellbeing
-          </motion.p>
+          </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 mb-16">
@@ -182,10 +159,10 @@ const Index = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="glass-card p-8 rounded-xl hover:bg-white/60 group"
+              className="glass-card p-6 rounded-xl hover:bg-white/60"
             >
               <div className="flex items-center gap-4 mb-4">
-                <div className="feature-icon p-3 rounded-xl bg-primary/10 text-primary group-hover:scale-110 transition-transform duration-300">
+                <div className="feature-icon p-2 rounded-lg bg-primary/10 text-primary">
                   {feature.icon}
                 </div>
                 <h3 className="text-xl font-semibold text-primary-foreground">
@@ -201,26 +178,14 @@ const Index = () => {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="relative container-custom py-24">
-        <div className="absolute inset-0 bg-gradient-to-t from-warm/30 to-warm-light/50 backdrop-blur-sm -z-10" />
+      <section id="pricing" className="container-custom py-24 bg-warm/50">
         <div className="text-center mb-16">
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4"
-          >
+          <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4">
             Choose Your Healing Journey
-          </motion.h2>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="text-lg text-muted-foreground"
-          >
+          </h2>
+          <p className="text-lg text-muted-foreground">
             Find the perfect plan for your transformation
-          </motion.p>
+          </p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
@@ -231,8 +196,8 @@ const Index = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className={`glass-card p-8 rounded-xl ${
-                plan.name === "Pro" ? "border-primary/30 ring-2 ring-primary/30 scale-105" : ""
+              className={`glass-card p-6 rounded-xl ${
+                plan.name === "Pro" ? "border-primary/30 ring-1 ring-primary/30" : ""
               }`}
             >
               {plan.name === "Pro" && (
@@ -259,16 +224,16 @@ const Index = () => {
                   </li>
                 ))}
               </ul>
-              <Button
-                asChild
-                className={`w-full ${
+              <a
+                href="/app"
+                className={`block text-center py-2 px-4 rounded-lg transition-colors ${
                   plan.name === "Pro"
                     ? "bg-primary text-white hover:bg-primary/90"
                     : "border border-primary/20 hover:bg-primary/5"
                 }`}
               >
-                <a href="/app">Get Started</a>
-              </Button>
+                Get Started
+              </a>
             </motion.div>
           ))}
         </div>
@@ -280,27 +245,22 @@ const Index = () => {
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          className="glass-card rounded-2xl p-12 text-center relative overflow-hidden"
+          className="glass-card rounded-2xl p-8 md:p-12 text-center"
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-accent-soft/30 via-primary/20 to-accent-soft/30 animate-aurora" />
-          <div className="relative z-10">
-            <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-primary-foreground">
-              Start Your Healing Journey Today
-            </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
-              Join thousands of others who have transformed their emotional wellbeing with Hearth's 
-              AI-powered affirmations.
-            </p>
-            <Button
-              asChild
-              className="inline-flex items-center px-8 py-4 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition-all duration-300 hover:scale-105"
-            >
-              <a href="/app">
-                Begin Free Trial
-                <ChevronRight className="ml-2 w-5 h-5" />
-              </a>
-            </Button>
-          </div>
+          <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-primary-foreground">
+            Start Your Healing Journey Today
+          </h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
+            Join thousands of others who have transformed their emotional wellbeing with Hearth's 
+            AI-powered affirmations.
+          </p>
+          <a
+            href="/app"
+            className="inline-flex items-center px-6 py-3 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition-colors"
+          >
+            Begin Free Trial
+            <ChevronRight className="ml-2 w-4 h-4" />
+          </a>
         </motion.div>
       </section>
 

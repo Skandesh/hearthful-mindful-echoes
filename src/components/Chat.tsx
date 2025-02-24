@@ -40,8 +40,7 @@ export default function Chat() {
     if (error) throw error;
     
     if (!affirmationSession.isActive && data.response.toLowerCase().includes("positive")) {
-      const askForSession = "\n\nWould you like to start an affirmation session to enhance these positive feelings?";
-      return data.response + askForSession;
+      return data.response + "\n\nWould you like to start an affirmation session to enhance these positive feelings?";
     }
     
     return data.response;
@@ -49,7 +48,6 @@ export default function Chat() {
 
   const handleVoiceInput = async (audioBase64: string) => {
     try {
-      // First, get the transcription
       const { data: transcriptionData, error: transcriptionError } = await supabase.functions.invoke('transcribe-audio', {
         body: { audio: audioBase64 }
       });
@@ -57,33 +55,12 @@ export default function Chat() {
       if (transcriptionError) throw transcriptionError;
 
       if (transcriptionData?.text) {
-        // Add user's transcribed message
         const userMessage = { type: 'user' as const, content: transcriptionData.text };
         setMessages(prev => [...prev, userMessage]);
 
-        // Generate AI response
         const aiResponse = await generateAIResponse(transcriptionData.text);
         const aiMessage = { type: 'ai' as const, content: aiResponse };
-
-        // Add AI message and generate speech
         setMessages(prev => [...prev, aiMessage]);
-
-        // Get text-to-speech for AI response
-        const { data: ttsData, error: ttsError } = await supabase.functions.invoke('text-to-speech', {
-          body: { text: aiResponse }
-        });
-
-        if (ttsError) throw ttsError;
-
-        if (ttsData?.audio) {
-          // Update AI message with audio
-          setMessages(prev => prev.map(msg => 
-            msg === aiMessage ? { ...msg, audio: ttsData.audio } : msg
-          ));
-          
-          // Play the audio
-          await playAudio({ ...aiMessage, audio: ttsData.audio });
-        }
       }
     } catch (error: any) {
       console.error('Voice Input Error:', error);
@@ -204,7 +181,6 @@ export default function Chat() {
   return (
     <div className="max-w-2xl mx-auto p-4 min-h-[calc(100vh-4rem)]">
       <WavyBackground />
-
       <Card className="p-8 w-full bg-white/70 backdrop-blur-xl shadow-xl border-primary/20">
         <div className="max-w-md mx-auto">
           {affirmationSession.isActive && (

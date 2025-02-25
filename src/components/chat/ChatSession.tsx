@@ -44,24 +44,28 @@ export function ChatSession({
   return (
     <>
       {affirmationSession.isActive && (
-        <div className="mb-4 p-3 bg-primary/10 rounded-lg text-center">
-          <p className="text-sm text-primary-foreground">
-            Affirmation Session in Progress - {affirmationSession.index + 1} of {affirmationSession.affirmations.length}
+        <div className="mb-4 p-3 bg-gradient-to-r from-primary/20 to-[#543ab7]/20 rounded-lg text-center backdrop-blur-sm border border-primary/10 shadow-sm">
+          <p className="text-sm font-medium text-primary-foreground">
+            Affirmation Session in Progress
+            <span className="inline-flex items-center justify-center ml-2 px-2 py-0.5 rounded-full bg-primary/20 text-xs">
+              {affirmationSession.index + 1}/{affirmationSession.affirmations.length}
+            </span>
           </p>
         </div>
       )}
       
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-6">
         <Button 
-          variant="ghost" 
+          variant="outline" 
           onClick={onBackClick}
-          className="text-[#9b87f5]"
+          className="text-[#9b87f5] border-[#9b87f5]/20 hover:bg-[#9b87f5]/5"
+          size="sm"
         >
           <ChevronLeft className="w-4 h-4 mr-1" /> Back
         </Button>
-        <h2 className="text-2xl font-bold text-primary-foreground">
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-[#543ab7] text-transparent bg-clip-text">
           {affirmationSession.isActive 
-            ? "Repeat this affirmation:" 
+            ? "Repeat After Me" 
             : "Your Affirmations"}
         </h2>
         <div className="w-16"></div> {/* Empty div for centering */}
@@ -75,14 +79,16 @@ export function ChatSession({
         />
       )}
       
-      <MessageList
-        messages={messages}
-        isPlaying={isPlaying}
-        loading={loading}
-        onPlayAudio={onPlayAudio}
-        onStopAudio={onStopAudio}
-      />
-      <div ref={messagesEndRef} />
+      <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 shadow-sm border border-[#9b87f5]/10 mb-6">
+        <MessageList
+          messages={messages}
+          isPlaying={isPlaying}
+          loading={loading}
+          onPlayAudio={onPlayAudio}
+          onStopAudio={onStopAudio}
+        />
+        <div ref={messagesEndRef} />
+      </div>
 
       <MessageInput
         message={message}

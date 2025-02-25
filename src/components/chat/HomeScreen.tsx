@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Mic } from "lucide-react";
+import { ChevronLeft, ChevronRight, Mic, Sparkles } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -41,94 +41,112 @@ export function HomeScreen({
 }: HomeScreenProps) {
   return (
     <div className="flex flex-col space-y-8">
-      <div className="text-center space-y-2">
-        <h1 className="text-4xl font-bold text-primary-foreground">
+      <div className="text-center space-y-3">
+        <div className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-2">
+          <Sparkles className="w-3.5 h-3.5 mr-1.5" />
+          <span>AI-Powered Affirmations</span>
+        </div>
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-primary via-[#543ab7] to-[#00acc1] text-transparent bg-clip-text leading-tight">
           Transform Your Self-Talk,<br />
-          Unlock Your True Potential
+          Unlock Your Potential
         </h1>
-        <p className="text-xl text-[#9b87f5]">
-          World's First AI APP Creating Custom Affirmations
+        <p className="text-lg text-[#9b87f5] max-w-md mx-auto">
+          Personalized affirmations to boost confidence, reduce stress, and improve focus
         </p>
       </div>
 
-      <div className="text-center">
-        <p className="text-lg text-[#9b87f5] mb-2">Chat or speak</p>
+      <div className="relative group">
+        <div className="text-center mb-2">
+          <p className="text-base text-[#9b87f5] font-medium">How are you feeling today?</p>
+        </div>
         <div className="relative">
           <input
             type="text"
             value={message}
             onChange={(e) => onMessageChange(e.target.value)}
-            placeholder="How are you feeling today?"
-            className="w-full p-4 pr-14 rounded-full border border-[#9b87f5]/20 bg-white focus:outline-none focus:ring-2 focus:ring-[#9b87f5]/50"
+            placeholder="Share your thoughts or feelings..."
+            className="w-full p-4 pr-14 rounded-full border border-[#9b87f5]/20 bg-white/90 focus:outline-none focus:ring-2 focus:ring-[#9b87f5]/50 shadow-sm transition-all duration-300 group-hover:shadow-md"
           />
           <Button
             onClick={isRecording ? onStopRecording : onStartRecording}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full w-10 h-10 p-0 bg-[#9b87f5]"
+            className={`absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full w-10 h-10 p-0 transition-all duration-300 ${
+              isRecording 
+                ? "bg-red-500 hover:bg-red-600" 
+                : "bg-[#9b87f5] hover:bg-[#8a75e8]"
+            }`}
           >
             <Mic className={`w-5 h-5 text-white ${isRecording ? "animate-pulse" : ""}`} />
           </Button>
         </div>
+        <p className="mt-2 text-xs text-center text-gray-500">Type or use your voice to tell us how you're feeling</p>
       </div>
 
-      <div>
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg text-gray-700">Try this</h3>
-          <div className="flex gap-2">
-            <Button variant="ghost" size="icon">
-              <ChevronLeft className="w-5 h-5" />
+      <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 shadow-sm border border-[#9b87f5]/10">
+        <div className="flex justify-between items-center mb-3">
+          <h3 className="text-base font-medium text-primary-foreground">Common Situations</h3>
+          <div className="flex gap-1">
+            <Button variant="ghost" size="icon" className="h-7 w-7 text-[#9b87f5]">
+              <ChevronLeft className="w-4 h-4" />
             </Button>
-            <Button variant="ghost" size="icon">
-              <ChevronRight className="w-5 h-5" />
+            <Button variant="ghost" size="icon" className="h-7 w-7 text-[#9b87f5]">
+              <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button
             variant="outline"
-            onClick={() => onSuggestedPrompt("Learning to love myself more")}
-            className="rounded-full border-[#9b87f5] text-[#9b87f5] hover:bg-[#9b87f5]/5"
+            onClick={() => onSuggestedPrompt("I want to feel more confident today")}
+            className="rounded-full border-[#9b87f5] text-[#9b87f5] hover:bg-[#9b87f5]/5 text-sm py-1 h-auto"
           >
-            Learning to love myself more
+            Boost confidence
           </Button>
           <Button
             variant="outline"
-            onClick={() => onSuggestedPrompt("Dealing with work stress")}
-            className="rounded-full border-[#9b87f5] text-[#9b87f5] hover:bg-[#9b87f5]/5"
+            onClick={() => onSuggestedPrompt("I'm feeling anxious about work")}
+            className="rounded-full border-[#9b87f5] text-[#9b87f5] hover:bg-[#9b87f5]/5 text-sm py-1 h-auto"
           >
-            Dealing with work stress
+            Reduce work anxiety
           </Button>
           <Button
             variant="outline"
-            onClick={() => onSuggestedPrompt("Starting a new chapter")}
-            className="rounded-full border-[#9b87f5] text-[#9b87f5] hover:bg-[#9b87f5]/5"
+            onClick={() => onSuggestedPrompt("I need to focus better")}
+            className="rounded-full border-[#9b87f5] text-[#9b87f5] hover:bg-[#9b87f5]/5 text-sm py-1 h-auto"
           >
-            Starting a new chapter
+            Improve focus
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => onSuggestedPrompt("I want to feel more positive about myself")}
+            className="rounded-full border-[#9b87f5] text-[#9b87f5] hover:bg-[#9b87f5]/5 text-sm py-1 h-auto"
+          >
+            Self-love
           </Button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <h3 className="text-lg text-gray-700 mb-2">Duration</h3>
+        <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 shadow-sm border border-[#9b87f5]/10">
+          <h3 className="text-base font-medium text-primary-foreground mb-3">Session Duration</h3>
           <Select value={duration} onValueChange={onDurationChange}>
-            <SelectTrigger className="w-full rounded-full border border-[#9b87f5]/20">
+            <SelectTrigger className="w-full rounded-lg border border-[#9b87f5]/20">
               <SelectValue placeholder="Select duration" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="5min">5min - Perfect for Daily Practice</SelectItem>
+            <SelectContent className="bg-white border border-[#9b87f5]/20 rounded-lg shadow-lg">
+              <SelectItem value="5min">5min - Quick Boost</SelectItem>
               <SelectItem value="10min">10min - Standard Session</SelectItem>
               <SelectItem value="15min">15min - Deep Immersion</SelectItem>
               <SelectItem value="20min">20min - Complete Transformation</SelectItem>
             </SelectContent>
           </Select>
         </div>
-        <div>
-          <h3 className="text-lg text-gray-700 mb-2">Language</h3>
+        <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 shadow-sm border border-[#9b87f5]/10">
+          <h3 className="text-base font-medium text-primary-foreground mb-3">Language</h3>
           <Select value={language} onValueChange={onLanguageChange}>
-            <SelectTrigger className="w-full rounded-full border border-[#9b87f5]/20">
+            <SelectTrigger className="w-full rounded-lg border border-[#9b87f5]/20">
               <SelectValue placeholder="Select language" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white border border-[#9b87f5]/20 rounded-lg shadow-lg">
               <SelectItem value="English">English</SelectItem>
               <SelectItem value="Spanish">Spanish</SelectItem>
               <SelectItem value="French">French</SelectItem>
@@ -144,9 +162,16 @@ export function HomeScreen({
       <Button 
         onClick={onCreateAffirmations}
         disabled={loading}
-        className="w-full py-6 bg-[#9b87f5] hover:bg-[#7E69AB] text-white text-xl font-semibold rounded-lg"
+        className="w-full py-6 bg-gradient-to-r from-[#9b87f5] to-[#7E69AB] hover:from-[#8a75e8] hover:to-[#6d5999] text-white text-xl font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
       >
-        Create My Affirmations
+        {loading ? (
+          <div className="flex items-center">
+            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+            Creating...
+          </div>
+        ) : (
+          <>Create My Affirmations</>
+        )}
       </Button>
     </div>
   );

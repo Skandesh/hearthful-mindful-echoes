@@ -25,37 +25,50 @@ export function MessageInput({
   onStopRecording,
 }: MessageInputProps) {
   return (
-    <form onSubmit={onSubmit} className="space-y-6">
+    <form onSubmit={onSubmit} className="space-y-4">
       <div className="flex gap-3">
-        <Textarea
-          placeholder={isAffirmationSession 
-            ? "Repeat the affirmation..." 
-            : "Share your thoughts and feelings..."}
-          value={message}
-          onChange={(e) => onMessageChange(e.target.value)}
-          className="min-h-[120px] bg-white/80 backdrop-blur-sm border-primary/20 focus:border-primary text-primary-foreground placeholder:text-primary-foreground/50"
-        />
-        <Button
-          type="button"
-          variant="outline"
-          onClick={isRecording ? onStopRecording : onStartRecording}
-          className={`flex-shrink-0 transition-all duration-300 hover:scale-105 ${
-            isRecording ? 'bg-red-50 border-red-200 text-red-500 hover:bg-red-100' : 'border-primary/20 bg-white/80 text-primary-foreground hover:bg-primary/10'
-          }`}
-        >
-          {isRecording ? 
-            <MicOff className="h-5 w-5 text-red-500" /> : 
-            <Mic className="h-5 w-5" />
-          }
-        </Button>
+        <div className="relative w-full">
+          <Textarea
+            placeholder={isAffirmationSession 
+              ? "Repeat the affirmation exactly..." 
+              : "Share your thoughts or ask a question..."}
+            value={message}
+            onChange={(e) => onMessageChange(e.target.value)}
+            className="min-h-[100px] bg-white/80 backdrop-blur-sm border-[#9b87f5]/20 focus:border-[#9b87f5] rounded-xl text-primary-foreground placeholder:text-gray-400 pr-12 resize-none shadow-sm"
+          />
+          <div className="absolute bottom-2 right-2">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={isRecording ? onStopRecording : onStartRecording}
+              className={`rounded-full h-8 w-8 ${
+                isRecording 
+                  ? 'bg-red-100 text-red-500 hover:bg-red-200 hover:text-red-600' 
+                  : 'text-[#9b87f5] hover:bg-[#9b87f5]/10'
+              }`}
+            >
+              {isRecording ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+            </Button>
+          </div>
+        </div>
       </div>
       <Button 
         type="submit" 
         disabled={loading || !message.trim()}
-        className="w-full bg-primary hover:bg-primary/90 text-white transition-all duration-300 hover:scale-[1.02]"
+        className="w-full bg-gradient-to-r from-[#9b87f5] to-[#543ab7] hover:from-[#8a75e8] hover:to-[#472e9d] text-white transition-all duration-300 hover:shadow-md disabled:opacity-70 disabled:cursor-not-allowed rounded-xl"
       >
-        <SendHorizonal className="mr-2 h-5 w-5" />
-        {isAffirmationSession ? "Submit Affirmation" : "Share"}
+        {loading ? (
+          <div className="flex items-center">
+            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+            {isAffirmationSession ? "Processing..." : "Sending..."}
+          </div>
+        ) : (
+          <>
+            <SendHorizonal className="mr-2 h-4 w-4" />
+            {isAffirmationSession ? "Submit Affirmation" : "Send Message"}
+          </>
+        )}
       </Button>
     </form>
   );

@@ -18,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { AffirmationVisualizer } from "./chat/AffirmationVisualizer";
 
 export default function Chat() {
   const [message, setMessage] = useState("");
@@ -208,6 +209,13 @@ export default function Chat() {
         { type: 'user', content: prompt },
         { type: 'ai', content: aiResponse }
       ]);
+      
+      // Start affirmation session automatically
+      if (!affirmationSession.isActive) {
+        const mood = message || "positive";
+        await startAffirmationSession(mood);
+      }
+      
       setShowChat(true);
     } catch (error: any) {
       console.error('Error:', error);
@@ -364,6 +372,14 @@ export default function Chat() {
                 </h2>
                 <div className="w-16"></div> {/* Empty div for centering */}
               </div>
+              
+              {/* Visualization Component - only show during affirmation sessions */}
+              {affirmationSession.isActive && (
+                <AffirmationVisualizer 
+                  isActive={affirmationSession.isActive} 
+                  currentAffirmation={affirmationSession.currentAffirmation} 
+                />
+              )}
               
               <MessageList
                 messages={messages}

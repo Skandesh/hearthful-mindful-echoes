@@ -77,10 +77,29 @@ export function AffirmationVisualizer({ isActive, currentAffirmation }: Affirmat
       return colors[Math.floor(Math.random() * colors.length)];
     }
     
+    // Create gradient background like music player
+    function createGradientBackground() {
+      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      gradient.addColorStop(0, 'rgba(155, 135, 245, 0.8)'); // Primary Purple
+      gradient.addColorStop(1, 'rgba(126, 105, 171, 0.8)'); // Secondary Purple
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Add subtle noise texture
+      for (let i = 0; i < canvas.width; i += 4) {
+        for (let j = 0; j < canvas.height; j += 4) {
+          if (Math.random() > 0.996) {
+            ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.2})`;
+            ctx.fillRect(i, j, 4, 4);
+          }
+        }
+      }
+    }
+    
     // Initialize particles
     function init() {
       particles = [];
-      for (let i = 0; i < 50; i++) {
+      for (let i = 0; i < 30; i++) {
         particles.push(new Particle());
       }
     }
@@ -89,12 +108,8 @@ export function AffirmationVisualizer({ isActive, currentAffirmation }: Affirmat
     function animate() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
-      // Create gradient background
-      const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-      gradient.addColorStop(0, 'rgba(229, 222, 255, 0.3)'); // Soft Purple with transparency
-      gradient.addColorStop(1, 'rgba(214, 188, 250, 0.3)'); // Light Purple with transparency
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // Draw gradient background
+      createGradientBackground();
       
       // Draw and update particles
       for (let i = 0; i < particles.length; i++) {
@@ -102,18 +117,36 @@ export function AffirmationVisualizer({ isActive, currentAffirmation }: Affirmat
         particles[i].draw();
       }
       
-      // Draw wave pattern
-      ctx.beginPath();
-      ctx.moveTo(0, canvas.height / 2);
+      // Draw the main affirmation text
+      const lines = currentAffirmation.split('.').filter(line => line.trim() !== '');
       
-      for (let i = 0; i < canvas.width; i++) {
-        const y = Math.sin(i * 0.01 + Date.now() * 0.001) * 20 + canvas.height / 2;
-        ctx.lineTo(i, y);
+      if (lines.length > 0) {
+        const mainLine = lines[0].trim();
+        
+        // Draw the main affirmation in large text
+        ctx.font = 'bold 24px sans-serif';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        ctx.textAlign = 'center';
+        
+        // Word wrap the text
+        const words = mainLine.split(' ');
+        let currentLine = '';
+        let y = canvas.height / 2 - 20;
+        
+        for (let i = 0; i < words.length; i++) {
+          const testLine = currentLine + words[i] + ' ';
+          const metrics = ctx.measureText(testLine);
+          if (metrics.width > canvas.width - 40 && i > 0) {
+            ctx.fillText(currentLine, canvas.width / 2, y);
+            currentLine = words[i] + ' ';
+            y += 30;
+          } else {
+            currentLine = testLine;
+          }
+        }
+        
+        ctx.fillText(currentLine, canvas.width / 2, y);
       }
-      
-      ctx.strokeStyle = 'rgba(155, 135, 245, 0.4)'; // Primary Purple with transparency
-      ctx.lineWidth = 2;
-      ctx.stroke();
       
       animationFrameId = requestAnimationFrame(animate);
     }
@@ -129,10 +162,29 @@ export function AffirmationVisualizer({ isActive, currentAffirmation }: Affirmat
   }, [isActive, currentAffirmation]);
   
   return (
-    <div className="mb-4 rounded-lg overflow-hidden border border-[#9b87f5]/20">
+    <div className="mb-4 rounded-lg overflow-hidden">
+      <div className="bg-gradient-to-b from-primary/90 to-primary-foreground/20 p-4 rounded-t-lg flex items-center justify-between">
+        <div className="flex items-center">
+          <div className="w-12 h-12 bg-white/10 rounded-md flex items-center justify-center mr-3">
+            <span className="text-xl">✨</span>
+          </div>
+          <div>
+            <h3 className="text-white font-bold">Daily Affirmation</h3>
+            <p className="text-white/70 text-sm">Empowerment Session</p>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <button className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+            <span className="text-white">★</span>
+          </button>
+          <button className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+            <span className="text-white">⋯</span>
+          </button>
+        </div>
+      </div>
       <canvas 
         ref={canvasRef} 
-        className="w-full h-32 bg-[#E5DEFF]/30"
+        className="w-full h-64 bg-primary"
       />
     </div>
   );

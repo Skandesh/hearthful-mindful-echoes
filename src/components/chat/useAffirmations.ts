@@ -25,8 +25,12 @@ export function useAffirmations() {
   const generateAffirmations = async (mood: string) => {
     const { data, error } = await supabase.functions.invoke('generate-response', {
       body: { 
-        message: `Generate 5 short, powerful affirmations for someone feeling ${mood}. 
-                 Make them personal and empowering. Just return the affirmations separated by |`,
+        message: `Generate 5 short, powerful, and purely positive affirmations for someone feeling ${mood}. 
+                 Each affirmation should be direct, empowering, and start with 'I' statements.
+                 Make them personal, impactful and inspiring.
+                 Use simple but powerful language.
+                 Avoid any negative words or contexts.
+                 Just return the affirmations separated by |`,
       }
     });
 

@@ -42,6 +42,11 @@ export function ChatSession({
   onStartRecording,
   onStopRecording,
 }: ChatSessionProps) {
+  // Only show the most recent AI message during affirmation sessions
+  const recentMessages = affirmationSession.isActive 
+    ? messages.slice(-2) // Just the recent user and AI message
+    : messages;
+
   return (
     <>
       {affirmationSession.isActive && (
@@ -108,16 +113,19 @@ export function ChatSession({
         />
       )}
       
-      <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 shadow-sm border border-[#9b87f5]/10 mb-6">
-        <MessageList
-          messages={messages}
-          isPlaying={isPlaying}
-          loading={loading}
-          onPlayAudio={onPlayAudio}
-          onStopAudio={onStopAudio}
-        />
-        <div ref={messagesEndRef} />
-      </div>
+      {/* Only show chat history if not in affirmation mode or if we have a special message to show */}
+      {(!affirmationSession.isActive || recentMessages.length > 0) && (
+        <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 shadow-sm border border-[#9b87f5]/10 mb-6">
+          <MessageList
+            messages={recentMessages}
+            isPlaying={isPlaying}
+            loading={loading}
+            onPlayAudio={onPlayAudio}
+            onStopAudio={onStopAudio}
+          />
+          <div ref={messagesEndRef} />
+        </div>
+      )}
 
       <MessageInput
         message={message}

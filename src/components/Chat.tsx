@@ -68,6 +68,23 @@ export default function Chat() {
     };
   }, []);
 
+  // Helper function to check if a user message matches the current affirmation
+  const matchesAffirmation = (userMessage: string, affirmation: string) => {
+    // Normalize both strings for comparison
+    const normalizeText = (text: string) => {
+      return text
+        .toLowerCase()
+        .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+    };
+    
+    const normalizedInput = normalizeText(userMessage);
+    const normalizedAffirmation = normalizeText(affirmation);
+    
+    return normalizedInput === normalizedAffirmation;
+  };
+
   const handleVoiceInput = async () => {
     try {
       setLoading(true);
@@ -120,7 +137,7 @@ export default function Chat() {
       }
 
       if (affirmationSession.isActive) {
-        if (message.toLowerCase().includes(affirmationSession.currentAffirmation.toLowerCase())) {
+        if (matchesAffirmation(message, affirmationSession.currentAffirmation)) {
           const nextAffirmation = await handleAffirmationComplete();
           if (nextAffirmation) {
             const aiResponse = await generateAIResponse(nextAffirmation);

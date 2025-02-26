@@ -1,132 +1,169 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Mail } from "lucide-react";
+import { WavyBackground } from "@/components/chat/WavyBackground";
+import { useNavigate } from "react-router-dom";
 
 export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const [view, setView] = useState<"sign-in" | "sign-up">("sign-in");
   const { toast } = useToast();
+  const navigate = useNavigate();
 
-  const handleAuth = async (isSignUp: boolean) => {
+  async function handleSignUp(e: React.FormEvent) {
+    e.preventDefault();
+    
+    if (!email || !password) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Please enter both email and password",
+      });
+      return;
+    }
+    
     try {
       setLoading(true);
-      const { error } = isSignUp 
-        ? await supabase.auth.signUp({ 
-            email, 
-            password,
-            options: {
-              emailRedirectTo: 'https://preview--hearthful-mindful-echoes.lovable.app/app'
-            }
-          })
-        : await supabase.auth.signInWithPassword({ email, password });
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
 
       if (error) throw error;
       
       toast({
-        title: isSignUp ? "Welcome!" : "Welcome back!",
-        description: isSignUp 
-          ? "Please check your email to confirm your account."
-          : "You've successfully signed in.",
+        title: "Success",
+        description: "Check your email for a confirmation link",
       });
-
-      if (!isSignUp) navigate("/app");
+      
+      // For demo purposes, we'll automatically sign in the user
+      await handleSignIn(e);
+      
     } catch (error: any) {
       toast({
         variant: "destructive",
-        title: "Error",
+        title: "Error signing up",
         description: error.message,
       });
     } finally {
       setLoading(false);
     }
-  };
+  }
 
-  const handleGoogleAuth = async () => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: 'https://preview--hearthful-mindful-echoes.lovable.app/app'
-        }
-      });
-      if (error) throw error;
-    } catch (error: any) {
+  async function handleSignIn(e: React.FormEvent) {
+    e.preventDefault();
+    
+    if (!email || !password) {
       toast({
         variant: "destructive",
         title: "Error",
+        description: "Please enter both email and password",
+      });
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+      
+      // Redirect to app on successful login
+      navigate("/app");
+      
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error signing in",
         description: error.message,
       });
+    } finally {
+      setLoading(false);
     }
-  };
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-warm-light to-warm flex items-center justify-center p-4">
-      <Card className="w-full max-w-md p-6 space-y-6 bg-white/80 backdrop-blur">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-2">Welcome to Hearth</h1>
-          <p className="text-muted-foreground">Sign in or create an account to continue</p>
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <WavyBackground />
+      <Card className="w-full max-w-md p-8 bg-white/80 backdrop-blur-xl shadow-xl border-primary/20">
+        <div className="mb-8 text-center">
+          <h1 className="text-2xl font-bold mb-2">
+            {view === "sign-in" ? "Welcome Back" : "Create Your Account"}
+          </h1>
+          <p className="text-gray-600">
+            {view === "sign-in" 
+              ? "Sign in to continue your healing journey" 
+              : "Start your transformation with personalized affirmations"}
+          </p>
         </div>
-
-        <div className="space-y-4">
-          <Input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <Input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          
-          <div className="space-y-2">
-            <Button
-              className="w-full"
-              onClick={() => handleAuth(false)}
+        
+        <form onSubmit={view === "sign-in" ? handleSignIn : handleSignUp}>
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                Email Address
+              </label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="your@email.com"
+                required
+              />
+            </div>
+            
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                Password
+              </label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+              />
+            </div>
+            
+            <Button 
+              type="submit" 
+              className="w-full bg-gradient-to-r from-[#9b87f5] to-[#543ab7] text-white"
               disabled={loading}
             >
-              Sign In
+              {loading 
+                ? "Processing..." 
+                : view === "sign-in" 
+                  ? "Sign In" 
+                  : "Sign Up"}
             </Button>
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={() => handleAuth(true)}
-              disabled={loading}
+          </div>
+        </form>
+        
+        <div className="mt-6 text-center">
+          <p className="text-sm text-gray-600">
+            {view === "sign-in" 
+              ? "Don't have an account?" 
+              : "Already have an account?"}
+            {" "}
+            <button
+              type="button"
+              className="text-primary font-medium"
+              onClick={() => setView(view === "sign-in" ? "sign-up" : "sign-in")}
             >
-              Sign Up
-            </Button>
-          </div>
-
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white/80 px-2 text-muted-foreground">
-                Or continue with
-              </span>
-            </div>
-          </div>
-
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={handleGoogleAuth}
-            disabled={loading}
-          >
-            <Mail className="mr-2 h-4 w-4" />
-            Google
-          </Button>
+              {view === "sign-in" ? "Sign Up" : "Sign In"}
+            </button>
+          </p>
         </div>
       </Card>
     </div>

@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -5,10 +6,15 @@ import { Message } from "./chat/types";
 import { WavyBackground } from "./chat/WavyBackground";
 import { useAudio } from "./chat/useAudio";
 import { useAffirmations } from "./chat/useAffirmations";
+import { useUserAffirmations } from "./chat/useUserAffirmations";
 import { useRecording } from "./chat/useRecording";
 import { generateAIResponse } from "./chat/ChatService";
 import { HomeScreen } from "./chat/HomeScreen";
 import { ChatSession } from "./chat/ChatSession";
+import { AffirmationHistory } from "./chat/AffirmationHistory";
+import { History, Star } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Chat() {
   const [message, setMessage] = useState("");
@@ -17,12 +23,22 @@ export default function Chat() {
   const [language, setLanguage] = useState("English");
   const [duration, setDuration] = useState("5min");
   const [showChat, setShowChat] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [user, setUser] = useState<any>(null);
   
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const { toast } = useToast();
 
   const { isPlaying, playAudio, stopAudio } = useAudio();
   const { affirmationSession, startAffirmationSession, handleAffirmationComplete } = useAffirmations();
+  const { 
+    userAffirmations, 
+    favoriteAffirmations, 
+    userPlan, 
+    saveAffirmation, 
+    toggleFavorite,
+    hasReachedLimit
+  } = useUserAffirmations();
   const { isRecording, startRecording, stopRecording, processRecording } = useRecording();
 
   const scrollToBottom = () => {
@@ -32,6 +48,25 @@ export default function Chat() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user || null);
+    };
+
+    fetchUser();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setUser(session?.user || null);
+      }
+    );
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
 
   const handleVoiceInput = async () => {
     try {
@@ -74,6 +109,12 @@ export default function Chat() {
         const firstAffirmation = await startAffirmationSession("positive");
         const aiResponse = await generateAIResponse(firstAffirmation);
         setMessages(prev => [...prev, { type: 'ai', content: aiResponse }]);
+        
+        // Save the affirmation if user is logged in
+        if (user) {
+          await saveAffirmation(firstAffirmation);
+        }
+        
         setLoading(false);
         return;
       }
@@ -84,6 +125,11 @@ export default function Chat() {
           if (nextAffirmation) {
             const aiResponse = await generateAIResponse(nextAffirmation);
             setMessages(prev => [...prev, { type: 'ai', content: aiResponse }]);
+            
+            // Save the affirmation if user is logged in
+            if (user) {
+              await saveAffirmation(nextAffirmation);
+            }
           } else {
             setMessages(prev => [...prev, { 
               type: 'ai', 
@@ -96,6 +142,16 @@ export default function Chat() {
             content: "Try repeating the affirmation exactly as shown. Take a deep breath and try again." 
           }]);
         }
+        setLoading(false);
+        return;
+      }
+
+      // Check if free trial user has reached their limit
+      if (user && hasReachedLimit && userPlan?.plan_type === 'free') {
+        setMessages(prev => [...prev, { 
+          type: 'ai', 
+          content: "You've reached your free trial limit of 10 affirmations. Please upgrade your plan to continue using our service." 
+        }]);
         setLoading(false);
         return;
       }
@@ -132,6 +188,17 @@ export default function Chat() {
   const createAffirmations = async () => {
     setLoading(true);
     try {
+      // Check if free trial user has reached their limit
+      if (user && hasReachedLimit && userPlan?.plan_type === 'free') {
+        toast({
+          variant: "destructive",
+          title: "Free trial limit reached",
+          description: "You've reached your limit of 10 affirmations. Upgrade your plan to continue."
+        });
+        setLoading(false);
+        return;
+      }
+
       let prompt = message || "Create affirmations for me";
       
       // Add context from selections
@@ -149,7 +216,12 @@ export default function Chat() {
       // Start affirmation session automatically
       if (!affirmationSession.isActive) {
         const mood = message || "positive";
-        await startAffirmationSession(mood);
+        const firstAffirmation = await startAffirmationSession(mood);
+        
+        // Save the affirmation if user is logged in
+        if (user) {
+          await saveAffirmation(firstAffirmation);
+        }
       }
       
       setShowChat(true);
@@ -169,6 +241,20 @@ export default function Chat() {
     <div className="max-w-2xl mx-auto p-4 min-h-[calc(100vh-4rem)]">
       <WavyBackground />
       <Card className="p-8 w-full bg-white/70 backdrop-blur-xl shadow-xl border-primary/20">
+        {user && (
+          <div className="flex justify-end mb-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex items-center gap-1 text-sm text-primary"
+              onClick={() => setShowHistory(true)}
+            >
+              <History className="w-4 h-4" />
+              <span>History</span>
+            </Button>
+          </div>
+        )}
+        
         <div className="max-w-md mx-auto">
           {showChat ? (
             <ChatSession 
@@ -205,6 +291,20 @@ export default function Chat() {
           )}
         </div>
       </Card>
+      
+      {showHistory && (
+        <AffirmationHistory 
+          affirmations={userAffirmations}
+          favoriteAffirmations={favoriteAffirmations}
+          userPlanInfo={{
+            used: userPlan?.affirmations_used || 0,
+            limit: userPlan?.affirmations_limit || 10,
+            type: userPlan?.plan_type || 'free'
+          }}
+          onToggleFavorite={toggleFavorite}
+          onClose={() => setShowHistory(false)}
+        />
+      )}
     </div>
   );
 }

@@ -1,69 +1,65 @@
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { createContext, useEffect, useState } from "react";
+import { Toaster } from "sonner";
+import { supabase } from "./integrations/supabase/client";
+
 import Index from "./pages/Index";
-import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
-import Chat from "./components/Chat";
+import Auth from "./pages/Auth";
 import Navigation from "./components/Navigation";
+import Chat from "./components/Chat";
 
-const queryClient = new QueryClient();
+export const AuthContext = createContext<{
+  user: any;
+  loading: boolean;
+}>({
+  user: null,
+  loading: true,
+});
 
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const [session, setSession] = useState<any>(null);
+function App() {
+  const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
+    async function getUser() {
+      const { data } = await supabase.auth.getSession();
+      setUser(data.session?.user || null);
       setLoading(false);
-    });
-
-    supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
+      
+      const { data: authListener } = supabase.auth.onAuthStateChange(
+        (_, session) => {
+          setUser(session?.user || null);
+        }
+      );
+      
+      return () => {
+        authListener.subscription.unsubscribe();
+      };
+    }
+    
+    getUser();
   }, []);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!session) {
-    return <Navigate to="/auth" replace />;
-  }
-
   return (
-    <>
-      <Navigation />
-      {children}
-    </>
+    <AuthContext.Provider value={{ user, loading }}>
+      <Router>
+        <div className="min-h-screen">
+          <Navigation />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/app" element={<Chat />} />
+            <Route path="/auth" element={
+              user ? <Navigate to="/app" /> : <Auth />
+            } />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
+        <Toaster richColors />
+      </Router>
+    </AuthContext.Provider>
   );
-};
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/app" element={
-            <ProtectedRoute>
-              <Chat />
-            </ProtectedRoute>
-          } />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+}
 
 export default App;

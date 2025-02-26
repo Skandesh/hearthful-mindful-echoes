@@ -33,12 +33,74 @@ export type Database = {
         }
         Relationships: []
       }
+      user_affirmations: {
+        Row: {
+          affirmation: string
+          created_at: string
+          id: string
+          is_favorite: boolean
+          plan_type: string
+          user_id: string | null
+        }
+        Insert: {
+          affirmation: string
+          created_at?: string
+          id?: string
+          is_favorite?: boolean
+          plan_type?: string
+          user_id?: string | null
+        }
+        Update: {
+          affirmation?: string
+          created_at?: string
+          id?: string
+          is_favorite?: boolean
+          plan_type?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      user_plans: {
+        Row: {
+          affirmations_limit: number
+          affirmations_used: number
+          created_at: string
+          id: string
+          plan_type: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          affirmations_limit?: number
+          affirmations_used?: number
+          created_at?: string
+          id?: string
+          plan_type?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          affirmations_limit?: number
+          affirmations_used?: number
+          created_at?: string
+          id?: string
+          plan_type?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      increment_affirmations_used: {
+        Args: {
+          user_uuid: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { UserAffirmation } from './types';
-import { Star, StarOff, Trash2 } from 'lucide-react';
+import { Star, StarOff, X } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { formatDistanceToNow } from 'date-fns';
@@ -41,7 +41,7 @@ export const AffirmationHistory = ({
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-primary-foreground">Your Affirmations</h2>
             <Button variant="ghost" onClick={onClose} className="h-8 w-8 p-0 rounded-full">
-              &times;
+              <X className="h-4 w-4" />
             </Button>
           </div>
 
@@ -127,13 +127,15 @@ export const AffirmationHistory = ({
   );
 };
 
+interface AffirmationItemProps {
+  affirmation: UserAffirmation;
+  onToggleFavorite: (id: string, status: boolean) => Promise<void>;
+}
+
 const AffirmationItem = ({ 
   affirmation, 
   onToggleFavorite 
-}: { 
-  affirmation: UserAffirmation, 
-  onToggleFavorite: (id: string, status: boolean) => Promise<void> 
-}) => {
+}: AffirmationItemProps) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}

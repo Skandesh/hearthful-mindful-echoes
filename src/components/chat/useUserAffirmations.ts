@@ -36,6 +36,7 @@ export function useUserAffirmations() {
     const { data, error } = await supabase
       .from('user_affirmations')
       .select('*')
+      .eq('user_id', user.id)
       .order('created_at', { ascending: false });
       
     if (error) {

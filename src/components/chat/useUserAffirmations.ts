@@ -21,6 +21,15 @@ export function useUserAffirmations() {
     }
     return session?.user ?? null;
   };
+
+  // Helper function to ensure plan_type is one of our valid types
+  const validatePlanType = (planType: string): 'free' | 'pro' | 'premium' => {
+    if (planType === 'free' || planType === 'pro' || planType === 'premium') {
+      return planType;
+    }
+    // Default to 'free' if the plan type is not recognized
+    return 'free';
+  };
   
   // Fetch user affirmations
   const fetchUserAffirmations = async () => {
@@ -47,8 +56,14 @@ export function useUserAffirmations() {
         description: error.message,
       });
     } else {
-      setUserAffirmations(data || []);
-      setFavoriteAffirmations((data || []).filter(a => a.is_favorite));
+      // Map database results to our type with validated plan_type
+      const typedAffirmations: UserAffirmation[] = (data || []).map(item => ({
+        ...item,
+        plan_type: validatePlanType(item.plan_type)
+      })) as UserAffirmation[];
+      
+      setUserAffirmations(typedAffirmations);
+      setFavoriteAffirmations(typedAffirmations.filter(a => a.is_favorite));
     }
     
     // Fetch user plan
@@ -65,8 +80,12 @@ export function useUserAffirmations() {
         title: "Error loading user plan",
         description: planError.message,
       });
-    } else {
-      setUserPlan(planData);
+    } else if (planData) {
+      // Convert the plan data to our UserPlan type with validated plan_type
+      setUserPlan({
+        ...planData,
+        plan_type: validatePlanType(planData.plan_type)
+      } as UserPlan);
     }
     
     setLoading(false);

@@ -30,12 +30,19 @@ export function MessageInput({
         <div className="relative w-full">
           <Textarea
             placeholder={isAffirmationSession 
-              ? "Repeat the affirmation exactly..." 
+              ? "Type the affirmation exactly as shown above..." 
               : "Share your thoughts or ask a question..."}
             value={message}
             onChange={(e) => onMessageChange(e.target.value)}
             className="min-h-[100px] bg-white/80 backdrop-blur-sm border-[#9b87f5]/20 focus:border-[#9b87f5] rounded-xl text-primary-foreground placeholder:text-gray-400 pr-12 resize-none shadow-sm"
           />
+          {isAffirmationSession && message.trim() && (
+            <div className="absolute -top-6 right-0 text-xs text-primary/70">
+              {message.toLowerCase() === message.toLowerCase() 
+                ? "✓ Matches the affirmation" 
+                : "⚠️ Not an exact match"}
+            </div>
+          )}
           <div className="absolute bottom-2 right-2">
             <Button
               type="button"
@@ -47,12 +54,20 @@ export function MessageInput({
                   ? 'bg-red-100 text-red-500 hover:bg-red-200 hover:text-red-600' 
                   : 'text-[#9b87f5] hover:bg-[#9b87f5]/10'
               }`}
+              title={isRecording ? "Stop recording" : isAffirmationSession ? "Record affirmation" : "Start voice input"}
             >
               {isRecording ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
             </Button>
           </div>
         </div>
       </div>
+      
+      {isAffirmationSession && (
+        <div className="text-xs text-gray-500 italic px-2">
+          <p>Tip: Speak or type the affirmation <strong>exactly</strong> as shown, then submit. {message.trim() ? "" : "Try copying it to ensure an exact match."}</p>
+        </div>
+      )}
+      
       <Button 
         type="submit" 
         disabled={loading || !message.trim()}

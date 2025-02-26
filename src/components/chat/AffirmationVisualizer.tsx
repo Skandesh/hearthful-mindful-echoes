@@ -239,20 +239,21 @@ export function AffirmationVisualizer({ isActive, currentAffirmation }: Affirmat
             <span className="text-xl">✨</span>
           </div>
           <div>
-            <h3 className="text-white font-bold">Daily Affirmation</h3>
-            <p className="text-white/70 text-xs">Repeat aloud for best results</p>
+            <h3 className="text-white font-bold">Affirmation to Repeat</h3>
+            <p className="text-white/70 text-xs">Say or type this exactly as shown</p>
           </div>
-        </div>
-        <div className="flex gap-2">
-          <button className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-sm hover:bg-white/20 transition-colors">
-            <span className="text-white">★</span>
-          </button>
         </div>
       </div>
       <canvas 
         ref={canvasRef} 
         className="w-full h-64 bg-gradient-to-b from-[#543ab7] to-[#00acc1]"
       />
+      <div className="p-4 bg-white/80 backdrop-blur-md">
+        <div className="flex items-center gap-2 text-sm text-gray-700">
+          <div className="w-4 h-4 rounded-full bg-green-500 animate-pulse"></div>
+          <span>Please repeat this affirmation exactly, then submit</span>
+        </div>
+      </div>
     </div>
   );
 }

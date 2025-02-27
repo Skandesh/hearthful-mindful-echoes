@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { UserAffirmation } from './types';
 import { Star, StarOff, X } from 'lucide-react';
 import { Card } from '@/components/ui/card';
@@ -28,6 +28,24 @@ export const AffirmationHistory = ({
   onClose
 }: AffirmationHistoryProps) => {
   const [activeTab, setActiveTab] = useState('all');
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  // Handle click outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    }
+
+    // Add event listener
+    document.addEventListener('mousedown', handleClickOutside);
+    
+    // Clean up
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [onClose]);
 
   return (
     <motion.div
@@ -36,7 +54,10 @@ export const AffirmationHistory = ({
       exit={{ opacity: 0, y: 20 }}
       className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4"
     >
-      <Card className="w-full max-w-2xl bg-white/95 backdrop-blur-xl shadow-2xl rounded-xl overflow-hidden">
+      <Card 
+        ref={modalRef}
+        className="w-full max-w-2xl bg-white/95 backdrop-blur-xl shadow-2xl rounded-xl overflow-hidden"
+      >
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-primary-foreground">Your Affirmations</h2>

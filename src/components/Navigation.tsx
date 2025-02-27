@@ -4,7 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Logo from "@/components/Logo";
+import { Logo } from "@/components/Logo"; // Changed from 'import Logo' to 'import { Logo }'
 import { AuthContext } from "@/App";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";

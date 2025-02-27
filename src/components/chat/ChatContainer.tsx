@@ -139,7 +139,7 @@ export function ChatContainer({
             limit: userPlan?.affirmations_limit || 10,
             type: userPlan?.plan_type || 'free'
           }}
-          onToggleFavorite={(id, status) => onToggleFavorite(id)}
+          onToggleFavorite={(id: string, status: boolean) => onToggleFavorite(id)}
           onClose={onCloseHistory}
         />
       )}

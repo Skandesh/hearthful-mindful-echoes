@@ -1,4 +1,3 @@
-
 import { Heart, ChevronRight, Sparkles, MoveUpRight, Stars, BrainCircuit, Wand2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { AuroraBackground } from "@/components/ui/aurora-background";
@@ -6,14 +5,20 @@ import { Button } from "@/components/ui/button";
 import { Features } from "@/components/sections/Features";
 import { ScientificStudies } from "@/components/sections/ScientificStudies";
 import { Pricing } from "@/components/sections/Pricing";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { AuthContext } from "@/App";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   const [animateCards, setAnimateCards] = useState(false);
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     setAnimateCards(true);
   }, []);
+
+  // Determine the path for the "Get Started" button
+  const startPath = user ? "/app" : "/auth";
 
   return (
     <div className="min-h-screen bg-[#F7F5F3]">
@@ -62,10 +67,10 @@ const Index = () => {
               asChild
               className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-gradient-to-r from-[#9b87f5] to-[#543ab7] hover:opacity-90 text-white transition-all duration-300 hover:scale-105"
             >
-              <a href="/app">
-                Get Started Free
+              <Link to={startPath}>
+                Get Started {user ? "Now" : "Free"}
                 <ChevronRight className="ml-2 w-4 h-4" />
-              </a>
+              </Link>
             </Button>
             <Button
               asChild
@@ -243,10 +248,10 @@ const Index = () => {
               asChild
               className="inline-flex items-center px-6 py-3 rounded-lg bg-gradient-to-r from-[#9b87f5] to-[#543ab7] text-white font-medium hover:opacity-90 transition-colors"
             >
-              <a href="/app">
-                Begin Free Trial
+              <Link to={startPath}>
+                Begin {user ? "Now" : "Free Trial"}
                 <ChevronRight className="ml-2 w-4 h-4" />
-              </a>
+              </Link>
             </Button>
             
             {/* Decorative elements */}

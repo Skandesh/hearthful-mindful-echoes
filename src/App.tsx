@@ -1,6 +1,6 @@
 
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { createContext, useEffect, useState } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { createContext, useEffect, useState, useContext } from "react";
 import { Toaster } from "sonner";
 import { supabase } from "./integrations/supabase/client";
 
@@ -17,6 +17,25 @@ export const AuthContext = createContext<{
   user: null,
   loading: true,
 });
+
+// Protected route component that redirects to /auth if not logged in
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, loading } = useContext(AuthContext);
+  
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+  
+  if (!user) {
+    return <Navigate to="/auth" replace />;
+  }
+  
+  return <>{children}</>;
+};
 
 function App() {
   const [user, setUser] = useState<any>(null);
@@ -49,7 +68,11 @@ function App() {
           <Navigation />
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/app" element={<Chat />} />
+            <Route path="/app" element={
+              <ProtectedRoute>
+                <Chat />
+              </ProtectedRoute>
+            } />
             <Route path="/auth" element={
               user ? <Navigate to="/app" /> : <Auth />
             } />

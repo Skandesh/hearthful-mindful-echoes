@@ -39,7 +39,7 @@ interface ChatContainerProps {
   onBackClick: () => void;
   onSuggestedPrompt: (prompt: string) => void;
   onCreateAffirmations: () => void;
-  onToggleFavorite: (id: string) => void;
+  onToggleFavorite: (id: string) => Promise<void>;
   onShowHistory: () => void;
   onCloseHistory: () => void;
 }
@@ -139,7 +139,7 @@ export function ChatContainer({
             limit: userPlan?.affirmations_limit || 10,
             type: userPlan?.plan_type || 'free'
           }}
-          onToggleFavorite={onToggleFavorite}
+          onToggleFavorite={(id, status) => onToggleFavorite(id)}
           onClose={onCloseHistory}
         />
       )}

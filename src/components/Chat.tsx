@@ -140,6 +140,19 @@ export default function Chat() {
     setShowChat(true);
   };
 
+  // Create a wrapper function to match the expected signature
+  const handleToggleFavorite = (id: string) => {
+    // Find the affirmation to get its current status
+    const affirmation = [...userAffirmations, ...favoriteAffirmations]
+      .find(a => a.id === id);
+    
+    if (affirmation) {
+      return toggleFavorite(id, affirmation.is_favorite);
+    }
+    
+    return Promise.resolve();
+  };
+
   return (
     <ChatContainer
       user={user}
@@ -168,7 +181,7 @@ export default function Chat() {
       onBackClick={() => setShowChat(false)}
       onSuggestedPrompt={handleSuggestedPrompt}
       onCreateAffirmations={createAffirmations}
-      onToggleFavorite={toggleFavorite}
+      onToggleFavorite={handleToggleFavorite}
       onShowHistory={() => setShowHistory(true)}
       onCloseHistory={() => setShowHistory(false)}
     />

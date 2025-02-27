@@ -24,22 +24,8 @@ export function MessageInput({
   onStartRecording,
   onStopRecording,
 }: MessageInputProps) {
-  // Get the current affirmation from the Chat component context or props
-  const matchesAffirmation = (inputText: string, affirmationText: string) => {
-    // Normalize both strings for comparison
-    // Remove punctuation, extra spaces, and convert to lowercase
-    const normalizeText = (text: string) => {
-      return text
-        .toLowerCase()
-        .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "")
-        .replace(/\s+/g, " ")
-        .trim();
-    };
-    
-    const normalizedInput = normalizeText(inputText);
-    const normalizedAffirmation = normalizeText(affirmationText);
-    
-    return normalizedInput === normalizedAffirmation;
+  const handleStopRecording = async () => {
+    await onStopRecording();
   };
 
   return (
@@ -54,21 +40,12 @@ export function MessageInput({
             onChange={(e) => onMessageChange(e.target.value)}
             className="min-h-[100px] bg-white/80 backdrop-blur-sm border-[#9b87f5]/20 focus:border-[#9b87f5] rounded-xl text-primary-foreground placeholder:text-gray-400 pr-12 resize-none shadow-sm"
           />
-          {isAffirmationSession && message.trim() && (
-            <div className="absolute -top-6 right-0 text-xs">
-              {/* This is a placeholder since we can't actually check against the current affirmation
-                  without passing it as a prop. We'll need to update the Chat component to pass it. */}
-              <span className="text-gray-500">
-                Type exactly as shown to proceed
-              </span>
-            </div>
-          )}
           <div className="absolute bottom-2 right-2">
             <Button
               type="button"
               variant="ghost"
               size="icon"
-              onClick={isRecording ? onStopRecording : onStartRecording}
+              onClick={isRecording ? handleStopRecording : onStartRecording}
               className={`rounded-full h-8 w-8 ${
                 isRecording 
                   ? 'bg-red-100 text-red-500 hover:bg-red-200 hover:text-red-600' 

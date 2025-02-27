@@ -51,7 +51,11 @@ export function useRecording() {
         const base64Audio = (reader.result as string).split(',')[1];
         try {
           const transcriptionData = await transcribeAudio(base64Audio);
-          resolve(transcriptionData?.text || null);
+          if (transcriptionData?.text) {
+            resolve(transcriptionData.text);
+          } else {
+            resolve(null);
+          }
         } catch (error) {
           console.error("Transcription error:", error);
           resolve(null);

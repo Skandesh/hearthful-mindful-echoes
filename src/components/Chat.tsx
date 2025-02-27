@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -91,12 +90,8 @@ export default function Chat() {
       const transcribedText = await processRecording();
       
       if (transcribedText) {
-        // Add user's transcribed message
-        setMessages(prev => [...prev, { type: 'user', content: transcribedText }]);
-
-        // Generate AI response
-        const aiResponse = await generateAIResponse(transcribedText);
-        setMessages(prev => [...prev, { type: 'ai', content: aiResponse }]);
+        // Set the transcribed text in the message input
+        setMessage(transcribedText);
       }
     } catch (error: any) {
       console.error('Voice Input Error:', error);

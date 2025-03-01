@@ -14,10 +14,8 @@ enabled = true
 port = 54323
 api_url = "http://localhost"
 
-[[functions]]
-name = "text-to-speech"
+[functions.text-to-speech]
 verify_jwt = false
 
-[[functions]]
-name = "generate-background-music"
+[functions.generate-background-music]
 verify_jwt = false

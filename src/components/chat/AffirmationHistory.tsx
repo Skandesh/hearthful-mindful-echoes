@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { formatDistanceToNow } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useNavigate } from 'react-router-dom';
 
 interface AffirmationHistoryProps {
   affirmations: UserAffirmation[];
@@ -29,6 +30,7 @@ export const AffirmationHistory = ({
 }: AffirmationHistoryProps) => {
   const [activeTab, setActiveTab] = useState('all');
   const modalRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   // Handle click outside
   useEffect(() => {
@@ -46,6 +48,11 @@ export const AffirmationHistory = ({
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [onClose]);
+
+  const handleUpgradePlan = () => {
+    onClose();
+    navigate('/#pricing');
+  };
 
   return (
     <motion.div
@@ -136,7 +143,10 @@ export const AffirmationHistory = ({
                 Close
               </Button>
               {userPlanInfo.type === 'free' && (
-                <Button className="bg-gradient-to-r from-[#9b87f5] to-[#543ab7] text-white">
+                <Button 
+                  className="bg-gradient-to-r from-[#9b87f5] to-[#543ab7] text-white"
+                  onClick={handleUpgradePlan}
+                >
                   Upgrade Plan
                 </Button>
               )}

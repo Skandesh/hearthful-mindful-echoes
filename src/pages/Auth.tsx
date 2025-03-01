@@ -8,8 +8,9 @@ import { useToast } from "@/hooks/use-toast";
 import { WavyBackground } from "@/components/chat/WavyBackground";
 import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sparkles, User, Mail, Lock, AlertCircle } from "lucide-react";
+import { Sparkles, User, Mail, Lock, AlertCircle, Info } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default function Auth() {
   const [email, setEmail] = useState("");
@@ -58,6 +59,21 @@ export default function Auth() {
       
       setSuccessMessage("Account created successfully! You can now sign in.");
       setView("sign-in");
+      
+      // Create a default plan for the new user
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await supabase.from('user_plans').insert({
+            user_id: user.id,
+            plan_type: 'free',
+            affirmations_limit: 10,
+            affirmations_used: 0
+          });
+        }
+      } catch (planError) {
+        console.error("Could not create default plan:", planError);
+      }
       
     } catch (error: any) {
       if (error.message.includes("User already registered")) {
@@ -125,6 +141,33 @@ export default function Auth() {
       setLoading(false);
     }
   }
+
+  const renderPlanFeatures = (planType: string) => {
+    return (
+      <div className="mt-2 bg-primary/5 rounded-lg p-3 text-xs">
+        <div className="font-medium text-primary mb-1">
+          {planType === 'free' ? 'Free Plan Features:' : 
+           planType === 'pro' ? 'Pro Plan Features:' : 'Premium Plan Features:'}
+        </div>
+        <ul className="space-y-1 text-gray-600">
+          {planType === 'free' && (
+            <>
+              <li className="flex items-center">• 2 voice options</li>
+              <li className="flex items-center">• Limited to 10 affirmations</li>
+              <li className="flex items-center">• No background music</li>
+            </>
+          )}
+          {planType === 'pro' && (
+            <>
+              <li className="flex items-center">• All 5 voice options</li>
+              <li className="flex items-center">• Unlimited affirmations</li>
+              <li className="flex items-center">• Background music</li>
+            </>
+          )}
+        </ul>
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
@@ -248,6 +291,28 @@ export default function Auth() {
                   <p className="text-xs text-gray-500 mt-1">Password must be at least 6 characters</p>
                 </div>
                 
+                <div className="my-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-sm font-medium text-gray-700">Plan Information</h3>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-6 w-6">
+                            <Info className="h-4 w-4 text-gray-500" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="w-[200px] text-xs">
+                            All accounts start with a free plan. You can upgrade anytime after registration.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                  
+                  {renderPlanFeatures('free')}
+                </div>
+                
                 <Button 
                   type="submit" 
                   className="w-full bg-gradient-to-r from-[#9b87f5] to-[#543ab7] text-white transition-all hover:opacity-90"
@@ -255,7 +320,7 @@ export default function Auth() {
                 >
                   {loading 
                     ? "Creating account..." 
-                    : "Create Account"}
+                    : "Create Free Account"}
                 </Button>
               </div>
             </form>

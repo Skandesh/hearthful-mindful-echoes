@@ -52,6 +52,11 @@ export function useAudio() {
         audio.volume = 0.2; // Lower volume for background music
         setBackgroundMusic(audio);
         await audio.play();
+        
+        toast({
+          title: "Background Music",
+          description: "Soothing background music is now playing",
+        });
       }
     } catch (error: any) {
       console.error("Background music error:", error);
@@ -66,10 +71,23 @@ export function useAudio() {
   const stopBackgroundMusic = () => {
     if (backgroundMusic) {
       backgroundMusic.pause();
+      backgroundMusic.currentTime = 0;
+      setBackgroundMusic(null);
+      
+      toast({
+        title: "Background Music",
+        description: "Background music stopped",
+      });
     }
   };
 
   const playAudio = async (message: Message, options: AudioOptions = defaultOptions, premiumCheck?: PremiumFeature) => {
+    // Stop any currently playing audio
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+    
     // Check if the selected voice is a premium feature
     if (premiumCheck && !checkPremiumFeature(premiumCheck)) {
       // Fall back to default voice

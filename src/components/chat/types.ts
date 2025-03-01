@@ -49,3 +49,9 @@ export interface PremiumFeature {
   available: boolean;
   upgradeMessage: string;
 }
+
+export interface AuthState {
+  user: any;
+  loading: boolean;
+  isAuthenticated: boolean;
+}

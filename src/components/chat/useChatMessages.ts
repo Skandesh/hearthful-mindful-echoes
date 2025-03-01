@@ -125,7 +125,8 @@ export function useChatMessages() {
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message,
+        description: error.message || "An unknown error occurred",
+        duration: 4000
       });
     } finally {
       setLoading(false);

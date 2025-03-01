@@ -10,6 +10,7 @@ import { ChatContainer } from "./chat/ChatContainer";
 import { useChatMessages } from "./chat/useChatMessages";
 import { useVoiceInput } from "./chat/useVoiceInput";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 export default function Chat() {
   const [language, setLanguage] = useState("English");
@@ -19,17 +20,20 @@ export default function Chat() {
   const [user, setUser] = useState<any>(null);
   const [selectedVoice, setSelectedVoice] = useState<string>("EXAVITQu4vr4xnSDxMaL"); // Default to Sarah
   const [enableBackgroundMusic, setEnableBackgroundMusic] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authLoading, setAuthLoading] = useState(true);
   
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   // Available voice options with premium flags
   const voiceOptions: VoiceOption[] = [
-    { id: "EXAVITQu4vr4xnSDxMaL", name: "Sarah (Female, Default)" },
-    { id: "IKne3meq5aSn9XLyUdCD", name: "Charlie (Male)" },
-    { id: "XB0fDUnXU5powFXDhCwa", name: "Charlotte (Female)", premium: true },
-    { id: "TX3LPaxmHKxFdv7VOQHJ", name: "Liam (Male)", premium: true },
-    { id: "pFZP5JQG7iQjIQuC4Bku", name: "Lily (Female)", premium: true }
+    { id: "EXAVITQu4vr4xnSDxMaL", name: "Sarah (Female)", description: "Default voice" },
+    { id: "IKne3meq5aSn9XLyUdCD", name: "Charlie (Male)", description: "Friendly male voice" },
+    { id: "XB0fDUnXU5powFXDhCwa", name: "Charlotte (Female)", premium: true, description: "Premium female voice" },
+    { id: "TX3LPaxmHKxFdv7VOQHJ", name: "Liam (Male)", premium: true, description: "Premium male voice" },
+    { id: "pFZP5JQG7iQjIQuC4Bku", name: "Lily (Female)", premium: true, description: "Premium female voice" }
   ];
 
   // Custom hooks for functionality
@@ -46,7 +50,8 @@ export default function Chat() {
     userPlan, 
     saveAffirmation, 
     toggleFavorite,
-    hasReachedLimit
+    hasReachedLimit,
+    fetchUserAffirmations
   } = useUserAffirmations();
 
   // Message handling
@@ -63,6 +68,46 @@ export default function Chat() {
 
   // Voice input handling
   const { isRecording, handleStartRecording, handleStopRecording } = useVoiceInput(setLoading, setMessage);
+
+  // Check authentication status
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      setAuthLoading(true);
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user || null);
+      setIsAuthenticated(!!session?.user);
+      setAuthLoading(false);
+      
+      // Redirect to auth page if not authenticated
+      if (!session?.user) {
+        toast({
+          title: "Authentication Required",
+          description: "Please sign in to access all features",
+        });
+        navigate("/auth");
+      } else {
+        // If authenticated, fetch user data
+        fetchUserAffirmations();
+      }
+    };
+
+    checkAuthStatus();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setUser(session?.user || null);
+        setIsAuthenticated(!!session?.user);
+        
+        if (event === 'SIGNED_OUT') {
+          navigate("/auth");
+        }
+      }
+    );
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, [navigate]);
 
   // Check if user has premium access to features
   const isPremiumVoice = (voiceId: string): boolean => {
@@ -98,25 +143,6 @@ export default function Chat() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setUser(session?.user || null);
-    };
-
-    fetchUser();
-
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setUser(session?.user || null);
-      }
-    );
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, []);
   
   // Handle background music when affirmation session starts/ends
   useEffect(() => {
@@ -129,6 +155,12 @@ export default function Chat() {
     } else {
       stopBackgroundMusic();
     }
+    
+    return () => {
+      // Clean up audio when component unmounts
+      stopBackgroundMusic();
+      stopAudio();
+    };
   }, [affirmationSession.isActive, enableBackgroundMusic]);
 
   // Filter voice options based on plan
@@ -151,7 +183,8 @@ export default function Chat() {
         toast({
           variant: "destructive",
           title: "Free trial limit reached",
-          description: "You've reached your limit of 10 affirmations. Upgrade your plan to continue."
+          description: "You've reached your limit of 10 affirmations. Upgrade your plan to continue.",
+          duration: 5000
         });
         setLoading(false);
         return;
@@ -188,15 +221,27 @@ export default function Chat() {
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message,
+        description: error.message || "An unknown error occurred",
+        duration: 5000
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleMessageSubmit = (e: React.FormEvent) => {
-    handleSubmit(e, {
+  const handleMessageSubmit = async (e: React.FormEvent) => {
+    // Check authentication
+    if (!isAuthenticated) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to use this feature",
+        duration: 3000
+      });
+      navigate("/auth");
+      return;
+    }
+    
+    await handleSubmit(e, {
       affirmationSession,
       saveAffirmation,
       startAffirmationSession,
@@ -209,7 +254,18 @@ export default function Chat() {
   };
 
   // Create a wrapper function to match the expected signature
-  const handleToggleFavorite = (id: string) => {
+  const handleToggleFavorite = async (id: string) => {
+    // Check authentication
+    if (!isAuthenticated) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to save favorites",
+        duration: 3000
+      });
+      navigate("/auth");
+      return;
+    }
+    
     // Find the affirmation to get its current status
     const affirmation = [...userAffirmations, ...favoriteAffirmations]
       .find(a => a.id === id);
@@ -244,12 +300,18 @@ export default function Chat() {
         title: "Premium Voice",
         description: "This voice is only available on Pro and Premium plans. Upgrade to access it.",
         variant: "default",
+        duration: 3000
       });
       // Don't change the voice
       return;
     }
     
     setSelectedVoice(voiceId);
+    toast({
+      title: "Voice Changed",
+      description: `Now using ${voice?.name || "selected voice"}`,
+      duration: 1500
+    });
   };
 
   const handleBackgroundMusicChange = (enabled: boolean) => {
@@ -262,7 +324,26 @@ export default function Chat() {
     }
     
     setEnableBackgroundMusic(enabled);
+    
+    if (enabled) {
+      toast({
+        title: "Background Music",
+        description: "Background music enabled",
+        duration: 1500
+      });
+    } else {
+      stopBackgroundMusic();
+    }
   };
+
+  // If still loading auth status, show a loading spinner
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <ChatContainer

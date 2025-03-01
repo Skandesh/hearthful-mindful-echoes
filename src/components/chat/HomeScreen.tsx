@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Mic, Sparkles } from "lucide-react";
+import { ChevronLeft, ChevronRight, Mic, Sparkles, Music } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -9,6 +9,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { VoiceOption } from "./types";
 
 interface HomeScreenProps {
   message: string;
@@ -16,12 +19,17 @@ interface HomeScreenProps {
   loading: boolean;
   language: string;
   duration: string;
+  voiceOptions: VoiceOption[];
+  selectedVoice: string;
+  enableBackgroundMusic: boolean;
   onMessageChange: (message: string) => void;
   onStartRecording: () => void;
   onStopRecording: () => void;
   onSuggestedPrompt: (prompt: string) => void;
   onLanguageChange: (value: string) => void;
   onDurationChange: (value: string) => void;
+  onVoiceChange: (value: string) => void;
+  onBackgroundMusicChange: (value: boolean) => void;
   onCreateAffirmations: () => void;
 }
 
@@ -31,12 +39,17 @@ export function HomeScreen({
   loading,
   language,
   duration,
+  voiceOptions,
+  selectedVoice,
+  enableBackgroundMusic,
   onMessageChange,
   onStartRecording,
   onStopRecording,
   onSuggestedPrompt,
   onLanguageChange,
   onDurationChange,
+  onVoiceChange,
+  onBackgroundMusicChange,
   onCreateAffirmations,
 }: HomeScreenProps) {
   return (
@@ -156,6 +169,45 @@ export function HomeScreen({
               <SelectItem value="Korean">Korean</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+      </div>
+
+      {/* New Voice Selection and Background Music UI */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 shadow-sm border border-[#9b87f5]/10">
+          <h3 className="text-base font-medium text-primary-foreground mb-3">Voice Selection</h3>
+          <Select value={selectedVoice} onValueChange={onVoiceChange}>
+            <SelectTrigger className="w-full rounded-lg border border-[#9b87f5]/20">
+              <SelectValue placeholder="Select voice" />
+            </SelectTrigger>
+            <SelectContent className="bg-white border border-[#9b87f5]/20 rounded-lg shadow-lg">
+              {voiceOptions.map(voice => (
+                <SelectItem key={voice.id} value={voice.id}>
+                  {voice.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 shadow-sm border border-[#9b87f5]/10">
+          <h3 className="text-base font-medium text-primary-foreground mb-3">Soothing Background</h3>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Music className="w-4 h-4 text-[#9b87f5]" />
+              <Label htmlFor="background-music" className="text-sm text-gray-600">
+                Enable calming background music
+              </Label>
+            </div>
+            <Switch
+              id="background-music"
+              checked={enableBackgroundMusic}
+              onCheckedChange={onBackgroundMusicChange}
+              className="data-[state=checked]:bg-[#9b87f5]"
+            />
+          </div>
+          <p className="mt-2 text-xs text-gray-500">
+            Gentle ambient sounds will play during your affirmation session
+          </p>
         </div>
       </div>
 

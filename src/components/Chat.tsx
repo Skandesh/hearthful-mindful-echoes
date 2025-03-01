@@ -1,10 +1,11 @@
+
 import { useRef, useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { generateAIResponse } from "./chat/ChatService";
 import { useAudio } from "./chat/useAudio";
 import { useAffirmations } from "./chat/useAffirmations";
 import { useUserAffirmations } from "./chat/useUserAffirmations";
-import { Message } from "./chat/types";
+import { Message, VoiceOption, AudioOptions } from "./chat/types";
 import { ChatContainer } from "./chat/ChatContainer";
 import { useChatMessages } from "./chat/useChatMessages";
 import { useVoiceInput } from "./chat/useVoiceInput";
@@ -16,12 +17,23 @@ export default function Chat() {
   const [showChat, setShowChat] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [selectedVoice, setSelectedVoice] = useState<string>("EXAVITQu4vr4xnSDxMaL"); // Default to Sarah
+  const [enableBackgroundMusic, setEnableBackgroundMusic] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const { toast } = useToast();
 
+  // Available voice options
+  const voiceOptions: VoiceOption[] = [
+    { id: "EXAVITQu4vr4xnSDxMaL", name: "Sarah (Female, Default)" },
+    { id: "IKne3meq5aSn9XLyUdCD", name: "Charlie (Male)" },
+    { id: "XB0fDUnXU5powFXDhCwa", name: "Charlotte (Female)" },
+    { id: "TX3LPaxmHKxFdv7VOQHJ", name: "Liam (Male)" },
+    { id: "pFZP5JQG7iQjIQuC4Bku", name: "Lily (Female)" }
+  ];
+
   // Custom hooks for functionality
-  const { isPlaying, playAudio, stopAudio } = useAudio();
+  const { isPlaying, playAudio, stopAudio, playBackgroundMusic, stopBackgroundMusic } = useAudio();
   const { 
     affirmationSession,
     startAffirmationSession,
@@ -78,6 +90,15 @@ export default function Chat() {
       authListener.subscription.unsubscribe();
     };
   }, []);
+  
+  // Handle background music when affirmation session starts/ends
+  useEffect(() => {
+    if (affirmationSession.isActive && enableBackgroundMusic) {
+      playBackgroundMusic();
+    } else {
+      stopBackgroundMusic();
+    }
+  }, [affirmationSession.isActive, enableBackgroundMusic]);
 
   const createAffirmations = async () => {
     setLoading(true);
@@ -160,6 +181,15 @@ export default function Chat() {
   const handleToggleFullscreen = () => {
     toggleFullscreen();
   };
+  
+  const handlePlayAudio = (message: Message) => {
+    const options: AudioOptions = {
+      voiceId: selectedVoice,
+      backgroundMusic: enableBackgroundMusic
+    };
+    
+    playAudio(message, options);
+  };
 
   return (
     <ChatContainer
@@ -177,12 +207,17 @@ export default function Chat() {
       userAffirmations={userAffirmations}
       favoriteAffirmations={favoriteAffirmations}
       userPlan={userPlan}
+      voiceOptions={voiceOptions}
+      selectedVoice={selectedVoice}
+      enableBackgroundMusic={enableBackgroundMusic}
       messagesEndRef={messagesEndRef}
       onMessageChange={setMessage}
       onSubmit={handleMessageSubmit}
       onLanguageChange={setLanguage}
       onDurationChange={setDuration}
-      onPlayAudio={playAudio}
+      onVoiceChange={setSelectedVoice}
+      onBackgroundMusicChange={setEnableBackgroundMusic}
+      onPlayAudio={handlePlayAudio}
       onStopAudio={stopAudio}
       onStartRecording={handleStartRecording}
       onStopRecording={handleStopRecording}

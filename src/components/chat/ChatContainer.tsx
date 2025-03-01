@@ -1,3 +1,4 @@
+
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { History } from "lucide-react";
@@ -5,10 +6,7 @@ import { WavyBackground } from "./WavyBackground";
 import { ChatSession } from "./ChatSession";
 import { HomeScreen } from "./HomeScreen";
 import { AffirmationHistory } from "./AffirmationHistory";
-import { Message } from "./types";
-import { AffirmationSession } from "./types";
-import { UserAffirmation } from "./types";
-import { UserPlan } from "./types";
+import { Message, AffirmationSession, UserAffirmation, UserPlan, VoiceOption } from "./types";
 import { RefObject } from "react";
 
 interface ChatContainerProps {
@@ -26,11 +24,16 @@ interface ChatContainerProps {
   userAffirmations: UserAffirmation[];
   favoriteAffirmations: UserAffirmation[];
   userPlan: UserPlan | null;
+  voiceOptions: VoiceOption[];
+  selectedVoice: string;
+  enableBackgroundMusic: boolean;
   messagesEndRef: RefObject<HTMLDivElement>;
   onMessageChange: (message: string) => void;
   onSubmit: (e: React.FormEvent) => void;
   onLanguageChange: (language: string) => void;
   onDurationChange: (duration: string) => void;
+  onVoiceChange: (voiceId: string) => void;
+  onBackgroundMusicChange: (enabled: boolean) => void;
   onPlayAudio: (msg: Message) => void;
   onStopAudio: () => void;
   onStartRecording: () => void;
@@ -59,11 +62,16 @@ export function ChatContainer({
   userAffirmations,
   favoriteAffirmations,
   userPlan,
+  voiceOptions,
+  selectedVoice,
+  enableBackgroundMusic,
   messagesEndRef,
   onMessageChange,
   onSubmit,
   onLanguageChange,
   onDurationChange,
+  onVoiceChange,
+  onBackgroundMusicChange,
   onPlayAudio,
   onStopAudio,
   onStartRecording,
@@ -120,12 +128,17 @@ export function ChatContainer({
               loading={loading}
               language={language}
               duration={duration}
+              voiceOptions={voiceOptions}
+              selectedVoice={selectedVoice}
+              enableBackgroundMusic={enableBackgroundMusic}
               onMessageChange={onMessageChange}
               onStartRecording={onStartRecording}
               onStopRecording={onStopRecording}
               onSuggestedPrompt={onSuggestedPrompt}
               onLanguageChange={onLanguageChange}
               onDurationChange={onDurationChange}
+              onVoiceChange={onVoiceChange}
+              onBackgroundMusicChange={onBackgroundMusicChange}
               onCreateAffirmations={onCreateAffirmations}
             />
           )}

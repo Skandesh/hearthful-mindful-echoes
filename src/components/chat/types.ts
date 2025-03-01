@@ -31,3 +31,14 @@ export interface UserPlan {
   created_at: string;
   updated_at: string;
 }
+
+export interface VoiceOption {
+  id: string;
+  name: string;
+  description?: string;
+}
+
+export interface AudioOptions {
+  voiceId: string;
+  backgroundMusic?: boolean;
+}

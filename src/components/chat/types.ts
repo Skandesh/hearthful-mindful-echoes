@@ -36,9 +36,16 @@ export interface VoiceOption {
   id: string;
   name: string;
   description?: string;
+  premium?: boolean;
 }
 
 export interface AudioOptions {
   voiceId: string;
   backgroundMusic?: boolean;
+}
+
+export interface PremiumFeature {
+  type: 'voice' | 'music' | 'language' | 'duration';
+  available: boolean;
+  upgradeMessage: string;
 }

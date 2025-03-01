@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Mic, Sparkles, Music } from "lucide-react";
+import { ChevronLeft, ChevronRight, Mic, Sparkles, Music, Crown } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -12,6 +12,12 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { VoiceOption } from "./types";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface HomeScreenProps {
   message: string;
@@ -172,7 +178,7 @@ export function HomeScreen({
         </div>
       </div>
 
-      {/* New Voice Selection and Background Music UI */}
+      {/* Enhanced Voice Selection and Background Music UI */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 shadow-sm border border-[#9b87f5]/10">
           <h3 className="text-base font-medium text-primary-foreground mb-3">Voice Selection</h3>
@@ -180,17 +186,56 @@ export function HomeScreen({
             <SelectTrigger className="w-full rounded-lg border border-[#9b87f5]/20">
               <SelectValue placeholder="Select voice" />
             </SelectTrigger>
-            <SelectContent className="bg-white border border-[#9b87f5]/20 rounded-lg shadow-lg">
+            <SelectContent className="bg-white border border-[#9b87f5]/20 rounded-lg shadow-lg max-h-72">
               {voiceOptions.map(voice => (
-                <SelectItem key={voice.id} value={voice.id}>
-                  {voice.name}
+                <SelectItem key={voice.id} value={voice.id} className="flex items-center">
+                  <div className="flex items-center justify-between w-full">
+                    <span>{voice.name}</span>
+                    {voice.premium && (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="ml-2">
+                              <Crown className="h-3.5 w-3.5 text-amber-500 inline-block" />
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent side="right">
+                            <p className="text-xs">Premium voice (Pro & Premium plans)</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
+                  </div>
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
+          <p className="mt-2 text-xs text-gray-500">
+            Choose the voice that will narrate your affirmations
+            {voiceOptions.some(v => v.premium) && (
+              <span className="flex items-center mt-1">
+                <Crown className="h-3 w-3 text-amber-500 mr-1 inline-block" />
+                <span>Premium voices available with Pro & Premium plans</span>
+              </span>
+            )}
+          </p>
         </div>
         <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 shadow-sm border border-[#9b87f5]/10">
-          <h3 className="text-base font-medium text-primary-foreground mb-3">Soothing Background</h3>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-base font-medium text-primary-foreground">Soothing Background</h3>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="inline-flex">
+                    <Crown className="h-4 w-4 text-amber-500" />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="top">
+                  <p className="text-xs">Premium feature (Pro & Premium plans)</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Music className="w-4 h-4 text-[#9b87f5]" />

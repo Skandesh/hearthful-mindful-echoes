@@ -1,7 +1,7 @@
 
 import { useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Message, AudioOptions } from "./types";
+import { Message, AudioOptions, PremiumFeature } from "./types";
 import { useToast } from "@/hooks/use-toast";
 
 export function useAudio() {
@@ -16,7 +16,24 @@ export function useAudio() {
     backgroundMusic: false
   };
 
-  const playBackgroundMusic = async () => {
+  const checkPremiumFeature = (feature: PremiumFeature): boolean => {
+    if (feature.available) return true;
+    
+    toast({
+      title: "Premium Feature",
+      description: feature.upgradeMessage,
+      variant: "default",
+    });
+    
+    return false;
+  };
+
+  const playBackgroundMusic = async (premiumCheck?: PremiumFeature) => {
+    // Check if background music is a premium feature
+    if (premiumCheck && !checkPremiumFeature(premiumCheck)) {
+      return;
+    }
+    
     try {
       if (backgroundMusic) {
         backgroundMusic.play();
@@ -52,7 +69,13 @@ export function useAudio() {
     }
   };
 
-  const playAudio = async (message: Message, options: AudioOptions = defaultOptions) => {
+  const playAudio = async (message: Message, options: AudioOptions = defaultOptions, premiumCheck?: PremiumFeature) => {
+    // Check if the selected voice is a premium feature
+    if (premiumCheck && !checkPremiumFeature(premiumCheck)) {
+      // Fall back to default voice
+      options.voiceId = defaultOptions.voiceId;
+    }
+    
     if (!message.audio) {
       try {
         const { data, error } = await supabase.functions.invoke('text-to-speech', {
@@ -73,7 +96,8 @@ export function useAudio() {
 
           // If background music is enabled in options, play it
           if (options.backgroundMusic) {
-            playBackgroundMusic();
+            const musicPremiumCheck = premiumCheck?.type === 'music' ? premiumCheck : undefined;
+            playBackgroundMusic(musicPremiumCheck);
           }
           
           return data.audio;
@@ -96,7 +120,8 @@ export function useAudio() {
         
         // If background music is enabled in options, play it
         if (options.backgroundMusic) {
-          playBackgroundMusic();
+          const musicPremiumCheck = premiumCheck?.type === 'music' ? premiumCheck : undefined;
+          playBackgroundMusic(musicPremiumCheck);
         }
       } catch (error) {
         console.error("Audio playback error:", error);
@@ -122,6 +147,7 @@ export function useAudio() {
     playAudio,
     stopAudio,
     playBackgroundMusic,
-    stopBackgroundMusic
+    stopBackgroundMusic,
+    checkPremiumFeature
   };
 }

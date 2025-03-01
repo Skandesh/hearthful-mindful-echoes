@@ -5,7 +5,7 @@ import { generateAIResponse } from "./chat/ChatService";
 import { useAudio } from "./chat/useAudio";
 import { useAffirmations } from "./chat/useAffirmations";
 import { useUserAffirmations } from "./chat/useUserAffirmations";
-import { Message, VoiceOption, AudioOptions } from "./chat/types";
+import { Message, VoiceOption, AudioOptions, PremiumFeature } from "./chat/types";
 import { ChatContainer } from "./chat/ChatContainer";
 import { useChatMessages } from "./chat/useChatMessages";
 import { useVoiceInput } from "./chat/useVoiceInput";
@@ -23,17 +23,17 @@ export default function Chat() {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const { toast } = useToast();
 
-  // Available voice options
+  // Available voice options with premium flags
   const voiceOptions: VoiceOption[] = [
     { id: "EXAVITQu4vr4xnSDxMaL", name: "Sarah (Female, Default)" },
     { id: "IKne3meq5aSn9XLyUdCD", name: "Charlie (Male)" },
-    { id: "XB0fDUnXU5powFXDhCwa", name: "Charlotte (Female)" },
-    { id: "TX3LPaxmHKxFdv7VOQHJ", name: "Liam (Male)" },
-    { id: "pFZP5JQG7iQjIQuC4Bku", name: "Lily (Female)" }
+    { id: "XB0fDUnXU5powFXDhCwa", name: "Charlotte (Female)", premium: true },
+    { id: "TX3LPaxmHKxFdv7VOQHJ", name: "Liam (Male)", premium: true },
+    { id: "pFZP5JQG7iQjIQuC4Bku", name: "Lily (Female)", premium: true }
   ];
 
   // Custom hooks for functionality
-  const { isPlaying, playAudio, stopAudio, playBackgroundMusic, stopBackgroundMusic } = useAudio();
+  const { isPlaying, playAudio, stopAudio, playBackgroundMusic, stopBackgroundMusic, checkPremiumFeature } = useAudio();
   const { 
     affirmationSession,
     startAffirmationSession,
@@ -63,6 +63,33 @@ export default function Chat() {
 
   // Voice input handling
   const { isRecording, handleStartRecording, handleStopRecording } = useVoiceInput(setLoading, setMessage);
+
+  // Check if user has premium access to features
+  const isPremiumVoice = (voiceId: string): boolean => {
+    const voice = voiceOptions.find(v => v.id === voiceId);
+    return voice?.premium || false;
+  };
+
+  const canAccessPremiumVoice = (voiceId: string): PremiumFeature => {
+    const isPremium = isPremiumVoice(voiceId);
+    const hasPremiumPlan = userPlan?.plan_type === 'premium' || userPlan?.plan_type === 'pro';
+    
+    return {
+      type: 'voice',
+      available: !isPremium || hasPremiumPlan,
+      upgradeMessage: "Premium voices are available on Pro and Premium plans. Upgrade to access this voice."
+    };
+  };
+
+  const canAccessBackgroundMusic = (): PremiumFeature => {
+    const hasPremiumPlan = userPlan?.plan_type === 'premium' || userPlan?.plan_type === 'pro';
+    
+    return {
+      type: 'music',
+      available: hasPremiumPlan,
+      upgradeMessage: "Background music is available on Pro and Premium plans. Upgrade to access this feature."
+    };
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -94,11 +121,27 @@ export default function Chat() {
   // Handle background music when affirmation session starts/ends
   useEffect(() => {
     if (affirmationSession.isActive && enableBackgroundMusic) {
-      playBackgroundMusic();
+      // Check if user can access background music
+      const musicFeature = canAccessBackgroundMusic();
+      if (checkPremiumFeature(musicFeature)) {
+        playBackgroundMusic();
+      }
     } else {
       stopBackgroundMusic();
     }
   }, [affirmationSession.isActive, enableBackgroundMusic]);
+
+  // Filter voice options based on plan
+  const getAvailableVoices = () => {
+    const hasPremiumPlan = userPlan?.plan_type === 'premium' || userPlan?.plan_type === 'pro';
+    
+    if (hasPremiumPlan) {
+      return voiceOptions; // All voices available
+    } else {
+      // Only free voices
+      return voiceOptions.filter(voice => !voice.premium);
+    }
+  };
 
   const createAffirmations = async () => {
     setLoading(true);
@@ -188,7 +231,37 @@ export default function Chat() {
       backgroundMusic: enableBackgroundMusic
     };
     
-    playAudio(message, options);
+    // Check if the user can access these premium features
+    const voiceFeature = canAccessPremiumVoice(selectedVoice);
+    playAudio(message, options, voiceFeature);
+  };
+
+  const handleVoiceChange = (voiceId: string) => {
+    // Check if this is a premium voice and user doesn't have premium access
+    const voice = voiceOptions.find(v => v.id === voiceId);
+    if (voice?.premium && !(userPlan?.plan_type === 'premium' || userPlan?.plan_type === 'pro')) {
+      toast({
+        title: "Premium Voice",
+        description: "This voice is only available on Pro and Premium plans. Upgrade to access it.",
+        variant: "default",
+      });
+      // Don't change the voice
+      return;
+    }
+    
+    setSelectedVoice(voiceId);
+  };
+
+  const handleBackgroundMusicChange = (enabled: boolean) => {
+    if (enabled) {
+      // Check if user can access background music
+      const musicFeature = canAccessBackgroundMusic();
+      if (!checkPremiumFeature(musicFeature)) {
+        return; // Don't enable if not available
+      }
+    }
+    
+    setEnableBackgroundMusic(enabled);
   };
 
   return (
@@ -207,7 +280,7 @@ export default function Chat() {
       userAffirmations={userAffirmations}
       favoriteAffirmations={favoriteAffirmations}
       userPlan={userPlan}
-      voiceOptions={voiceOptions}
+      voiceOptions={getAvailableVoices()}
       selectedVoice={selectedVoice}
       enableBackgroundMusic={enableBackgroundMusic}
       messagesEndRef={messagesEndRef}
@@ -215,8 +288,8 @@ export default function Chat() {
       onSubmit={handleMessageSubmit}
       onLanguageChange={setLanguage}
       onDurationChange={setDuration}
-      onVoiceChange={setSelectedVoice}
-      onBackgroundMusicChange={setEnableBackgroundMusic}
+      onVoiceChange={handleVoiceChange}
+      onBackgroundMusicChange={handleBackgroundMusicChange}
       onPlayAudio={handlePlayAudio}
       onStopAudio={stopAudio}
       onStartRecording={handleStartRecording}

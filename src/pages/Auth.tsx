@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,24 +7,43 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { WavyBackground } from "@/components/chat/WavyBackground";
 import { useNavigate } from "react-router-dom";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Sparkles, User, Mail, Lock, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [view, setView] = useState<"sign-in" | "sign-up">("sign-in");
+  const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  // Check if user is already logged in
+  useEffect(() => {
+    const checkUserSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate("/app");
+      }
+    };
+    
+    checkUserSession();
+  }, [navigate]);
+
   async function handleSignUp(e: React.FormEvent) {
     e.preventDefault();
+    setError(null);
     
     if (!email || !password) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Please enter both email and password",
-      });
+      setError("Please enter both email and password");
+      return;
+    }
+    
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
       return;
     }
     
@@ -37,20 +56,15 @@ export default function Auth() {
 
       if (error) throw error;
       
-      toast({
-        title: "Success",
-        description: "Check your email for a confirmation link",
-      });
-      
-      // For demo purposes, we'll automatically sign in the user
-      await handleSignIn(e);
+      setSuccessMessage("Account created successfully! You can now sign in.");
+      setView("sign-in");
       
     } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Error signing up",
-        description: error.message,
-      });
+      if (error.message.includes("User already registered")) {
+        setError("This email is already registered. Please sign in instead.");
+      } else {
+        setError(error.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -58,13 +72,10 @@ export default function Auth() {
 
   async function handleSignIn(e: React.FormEvent) {
     e.preventDefault();
+    setError(null);
     
     if (!email || !password) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Please enter both email and password",
-      });
+      setError("Please enter both email and password");
       return;
     }
     
@@ -77,15 +88,20 @@ export default function Auth() {
 
       if (error) throw error;
       
-      // Redirect to app on successful login
+      // Show success message and redirect to app
+      toast({
+        title: "Welcome back!",
+        description: "You've successfully signed in.",
+      });
+      
       navigate("/app");
       
     } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Error signing in",
-        description: error.message,
-      });
+      if (error.message.includes("Invalid login credentials")) {
+        setError("Incorrect email or password. Please try again.");
+      } else {
+        setError(error.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -104,11 +120,7 @@ export default function Auth() {
       if (error) throw error;
       
     } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Error signing in with Google",
-        description: error.message,
-      });
+      setError(error.message);
     } finally {
       setLoading(false);
     }
@@ -119,61 +131,138 @@ export default function Auth() {
       <WavyBackground />
       <Card className="w-full max-w-md p-8 bg-white/80 backdrop-blur-xl shadow-xl border-primary/20">
         <div className="mb-8 text-center">
-          <h1 className="text-2xl font-bold mb-2">
-            {view === "sign-in" ? "Welcome Back" : "Create Your Account"}
+          <div className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
+            <Sparkles className="w-3.5 h-3.5 mr-1.5" />
+            <span>Personalized Healing</span>
+          </div>
+          
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-[#543ab7] to-[#00acc1] text-transparent bg-clip-text mb-2">
+            Welcome to Hearth
           </h1>
           <p className="text-gray-600">
-            {view === "sign-in" 
-              ? "Sign in to continue your healing journey" 
-              : "Start your transformation with personalized affirmations"}
+            Your journey to better self-talk begins here
           </p>
         </div>
         
-        <form onSubmit={view === "sign-in" ? handleSignIn : handleSignUp}>
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email Address
-              </label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@email.com"
-                required
-              />
-            </div>
-            
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                Password
-              </label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                required
-              />
-            </div>
-            
-            <Button 
-              type="submit" 
-              className="w-full bg-gradient-to-r from-[#9b87f5] to-[#543ab7] text-white"
-              disabled={loading}
-            >
-              {loading 
-                ? "Processing..." 
-                : view === "sign-in" 
-                  ? "Sign In" 
-                  : "Sign Up"}
-            </Button>
-          </div>
-        </form>
+        {error && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
         
-        <div className="mt-4">
+        {successMessage && (
+          <Alert className="mb-6 bg-green-50 border-green-200 text-green-800">
+            <AlertDescription>{successMessage}</AlertDescription>
+          </Alert>
+        )}
+        
+        <Tabs defaultValue={view} onValueChange={(v) => setView(v as "sign-in" | "sign-up")}>
+          <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsTrigger value="sign-in">Sign In</TabsTrigger>
+            <TabsTrigger value="sign-up">Create Account</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="sign-in">
+            <form onSubmit={handleSignIn}>
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <label htmlFor="email-signin" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+                    <Mail className="h-4 w-4 mr-1.5 text-gray-500" />
+                    Email Address
+                  </label>
+                  <Input
+                    id="email-signin"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="your@email.com"
+                    className="w-full"
+                    required
+                  />
+                </div>
+                
+                <div className="space-y-1">
+                  <label htmlFor="password-signin" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+                    <Lock className="h-4 w-4 mr-1.5 text-gray-500" />
+                    Password
+                  </label>
+                  <Input
+                    id="password-signin"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full"
+                    required
+                  />
+                </div>
+                
+                <Button 
+                  type="submit" 
+                  className="w-full bg-gradient-to-r from-[#9b87f5] to-[#543ab7] text-white transition-all hover:opacity-90"
+                  disabled={loading}
+                >
+                  {loading 
+                    ? "Signing in..." 
+                    : "Sign In"}
+                </Button>
+              </div>
+            </form>
+          </TabsContent>
+          
+          <TabsContent value="sign-up">
+            <form onSubmit={handleSignUp}>
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <label htmlFor="email-signup" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+                    <Mail className="h-4 w-4 mr-1.5 text-gray-500" />
+                    Email Address
+                  </label>
+                  <Input
+                    id="email-signup"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="your@email.com"
+                    className="w-full"
+                    required
+                  />
+                </div>
+                
+                <div className="space-y-1">
+                  <label htmlFor="password-signup" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+                    <Lock className="h-4 w-4 mr-1.5 text-gray-500" />
+                    Password
+                  </label>
+                  <Input
+                    id="password-signup"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full"
+                    required
+                    minLength={6}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Password must be at least 6 characters</p>
+                </div>
+                
+                <Button 
+                  type="submit" 
+                  className="w-full bg-gradient-to-r from-[#9b87f5] to-[#543ab7] text-white transition-all hover:opacity-90"
+                  disabled={loading}
+                >
+                  {loading 
+                    ? "Creating account..." 
+                    : "Create Account"}
+                </Button>
+              </div>
+            </form>
+          </TabsContent>
+        </Tabs>
+        
+        <div className="mt-6">
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-300"></div>
@@ -210,24 +299,17 @@ export default function Auth() {
                 />
                 <path d="M1 1h22v22H1z" fill="none" />
               </svg>
-              Sign in with Google
+              Continue with Google
             </Button>
           </div>
         </div>
         
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
-            {view === "sign-in" 
-              ? "Don't have an account?" 
-              : "Already have an account?"}
-            {" "}
-            <button
-              type="button"
-              className="text-primary font-medium"
-              onClick={() => setView(view === "sign-in" ? "sign-up" : "sign-in")}
-            >
-              {view === "sign-in" ? "Sign Up" : "Sign In"}
-            </button>
+        <div className="mt-6 pt-4 border-t border-gray-200">
+          <p className="text-sm text-gray-600 text-center">
+            By signing up, you agree to our 
+            <a href="#" className="text-primary font-medium mx-1">Terms of Service</a>
+            and
+            <a href="#" className="text-primary font-medium ml-1">Privacy Policy</a>
           </p>
         </div>
       </Card>

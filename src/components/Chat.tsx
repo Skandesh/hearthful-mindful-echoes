@@ -1,4 +1,3 @@
-
 import { useRef, useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { generateAIResponse } from "./chat/ChatService";
@@ -23,7 +22,12 @@ export default function Chat() {
 
   // Custom hooks for functionality
   const { isPlaying, playAudio, stopAudio } = useAudio();
-  const { affirmationSession, startAffirmationSession, handleAffirmationComplete } = useAffirmations();
+  const { 
+    affirmationSession,
+    startAffirmationSession,
+    handleAffirmationComplete,
+    toggleFullscreen
+  } = useAffirmations();
   const { 
     userAffirmations, 
     favoriteAffirmations, 
@@ -153,6 +157,10 @@ export default function Chat() {
     return Promise.resolve();
   };
 
+  const handleToggleFullscreen = () => {
+    toggleFullscreen();
+  };
+
   return (
     <ChatContainer
       user={user}
@@ -184,6 +192,7 @@ export default function Chat() {
       onToggleFavorite={handleToggleFavorite}
       onShowHistory={() => setShowHistory(true)}
       onCloseHistory={() => setShowHistory(false)}
+      onToggleFullscreen={handleToggleFullscreen}
     />
   );
 }

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AffirmationSession, Message } from "./types";
@@ -8,7 +7,8 @@ export function useAffirmations() {
     isActive: false,
     currentAffirmation: "",
     affirmations: [],
-    index: 0
+    index: 0,
+    isFullscreen: false
   });
 
   const startAffirmationSession = async (mood: string) => {
@@ -17,9 +17,17 @@ export function useAffirmations() {
       isActive: true,
       currentAffirmation: affirmations[0],
       affirmations,
-      index: 0
+      index: 0,
+      isFullscreen: false
     });
     return affirmations[0];
+  };
+
+  const toggleFullscreen = () => {
+    setAffirmationSession(prev => ({
+      ...prev,
+      isFullscreen: !prev.isFullscreen
+    }));
   };
 
   const generateAffirmations = async (mood: string) => {
@@ -63,7 +71,8 @@ export function useAffirmations() {
         isActive: false,
         currentAffirmation: "",
         affirmations: [],
-        index: 0
+        index: 0,
+        isFullscreen: false
       });
       return completeMessage;
     }
@@ -90,6 +99,7 @@ export function useAffirmations() {
   return {
     affirmationSession,
     startAffirmationSession,
-    handleAffirmationComplete
+    handleAffirmationComplete,
+    toggleFullscreen
   };
 }

@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { History } from "lucide-react";
@@ -42,6 +41,7 @@ interface ChatContainerProps {
   onToggleFavorite: (id: string) => Promise<void>;
   onShowHistory: () => void;
   onCloseHistory: () => void;
+  onToggleFullscreen: () => void;
 }
 
 export function ChatContainer({
@@ -74,6 +74,7 @@ export function ChatContainer({
   onToggleFavorite,
   onShowHistory,
   onCloseHistory,
+  onToggleFullscreen,
 }: ChatContainerProps) {
   return (
     <div className="max-w-2xl mx-auto p-4 min-h-[calc(100vh-4rem)]">
@@ -110,6 +111,7 @@ export function ChatContainer({
               onStopAudio={onStopAudio}
               onStartRecording={onStartRecording}
               onStopRecording={onStopRecording}
+              onToggleFullscreen={onToggleFullscreen}
             />
           ) : (
             <HomeScreen 

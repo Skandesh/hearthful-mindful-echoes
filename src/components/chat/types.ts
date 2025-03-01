@@ -1,3 +1,4 @@
+
 export interface Message {
   type: 'user' | 'ai';
   content: string;
@@ -19,4 +20,14 @@ export interface AffirmationSession {
   affirmations: string[];
   index: number;
   isFullscreen?: boolean;
+}
+
+export interface UserPlan {
+  id: string;
+  user_id: string;
+  plan_type: 'free' | 'pro' | 'premium';
+  affirmations_limit: number;
+  affirmations_used: number;
+  created_at: string;
+  updated_at: string;
 }

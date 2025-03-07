@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { Speaker, SpeakerOff } from "lucide-react";
+import { Speaker } from "lucide-react";
 import { Message } from "./types";
 
 interface MessageListProps {
@@ -42,7 +42,7 @@ export function MessageList({
                 className={`h-7 w-7 text-[#543ab7] hover:bg-[#543ab7]/10 rounded-full ${isPlaying ? 'bg-[#543ab7]/10' : ''}`}
                 onClick={() => isPlaying ? onStopAudio() : onPlayAudio(msg)}
               >
-                {isPlaying ? <SpeakerOff className="h-4 w-4" /> : <Speaker className="h-4 w-4" />}
+                <Speaker className={`h-4 w-4 ${isPlaying ? 'animate-pulse' : ''}`} />
               </Button>
             )}
           </div>

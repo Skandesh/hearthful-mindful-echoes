@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AlertCircle, Info, Mail, Lock } from "lucide-react";
+import { AlertCircle, HelpCircle, Mail, KeyRound } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SignInForm } from "./SignInForm";
@@ -132,14 +132,14 @@ export const AuthForm = () => {
   }
 
   return (
-    <div className="w-full max-w-md p-8 bg-white/80 backdrop-blur-xl shadow-xl border-primary/20">
-      <div className="mb-8 text-center">
-        <div className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
-          <Sparkles className="w-3.5 h-3.5 mr-1.5" />
+    <div className="w-full max-w-md p-10 bg-white/80 backdrop-blur-xl shadow-xl border-primary/20">
+      <div className="mb-10 text-center">
+        <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-5">
+          <Sparkles className="w-4 h-4 mr-2" />
           <span>Personalized Healing</span>
         </div>
         
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-[#543ab7] to-[#00acc1] text-transparent bg-clip-text mb-2">
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-[#543ab7] to-[#00acc1] text-transparent bg-clip-text mb-3">
           Welcome to Hearth
         </h1>
         <p className="text-gray-600">
@@ -148,20 +148,20 @@ export const AuthForm = () => {
       </div>
       
       {error && (
-        <Alert variant="destructive" className="mb-6">
+        <Alert variant="destructive" className="mb-7">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
       
       {successMessage && (
-        <Alert className="mb-6 bg-green-50 border-green-200 text-green-800">
+        <Alert className="mb-7 bg-green-50 border-green-200 text-green-800">
           <AlertDescription>{successMessage}</AlertDescription>
         </Alert>
       )}
       
       <Tabs defaultValue={view} onValueChange={(v) => setView(v as "sign-in" | "sign-up")}>
-        <TabsList className="grid w-full grid-cols-2 mb-6">
+        <TabsList className="grid w-full grid-cols-2 mb-7">
           <TabsTrigger value="sign-in">Sign In</TabsTrigger>
           <TabsTrigger value="sign-up">Create Account</TabsTrigger>
         </TabsList>
@@ -189,25 +189,25 @@ export const AuthForm = () => {
         </TabsContent>
       </Tabs>
       
-      <div className="mt-6">
+      <div className="mt-7">
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-gray-300"></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white/80 text-gray-500">Or continue with</span>
+            <span className="px-3 bg-white/80 text-gray-500">Or continue with</span>
           </div>
         </div>
         
         <SocialAuth loading={loading} handleSignInWithGoogle={handleSignInWithGoogle} />
       </div>
       
-      <div className="mt-6 pt-4 border-t border-gray-200">
+      <div className="mt-7 pt-5 border-t border-gray-200">
         <p className="text-sm text-gray-600 text-center">
           By signing up, you agree to our 
-          <a href="#" className="text-primary font-medium mx-1">Terms of Service</a>
+          <a href="#" className="text-primary font-medium mx-1.5">Terms of Service</a>
           and
-          <a href="#" className="text-primary font-medium ml-1">Privacy Policy</a>
+          <a href="#" className="text-primary font-medium ml-1.5">Privacy Policy</a>
         </p>
       </div>
     </div>

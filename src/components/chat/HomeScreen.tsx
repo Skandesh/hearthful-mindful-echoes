@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Mic, Sparkles, Music, Crown } from "lucide-react";
+import { ArrowLeftCircle, ArrowRightCircle, Mic, Lightbulb, Music2, Crown } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -59,23 +59,23 @@ export function HomeScreen({
   onCreateAffirmations,
 }: HomeScreenProps) {
   return (
-    <div className="flex flex-col space-y-8">
-      <div className="text-center space-y-3">
-        <div className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-2">
-          <Sparkles className="w-3.5 h-3.5 mr-1.5" />
+    <div className="flex flex-col space-y-10">
+      <div className="text-center space-y-4">
+        <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-3">
+          <Lightbulb className="w-4 h-4 mr-2" />
           <span>AI-Powered Affirmations</span>
         </div>
         <h1 className="text-4xl font-bold bg-gradient-to-r from-primary via-[#543ab7] to-[#00acc1] text-transparent bg-clip-text leading-tight">
           Transform Your Self-Talk,<br />
           Unlock Your Potential
         </h1>
-        <p className="text-lg text-[#9b87f5] max-w-md mx-auto">
+        <p className="text-lg text-[#9b87f5] max-w-md mx-auto mt-2">
           Personalized affirmations to boost confidence, reduce stress, and improve focus
         </p>
       </div>
 
       <div className="relative group">
-        <div className="text-center mb-2">
+        <div className="text-center mb-3">
           <p className="text-base text-[#9b87f5] font-medium">How are you feeling today?</p>
         </div>
         <div className="relative">
@@ -84,11 +84,11 @@ export function HomeScreen({
             value={message}
             onChange={(e) => onMessageChange(e.target.value)}
             placeholder="Share your thoughts or feelings..."
-            className="w-full p-4 pr-14 rounded-full border border-[#9b87f5]/20 bg-white/90 focus:outline-none focus:ring-2 focus:ring-[#9b87f5]/50 shadow-sm transition-all duration-300 group-hover:shadow-md"
+            className="w-full p-5 pr-14 rounded-full border border-[#9b87f5]/20 bg-white/90 focus:outline-none focus:ring-2 focus:ring-[#9b87f5]/50 shadow-sm transition-all duration-300 group-hover:shadow-md"
           />
           <Button
             onClick={isRecording ? onStopRecording : onStartRecording}
-            className={`absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full w-10 h-10 p-0 transition-all duration-300 ${
+            className={`absolute right-3 top-1/2 transform -translate-y-1/2 rounded-full w-11 h-11 p-0 transition-all duration-300 ${
               isRecording 
                 ? "bg-red-500 hover:bg-red-600" 
                 : "bg-[#9b87f5] hover:bg-[#8a75e8]"
@@ -97,56 +97,56 @@ export function HomeScreen({
             <Mic className={`w-5 h-5 text-white ${isRecording ? "animate-pulse" : ""}`} />
           </Button>
         </div>
-        <p className="mt-2 text-xs text-center text-gray-500">Type or use your voice to tell us how you're feeling</p>
+        <p className="mt-3 text-xs text-center text-gray-500">Type or use your voice to tell us how you're feeling</p>
       </div>
 
-      <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 shadow-sm border border-[#9b87f5]/10">
-        <div className="flex justify-between items-center mb-3">
+      <div className="bg-white/50 backdrop-blur-sm rounded-xl p-5 shadow-sm border border-[#9b87f5]/10">
+        <div className="flex justify-between items-center mb-4">
           <h3 className="text-base font-medium text-primary-foreground">Common Situations</h3>
-          <div className="flex gap-1">
-            <Button variant="ghost" size="icon" className="h-7 w-7 text-[#9b87f5]">
-              <ChevronLeft className="w-4 h-4" />
+          <div className="flex gap-2">
+            <Button variant="ghost" size="icon" className="h-8 w-8 text-[#9b87f5]">
+              <ArrowLeftCircle className="w-5 h-5" />
             </Button>
-            <Button variant="ghost" size="icon" className="h-7 w-7 text-[#9b87f5]">
-              <ChevronRight className="w-4 h-4" />
+            <Button variant="ghost" size="icon" className="h-8 w-8 text-[#9b87f5]">
+              <ArrowRightCircle className="w-5 h-5" />
             </Button>
           </div>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-3">
           <Button
             variant="outline"
             onClick={() => onSuggestedPrompt("I want to feel more confident today")}
-            className="rounded-full border-[#9b87f5] text-[#9b87f5] hover:bg-[#9b87f5]/5 text-sm py-1 h-auto"
+            className="rounded-full border-[#9b87f5] text-[#9b87f5] hover:bg-[#9b87f5]/5 text-sm py-1.5 h-auto"
           >
             Boost confidence
           </Button>
           <Button
             variant="outline"
             onClick={() => onSuggestedPrompt("I'm feeling anxious about work")}
-            className="rounded-full border-[#9b87f5] text-[#9b87f5] hover:bg-[#9b87f5]/5 text-sm py-1 h-auto"
+            className="rounded-full border-[#9b87f5] text-[#9b87f5] hover:bg-[#9b87f5]/5 text-sm py-1.5 h-auto"
           >
             Reduce work anxiety
           </Button>
           <Button
             variant="outline"
             onClick={() => onSuggestedPrompt("I need to focus better")}
-            className="rounded-full border-[#9b87f5] text-[#9b87f5] hover:bg-[#9b87f5]/5 text-sm py-1 h-auto"
+            className="rounded-full border-[#9b87f5] text-[#9b87f5] hover:bg-[#9b87f5]/5 text-sm py-1.5 h-auto"
           >
             Improve focus
           </Button>
           <Button
             variant="outline"
             onClick={() => onSuggestedPrompt("I want to feel more positive about myself")}
-            className="rounded-full border-[#9b87f5] text-[#9b87f5] hover:bg-[#9b87f5]/5 text-sm py-1 h-auto"
+            className="rounded-full border-[#9b87f5] text-[#9b87f5] hover:bg-[#9b87f5]/5 text-sm py-1.5 h-auto"
           >
             Self-love
           </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 shadow-sm border border-[#9b87f5]/10">
-          <h3 className="text-base font-medium text-primary-foreground mb-3">Session Duration</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="bg-white/50 backdrop-blur-sm rounded-xl p-5 shadow-sm border border-[#9b87f5]/10">
+          <h3 className="text-base font-medium text-primary-foreground mb-4">Session Duration</h3>
           <Select value={duration} onValueChange={onDurationChange}>
             <SelectTrigger className="w-full rounded-lg border border-[#9b87f5]/20">
               <SelectValue placeholder="Select duration" />
@@ -159,8 +159,8 @@ export function HomeScreen({
             </SelectContent>
           </Select>
         </div>
-        <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 shadow-sm border border-[#9b87f5]/10">
-          <h3 className="text-base font-medium text-primary-foreground mb-3">Language</h3>
+        <div className="bg-white/50 backdrop-blur-sm rounded-xl p-5 shadow-sm border border-[#9b87f5]/10">
+          <h3 className="text-base font-medium text-primary-foreground mb-4">Language</h3>
           <Select value={language} onValueChange={onLanguageChange}>
             <SelectTrigger className="w-full rounded-lg border border-[#9b87f5]/20">
               <SelectValue placeholder="Select language" />
@@ -179,9 +179,9 @@ export function HomeScreen({
       </div>
 
       {/* Enhanced Voice Selection and Background Music UI */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 shadow-sm border border-[#9b87f5]/10">
-          <h3 className="text-base font-medium text-primary-foreground mb-3">Voice Selection</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="bg-white/50 backdrop-blur-sm rounded-xl p-5 shadow-sm border border-[#9b87f5]/10">
+          <h3 className="text-base font-medium text-primary-foreground mb-4">Voice Selection</h3>
           <Select value={selectedVoice} onValueChange={onVoiceChange}>
             <SelectTrigger className="w-full rounded-lg border border-[#9b87f5]/20">
               <SelectValue placeholder="Select voice" />
@@ -210,18 +210,18 @@ export function HomeScreen({
               ))}
             </SelectContent>
           </Select>
-          <p className="mt-2 text-xs text-gray-500">
+          <p className="mt-3 text-xs text-gray-500">
             Choose the voice that will narrate your affirmations
             {voiceOptions.some(v => v.premium) && (
-              <span className="flex items-center mt-1">
-                <Crown className="h-3 w-3 text-amber-500 mr-1 inline-block" />
+              <span className="flex items-center mt-1.5">
+                <Crown className="h-3 w-3 text-amber-500 mr-1.5 inline-block" />
                 <span>Premium voices available with Pro & Premium plans</span>
               </span>
             )}
           </p>
         </div>
-        <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 shadow-sm border border-[#9b87f5]/10">
-          <div className="flex items-center justify-between mb-3">
+        <div className="bg-white/50 backdrop-blur-sm rounded-xl p-5 shadow-sm border border-[#9b87f5]/10">
+          <div className="flex items-center justify-between mb-4">
             <h3 className="text-base font-medium text-primary-foreground">Soothing Background</h3>
             <TooltipProvider>
               <Tooltip>
@@ -237,8 +237,8 @@ export function HomeScreen({
             </TooltipProvider>
           </div>
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Music className="w-4 h-4 text-[#9b87f5]" />
+            <div className="flex items-center space-x-3">
+              <Music2 className="w-5 h-5 text-[#9b87f5]" />
               <Label htmlFor="background-music" className="text-sm text-gray-600">
                 Enable calming background music
               </Label>
@@ -250,7 +250,7 @@ export function HomeScreen({
               className="data-[state=checked]:bg-[#9b87f5]"
             />
           </div>
-          <p className="mt-2 text-xs text-gray-500">
+          <p className="mt-3 text-xs text-gray-500">
             Gentle ambient sounds will play during your affirmation session
           </p>
         </div>
@@ -259,11 +259,11 @@ export function HomeScreen({
       <Button 
         onClick={onCreateAffirmations}
         disabled={loading}
-        className="w-full py-6 bg-gradient-to-r from-[#9b87f5] to-[#7E69AB] hover:from-[#8a75e8] hover:to-[#6d5999] text-white text-xl font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
+        className="w-full py-7 bg-gradient-to-r from-[#9b87f5] to-[#7E69AB] hover:from-[#8a75e8] hover:to-[#6d5999] text-white text-xl font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
       >
         {loading ? (
           <div className="flex items-center">
-            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin mr-3"></div>
             Creating...
           </div>
         ) : (

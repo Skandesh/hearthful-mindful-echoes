@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, Info, Maximize, Minimize } from "lucide-react";
+import { ArrowLeft, HelpCircle, Maximize, Minimize } from "lucide-react";
 import { Message } from "./types";
 import { MessageList } from "./MessageList";
 import { MessageInput } from "./MessageInput";
@@ -99,11 +99,11 @@ export function ChatSession({
       </AlertDialog>
 
       {affirmationSession.isActive && (
-        <div className={`mb-4 p-3 ${isFullscreenMode ? 'hidden' : 'bg-gradient-to-r from-primary/20 to-[#543ab7]/20 rounded-lg backdrop-blur-sm border border-primary/10 shadow-sm'}`}>
+        <div className={`mb-6 p-4 ${isFullscreenMode ? 'hidden' : 'bg-gradient-to-r from-primary/20 to-[#543ab7]/20 rounded-lg backdrop-blur-sm border border-primary/10 shadow-sm'}`}>
           <div className="flex items-center justify-between">
             <p className="text-sm font-medium text-primary-foreground">
               Affirmation Session in Progress
-              <span className="inline-flex items-center justify-center ml-2 px-2 py-0.5 rounded-full bg-primary/20 text-xs">
+              <span className="inline-flex items-center justify-center ml-3 px-2.5 py-1 rounded-full bg-primary/20 text-xs">
                 {affirmationSession.index + 1}/{affirmationSession.affirmations.length}
               </span>
             </p>
@@ -111,14 +111,14 @@ export function ChatSession({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0 rounded-full">
-                    <Info className="h-3.5 w-3.5 text-primary-foreground/70" />
+                  <Button variant="ghost" size="sm" className="h-7 w-7 p-0 rounded-full">
+                    <HelpCircle className="h-4 w-4 text-primary-foreground/70" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-xs p-4">
-                  <div className="space-y-2 text-sm">
+                  <div className="space-y-3 text-sm">
                     <p className="font-medium">How to complete the session:</p>
-                    <ol className="list-decimal pl-4 space-y-1">
+                    <ol className="list-decimal pl-5 space-y-1.5">
                       <li>Type or say the affirmation <strong>exactly</strong> as shown</li>
                       <li>Press submit to confirm and move to the next affirmation</li>
                       <li>Complete all {affirmationSession.affirmations.length} affirmations to finish</li>
@@ -131,21 +131,21 @@ export function ChatSession({
           </div>
           
           {/* Clear instructions for what to do */}
-          <div className="mt-2 p-2 bg-white/20 rounded text-xs">
+          <div className="mt-3 p-3 bg-white/20 rounded text-xs">
             <p><strong>Your task:</strong> Type or speak the displayed affirmation exactly as shown, then submit it.</p>
           </div>
         </div>
       )}
       
       {!isFullscreenMode && (
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-8">
           <Button 
             variant="outline" 
             onClick={handleBackButton}
             className="text-[#9b87f5] border-[#9b87f5]/20 hover:bg-[#9b87f5]/5"
             size="sm"
           >
-            <ChevronLeft className="w-4 h-4 mr-1" /> Back
+            <ArrowLeft className="w-4 h-4 mr-2" /> Back
           </Button>
           <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-[#543ab7] text-transparent bg-clip-text">
             {affirmationSession.isActive 
@@ -167,7 +167,7 @@ export function ChatSession({
             <Button 
               variant="ghost" 
               size="sm" 
-              className="absolute top-2 right-2 h-8 w-8 p-0 rounded-full bg-white/30 hover:bg-white/50"
+              className="absolute top-3 right-3 h-8 w-8 p-0 rounded-full bg-white/30 hover:bg-white/50"
               onClick={onToggleFullscreen}
             >
               {affirmationSession.isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
@@ -178,7 +178,7 @@ export function ChatSession({
       
       {/* Only show chat history if not in fullscreen mode and if not in affirmation mode or if we have a special message to show */}
       {!isFullscreenMode && (!affirmationSession.isActive || recentMessages.length > 0) && (
-        <div className={`bg-white/50 backdrop-blur-sm rounded-xl p-4 shadow-sm border border-[#9b87f5]/10 mb-6 ${affirmationSession.isActive ? 'max-h-32 overflow-y-auto opacity-60' : ''}`}>
+        <div className={`bg-white/50 backdrop-blur-sm rounded-xl p-5 shadow-sm border border-[#9b87f5]/10 mb-8 ${affirmationSession.isActive ? 'max-h-32 overflow-y-auto opacity-60' : ''}`}>
           <MessageList
             messages={recentMessages}
             isPlaying={isPlaying}

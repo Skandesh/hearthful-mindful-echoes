@@ -1,5 +1,5 @@
 
-import { Check, Medal, X, Music, Mic } from "lucide-react";
+import { Check, Award, X, Music2, Mic2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -53,9 +53,9 @@ const pricingPlans = [
 
 export const Pricing = () => {
   return (
-    <section id="pricing" className="container-custom py-24 bg-gradient-to-b from-[#F2FCE2] to-[#F1F0FB]">
-      <div className="text-center mb-16">
-        <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4">
+    <section id="pricing" className="container-custom py-28 bg-gradient-to-b from-[#F2FCE2] to-[#F1F0FB]">
+      <div className="text-center mb-18">
+        <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-5">
           Choose Your Healing Journey
         </h2>
         <p className="text-lg text-muted-foreground">
@@ -71,42 +71,42 @@ export const Pricing = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
-            className={`glass-card p-6 rounded-xl shadow-lg relative ${
+            className={`glass-card p-8 rounded-xl shadow-lg relative ${
               plan.popular ? "border-primary/30 ring-1 ring-primary/30 transform scale-105" : "border border-gray-100"
             }`}
           >
             {plan.popular && (
-              <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-[#9b87f5] to-[#7E69AB] border-0 px-4 py-1 text-white font-medium">
-                <Medal className="w-4 h-4 mr-1" />
+              <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-[#9b87f5] to-[#7E69AB] border-0 px-4 py-1.5 text-white font-medium">
+                <Award className="w-4 h-4 mr-1.5" />
                 Most Popular
               </Badge>
             )}
             
-            <div className="text-xl font-semibold text-primary-foreground mb-2 mt-4">
+            <div className="text-xl font-semibold text-primary-foreground mb-3 mt-5">
               {plan.name}
             </div>
             
-            <div className="flex items-baseline gap-1 mb-4">
+            <div className="flex items-baseline gap-2 mb-5">
               <span className="text-4xl font-bold text-primary-foreground">
                 ${plan.price}
               </span>
               <span className="text-muted-foreground">/month</span>
             </div>
             
-            <p className="text-muted-foreground mb-6">{plan.description}</p>
+            <p className="text-muted-foreground mb-7">{plan.description}</p>
             
-            <ul className="space-y-3 mb-8">
+            <ul className="space-y-4 mb-10">
               {plan.features.map((feature) => (
-                <li key={feature.text} className={`flex items-center gap-2 text-sm ${feature.available ? '' : 'text-gray-400'}`}>
+                <li key={feature.text} className={`flex items-center gap-3 text-sm ${feature.available ? '' : 'text-gray-400'}`}>
                   {feature.available ? (
-                    <Check className={`w-4 h-4 ${feature.highlight ? 'text-green-500' : 'text-primary'}`} />
+                    <Check className={`w-5 h-5 ${feature.highlight ? 'text-green-500' : 'text-primary'}`} />
                   ) : (
-                    <X className="w-4 h-4 text-gray-400" />
+                    <X className="w-5 h-5 text-gray-400" />
                   )}
                   <span className={feature.highlight ? 'font-medium' : ''}>
                     {feature.text}
-                    {feature.text.includes("AI voice") && <Mic className="w-3 h-3 inline ml-1" />}
-                    {feature.text.includes("Background music") && <Music className="w-3 h-3 inline ml-1" />}
+                    {feature.text.includes("AI voice") && <Mic2 className="w-3.5 h-3.5 inline ml-1.5" />}
+                    {feature.text.includes("Background music") && <Music2 className="w-3.5 h-3.5 inline ml-1.5" />}
                   </span>
                 </li>
               ))}
@@ -114,7 +114,7 @@ export const Pricing = () => {
             
             <Button
               asChild
-              className={`w-full transition-all ${
+              className={`w-full transition-all py-6 ${
                 plan.popular
                   ? "bg-gradient-to-r from-[#9b87f5] to-[#7E69AB] text-white hover:opacity-90"
                   : "border border-primary/20 hover:bg-primary/5"
@@ -132,11 +132,11 @@ export const Pricing = () => {
         ))}
       </div>
       
-      <div className="mt-20 max-w-2xl mx-auto text-center">
-        <h3 className="text-2xl font-bold text-primary-foreground mb-4">
+      <div className="mt-22 max-w-2xl mx-auto text-center">
+        <h3 className="text-2xl font-bold text-primary-foreground mb-5">
           Questions? We're Here to Help
         </h3>
-        <p className="text-muted-foreground mb-6">
+        <p className="text-muted-foreground mb-7">
           Contact our support team for any questions about our plans, features, or how Hearth can help you transform your daily affirmation practice.
         </p>
         <Button variant="outline" className="border-primary/20 hover:bg-primary/5">

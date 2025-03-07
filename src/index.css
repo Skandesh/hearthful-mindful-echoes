@@ -24,6 +24,11 @@
   body {
     @apply bg-warm-light text-foreground font-['Inter'];
     font-feature-settings: "ss01" 1, "ss02" 1, "cv01" 1;
+    letter-spacing: -0.01em;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply tracking-tight;
   }
 
   .glass-card {
@@ -31,7 +36,7 @@
   }
 
   .container-custom {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    @apply max-w-7xl mx-auto px-6 sm:px-8 lg:px-10;
   }
 
   .feature-icon {
@@ -87,5 +92,20 @@
   .animate-gradient {
     background-size: 200% auto;
     animation: gradient 4s linear infinite;
+  }
+  
+  /* Enhance spacing for form elements */
+  input, select, textarea {
+    @apply py-2.5;
+  }
+  
+  /* Better button hover effects */
+  .btn, button {
+    @apply transition-all duration-300;
+  }
+  
+  /* Improved card styling */
+  .card {
+    @apply rounded-xl overflow-hidden;
   }
 }

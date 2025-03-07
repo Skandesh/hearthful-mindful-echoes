@@ -2,7 +2,7 @@
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Mail, Lock } from "lucide-react";
+import { AtSign, KeyRound } from "lucide-react";
 
 interface SignInFormProps {
   email: string;
@@ -23,10 +23,10 @@ export const SignInForm: React.FC<SignInFormProps> = ({
 }) => {
   return (
     <form onSubmit={handleSignIn}>
-      <div className="space-y-4">
-        <div className="space-y-1">
-          <label htmlFor="email-signin" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-            <Mail className="h-4 w-4 mr-1.5 text-gray-500" />
+      <div className="space-y-5">
+        <div className="space-y-2">
+          <label htmlFor="email-signin" className="block text-sm font-medium text-gray-700 mb-1.5 flex items-center">
+            <AtSign className="h-4 w-4 mr-2 text-gray-500" />
             Email Address
           </label>
           <Input
@@ -40,9 +40,9 @@ export const SignInForm: React.FC<SignInFormProps> = ({
           />
         </div>
         
-        <div className="space-y-1">
-          <label htmlFor="password-signin" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-            <Lock className="h-4 w-4 mr-1.5 text-gray-500" />
+        <div className="space-y-2">
+          <label htmlFor="password-signin" className="block text-sm font-medium text-gray-700 mb-1.5 flex items-center">
+            <KeyRound className="h-4 w-4 mr-2 text-gray-500" />
             Password
           </label>
           <Input
@@ -58,7 +58,7 @@ export const SignInForm: React.FC<SignInFormProps> = ({
         
         <Button 
           type="submit" 
-          className="w-full bg-gradient-to-r from-[#9b87f5] to-[#543ab7] text-white transition-all hover:opacity-90"
+          className="w-full bg-gradient-to-r from-[#9b87f5] to-[#543ab7] text-white transition-all hover:opacity-90 mt-2"
           disabled={loading}
         >
           {loading 

@@ -1,7 +1,7 @@
 
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { History } from "lucide-react";
+import { ClipboardList, Moon } from "lucide-react";
 import { WavyBackground } from "./WavyBackground";
 import { ChatSession } from "./ChatSession";
 import { HomeScreen } from "./HomeScreen";
@@ -85,18 +85,18 @@ export function ChatContainer({
   onToggleFullscreen,
 }: ChatContainerProps) {
   return (
-    <div className="max-w-2xl mx-auto p-4 min-h-[calc(100vh-4rem)]">
+    <div className="max-w-2xl mx-auto p-6 min-h-[calc(100vh-5rem)]">
       <WavyBackground />
-      <Card className="p-8 w-full bg-white/70 backdrop-blur-xl shadow-xl border-primary/20">
+      <Card className="p-10 w-full bg-white/70 backdrop-blur-xl shadow-xl border-primary/20">
         {user && (
-          <div className="flex justify-end mb-4">
+          <div className="flex justify-end mb-6">
             <Button
               variant="ghost"
               size="sm"
-              className="flex items-center gap-1 text-sm text-primary"
+              className="flex items-center gap-2 text-sm text-primary"
               onClick={onShowHistory}
             >
-              <History className="w-4 h-4" />
+              <ClipboardList className="w-4 h-4" />
               <span>History</span>
             </Button>
           </div>

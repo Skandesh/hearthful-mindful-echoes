@@ -1,4 +1,4 @@
-<lov-codelov-code>
+
 import { useRef, useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { generateAIResponse } from "./chat/ChatService";
@@ -11,6 +11,7 @@ import { useChatMessages } from "./chat/useChatMessages";
 import { useVoiceInput } from "./chat/useVoiceInput";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import { useConfirmationDialog } from "./chat/useConfirmationDialog";
 
 export default function Chat() {
   const [language, setLanguage] = useState("English");
@@ -36,7 +37,7 @@ export default function Chat() {
     { id: "pFZP5JQG7iQjIQuC4Bku", name: "Lily (Female)", premium: true, description: "Premium female voice" }
   ];
 
-  // Custom hooks for functionality
+  // Custom hooks
   const { isPlaying, playAudio, stopAudio, playBackgroundMusic, stopBackgroundMusic, checkPremiumFeature } = useAudio();
   const { 
     affirmationSession,
@@ -55,7 +56,7 @@ export default function Chat() {
     fetchUserAffirmations
   } = useUserAffirmations();
 
-  // Message handling
+  // Message handling with our custom hook
   const {
     message,
     setMessage,
@@ -74,6 +75,9 @@ export default function Chat() {
     setMessage, 
     "en-US" // Explicitly set English as the recognition language
   );
+
+  // Confirmation dialog
+  const { showConfirmation, confirmAction, cancelAction } = useConfirmationDialog();
 
   // Check authentication status
   useEffect(() => {
@@ -115,7 +119,7 @@ export default function Chat() {
     };
   }, [navigate]);
 
-  // Check if user has premium access to features
+  // Helper functions for premium features
   const isPremiumVoice = (voiceId: string): boolean => {
     const voice = voiceOptions.find(v => v.id === voiceId);
     return voice?.premium || false;
@@ -142,6 +146,7 @@ export default function Chat() {
     };
   };
 
+  // Auto-scroll to bottom of messages
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -181,6 +186,7 @@ export default function Chat() {
     }
   };
 
+  // Affirmation creation function
   const createAffirmations = async () => {
     setLoading(true);
     try {
@@ -235,6 +241,7 @@ export default function Chat() {
     }
   };
 
+  // Message submission handling
   const handleMessageSubmit = async (e: React.FormEvent) => {
     // Check authentication
     if (!isAuthenticated) {
@@ -283,10 +290,12 @@ export default function Chat() {
     return Promise.resolve();
   };
 
+  // Toggle fullscreen for affirmations
   const handleToggleFullscreen = () => {
     toggleFullscreen();
   };
   
+  // Play audio for messages
   const handlePlayAudio = (message: Message) => {
     const options: AudioOptions = {
       voiceId: selectedVoice,
@@ -298,6 +307,7 @@ export default function Chat() {
     playAudio(message, options, voiceFeature);
   };
 
+  // Voice selection handler
   const handleVoiceChange = (voiceId: string) => {
     // Check if this is a premium voice and user doesn't have premium access
     const voice = voiceOptions.find(v => v.id === voiceId);
@@ -320,6 +330,7 @@ export default function Chat() {
     });
   };
 
+  // Background music toggle handler
   const handleBackgroundMusicChange = (enabled: boolean) => {
     if (enabled) {
       // Check if user can access background music
@@ -342,8 +353,25 @@ export default function Chat() {
     }
   };
 
-  // Handle back button click - clear all session data
+  // Handle back button click with confirmation
   const handleBackClick = () => {
+    // If there's an active affirmation session, show confirmation dialog
+    if (affirmationSession.isActive) {
+      showConfirmation(
+        "End Session?", 
+        "Are you sure you want to end your current affirmation session? All progress will be lost.",
+        () => {
+          cleanupSession();
+        }
+      );
+    } else {
+      // No active session, just clean up
+      cleanupSession();
+    }
+  };
+
+  // Clean up all session data
+  const cleanupSession = () => {
     // Stop any playing audio
     stopAudio();
     stopBackgroundMusic();
@@ -417,4 +445,3 @@ export default function Chat() {
     />
   );
 }
-</lov-code>

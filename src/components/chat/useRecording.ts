@@ -7,7 +7,7 @@ export function useRecording(language: string = "en-US") {
   const [isRecording, setIsRecording] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  // Remove the SpeechRecognition reference since we're not using it
   const { toast } = useToast();
 
   const startRecording = async () => {

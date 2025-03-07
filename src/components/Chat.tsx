@@ -1,51 +1,24 @@
-
-import { useRef, useEffect, useState } from "react";
-import { useToast } from "@/hooks/use-toast";
+import { useRef, useState } from "react";
 import { generateAIResponse } from "./chat/ChatService";
-import { useAudio } from "./chat/useAudio";
-import { useAffirmations } from "./chat/useAffirmations";
-import { useUserAffirmations } from "./chat/useUserAffirmations";
-import { Message, VoiceOption, AudioOptions, PremiumFeature } from "./chat/types";
+import { Message, AudioOptions } from "./chat/types";
 import { ChatContainer } from "./chat/ChatContainer";
 import { useChatMessages } from "./chat/useChatMessages";
 import { useVoiceInput } from "./chat/useVoiceInput";
-import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
-import { useConfirmationDialog } from "./chat/useConfirmationDialog";
+import { useUserAffirmations } from "./chat/useUserAffirmations";
+import { useAuthState } from "./chat/useAuthState";
+import { useVoiceSelection } from "./chat/useVoiceSelection";
+import { useSessionManagement } from "./chat/useSessionManagement";
+import { usePremiumFeatures } from "./chat/usePremiumFeatures";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Chat() {
   const [language, setLanguage] = useState("English");
   const [duration, setDuration] = useState("5min");
-  const [showChat, setShowChat] = useState(false);
-  const [showHistory, setShowHistory] = useState(false);
-  const [user, setUser] = useState<any>(null);
-  const [selectedVoice, setSelectedVoice] = useState<string>("EXAVITQu4vr4xnSDxMaL"); // Default to Sarah
-  const [enableBackgroundMusic, setEnableBackgroundMusic] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [authLoading, setAuthLoading] = useState(true);
-  
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const { toast } = useToast();
-  const navigate = useNavigate();
-
-  // Available voice options with premium flags
-  const voiceOptions: VoiceOption[] = [
-    { id: "EXAVITQu4vr4xnSDxMaL", name: "Sarah (Female)", description: "Default voice" },
-    { id: "IKne3meq5aSn9XLyUdCD", name: "Charlie (Male)", description: "Friendly male voice" },
-    { id: "XB0fDUnXU5powFXDhCwa", name: "Charlotte (Female)", premium: true, description: "Premium female voice" },
-    { id: "TX3LPaxmHKxFdv7VOQHJ", name: "Liam (Male)", premium: true, description: "Premium male voice" },
-    { id: "pFZP5JQG7iQjIQuC4Bku", name: "Lily (Female)", premium: true, description: "Premium female voice" }
-  ];
-
+  
   // Custom hooks
-  const { isPlaying, playAudio, stopAudio, playBackgroundMusic, stopBackgroundMusic, checkPremiumFeature } = useAudio();
-  const { 
-    affirmationSession,
-    startAffirmationSession,
-    handleAffirmationComplete,
-    toggleFullscreen,
-    resetAffirmationSession
-  } = useAffirmations();
+  const { user, isAuthenticated, loading: authLoading, requireAuth } = useAuthState();
   const { 
     userAffirmations, 
     favoriteAffirmations, 
@@ -55,6 +28,35 @@ export default function Chat() {
     hasReachedLimit,
     fetchUserAffirmations
   } = useUserAffirmations();
+  
+  const {
+    showChat,
+    setShowChat,
+    showHistory,
+    setShowHistory,
+    isPlaying,
+    playAudio,
+    stopAudio,
+    playBackgroundMusic,
+    stopBackgroundMusic,
+    checkPremiumFeature,
+    affirmationSession,
+    startAffirmationSession,
+    handleAffirmationComplete,
+    handleBackClick,
+    cleanupSession,
+    handleToggleFullscreen
+  } = useSessionManagement();
+
+  const {
+    selectedVoice,
+    enableBackgroundMusic,
+    handleVoiceChange,
+    handleBackgroundMusicChange,
+    getAvailableVoices
+  } = useVoiceSelection(userPlan);
+
+  const { canAccessPremiumVoice } = usePremiumFeatures(userPlan);
 
   // Message handling with our custom hook
   const {
@@ -76,120 +78,26 @@ export default function Chat() {
     "en-US" // Explicitly set English as the recognition language
   );
 
-  // Confirmation dialog
-  const { showConfirmation, confirmAction, cancelAction } = useConfirmationDialog();
-
-  // Check authentication status
-  useEffect(() => {
-    const checkAuthStatus = async () => {
-      setAuthLoading(true);
-      const { data: { session } } = await supabase.auth.getSession();
-      setUser(session?.user || null);
-      setIsAuthenticated(!!session?.user);
-      setAuthLoading(false);
-      
-      // Redirect to auth page if not authenticated
-      if (!session?.user) {
-        toast({
-          title: "Authentication Required",
-          description: "Please sign in to access all features",
-        });
-        navigate("/auth");
-      } else {
-        // If authenticated, fetch user data
-        fetchUserAffirmations();
-      }
-    };
-
-    checkAuthStatus();
-
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setUser(session?.user || null);
-        setIsAuthenticated(!!session?.user);
-        
-        if (event === 'SIGNED_OUT') {
-          navigate("/auth");
-        }
-      }
-    );
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, [navigate]);
-
-  // Helper functions for premium features
-  const isPremiumVoice = (voiceId: string): boolean => {
-    const voice = voiceOptions.find(v => v.id === voiceId);
-    return voice?.premium || false;
-  };
-
-  const canAccessPremiumVoice = (voiceId: string): PremiumFeature => {
-    const isPremium = isPremiumVoice(voiceId);
-    const hasPremiumPlan = userPlan?.plan_type === 'premium' || userPlan?.plan_type === 'pro';
-    
-    return {
-      type: 'voice',
-      available: !isPremium || hasPremiumPlan,
-      upgradeMessage: "Premium voices are available on Pro and Premium plans. Upgrade to access this voice."
-    };
-  };
-
-  const canAccessBackgroundMusic = (): PremiumFeature => {
-    const hasPremiumPlan = userPlan?.plan_type === 'premium' || userPlan?.plan_type === 'pro';
-    
-    return {
-      type: 'music',
-      available: hasPremiumPlan,
-      upgradeMessage: "Background music is available on Pro and Premium plans. Upgrade to access this feature."
-    };
-  };
+  // Fetch user data when authenticated
+  if (isAuthenticated && user) {
+    fetchUserAffirmations();
+  }
 
   // Auto-scroll to bottom of messages
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-  
-  // Handle background music when affirmation session starts/ends
-  useEffect(() => {
-    if (affirmationSession.isActive && enableBackgroundMusic) {
-      // Check if user can access background music
-      const musicFeature = canAccessBackgroundMusic();
-      if (checkPremiumFeature(musicFeature)) {
-        playBackgroundMusic();
-      }
-    } else {
-      stopBackgroundMusic();
-    }
-    
-    return () => {
-      // Clean up audio when component unmounts
-      stopBackgroundMusic();
-      stopAudio();
-    };
-  }, [affirmationSession.isActive, enableBackgroundMusic]);
-
-  // Filter voice options based on plan
-  const getAvailableVoices = () => {
-    const hasPremiumPlan = userPlan?.plan_type === 'premium' || userPlan?.plan_type === 'pro';
-    
-    if (hasPremiumPlan) {
-      return voiceOptions; // All voices available
-    } else {
-      // Only free voices
-      return voiceOptions.filter(voice => !voice.premium);
-    }
-  };
-
   // Affirmation creation function
   const createAffirmations = async () => {
     setLoading(true);
     try {
+      // Check if user is authenticated
+      if (!requireAuth("affirmation creation")) {
+        setLoading(false);
+        return;
+      }
+
       // Check if free trial user has reached their limit
       if (user && hasReachedLimit && userPlan?.plan_type === 'free') {
         toast({
@@ -244,13 +152,7 @@ export default function Chat() {
   // Message submission handling
   const handleMessageSubmit = async (e: React.FormEvent) => {
     // Check authentication
-    if (!isAuthenticated) {
-      toast({
-        title: "Authentication Required",
-        description: "Please sign in to use this feature",
-        duration: 3000
-      });
-      navigate("/auth");
+    if (!requireAuth("chat messaging")) {
       return;
     }
     
@@ -269,14 +171,8 @@ export default function Chat() {
   // Handle toggling favorites
   const handleToggleFavorite = async (id: string) => {
     // Check authentication
-    if (!isAuthenticated) {
-      toast({
-        title: "Authentication Required",
-        description: "Please sign in to save favorites",
-        duration: 3000
-      });
-      navigate("/auth");
-      return;
+    if (!requireAuth("favorites")) {
+      return Promise.resolve();
     }
     
     // Find the affirmation to get its current status
@@ -289,11 +185,6 @@ export default function Chat() {
     
     return Promise.resolve();
   };
-
-  // Toggle fullscreen for affirmations
-  const handleToggleFullscreen = () => {
-    toggleFullscreen();
-  };
   
   // Play audio for messages
   const handlePlayAudio = (message: Message) => {
@@ -305,95 +196,6 @@ export default function Chat() {
     // Check if the user can access these premium features
     const voiceFeature = canAccessPremiumVoice(selectedVoice);
     playAudio(message, options, voiceFeature);
-  };
-
-  // Voice selection handler
-  const handleVoiceChange = (voiceId: string) => {
-    // Check if this is a premium voice and user doesn't have premium access
-    const voice = voiceOptions.find(v => v.id === voiceId);
-    if (voice?.premium && !(userPlan?.plan_type === 'premium' || userPlan?.plan_type === 'pro')) {
-      toast({
-        title: "Premium Voice",
-        description: "This voice is only available on Pro and Premium plans. Upgrade to access it.",
-        variant: "default",
-        duration: 3000
-      });
-      // Don't change the voice
-      return;
-    }
-    
-    setSelectedVoice(voiceId);
-    toast({
-      title: "Voice Changed",
-      description: `Now using ${voice?.name || "selected voice"}`,
-      duration: 1500
-    });
-  };
-
-  // Background music toggle handler
-  const handleBackgroundMusicChange = (enabled: boolean) => {
-    if (enabled) {
-      // Check if user can access background music
-      const musicFeature = canAccessBackgroundMusic();
-      if (!checkPremiumFeature(musicFeature)) {
-        return; // Don't enable if not available
-      }
-    }
-    
-    setEnableBackgroundMusic(enabled);
-    
-    if (enabled) {
-      toast({
-        title: "Background Music",
-        description: "Background music enabled",
-        duration: 1500
-      });
-    } else {
-      stopBackgroundMusic();
-    }
-  };
-
-  // Handle back button click with confirmation
-  const handleBackClick = () => {
-    // If there's an active affirmation session, show confirmation dialog
-    if (affirmationSession.isActive) {
-      showConfirmation(
-        "End Session?", 
-        "Are you sure you want to end your current affirmation session? All progress will be lost.",
-        () => {
-          cleanupSession();
-        }
-      );
-    } else {
-      // No active session, just clean up
-      cleanupSession();
-    }
-  };
-
-  // Clean up all session data
-  const cleanupSession = () => {
-    // Stop any playing audio
-    stopAudio();
-    stopBackgroundMusic();
-    
-    // Reset affirmation session
-    resetAffirmationSession();
-    
-    // Reset messages to initial state
-    resetMessages();
-    
-    // Clear input field
-    setMessage("");
-    
-    // Return to home screen
-    setShowChat(false);
-    
-    // Notify user
-    toast({
-      title: "Session Ended",
-      description: "Your affirmation session was ended",
-      duration: 3000
-    });
   };
 
   // If still loading auth status, show a loading spinner

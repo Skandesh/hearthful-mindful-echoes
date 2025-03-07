@@ -8,6 +8,16 @@ import { MessageInput } from "./MessageInput";
 import { AffirmationVisualizer } from "./AffirmationVisualizer";
 import { AffirmationSession } from "./types";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface ChatSessionProps {
   messages: Message[];
@@ -51,9 +61,43 @@ export function ChatSession({
 
   // Determine if we should show the affirmation in fullscreen mode
   const isFullscreenMode = affirmationSession.isActive && affirmationSession.isFullscreen;
+  
+  // State for session exit confirmation dialog
+  const [showExitConfirmation, setShowExitConfirmation] = React.useState(false);
+
+  const handleBackButton = () => {
+    // Only show confirmation if there's an active session
+    if (affirmationSession.isActive) {
+      setShowExitConfirmation(true);
+    } else {
+      onBackClick();
+    }
+  };
 
   return (
     <div className={`transition-all duration-500 ${isFullscreenMode ? 'fixed inset-0 z-50 bg-black/80 flex items-center justify-center' : ''}`}>
+      {/* Confirmation Dialog */}
+      <AlertDialog open={showExitConfirmation} onOpenChange={setShowExitConfirmation}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>End Affirmation Session?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You have an active affirmation session in progress. 
+              Are you sure you want to exit? Your progress will be lost.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Continue Session</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={onBackClick}
+              className="bg-red-500 hover:bg-red-600 text-white"
+            >
+              End Session
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {affirmationSession.isActive && (
         <div className={`mb-4 p-3 ${isFullscreenMode ? 'hidden' : 'bg-gradient-to-r from-primary/20 to-[#543ab7]/20 rounded-lg backdrop-blur-sm border border-primary/10 shadow-sm'}`}>
           <div className="flex items-center justify-between">
@@ -97,7 +141,7 @@ export function ChatSession({
         <div className="flex justify-between items-center mb-6">
           <Button 
             variant="outline" 
-            onClick={onBackClick}
+            onClick={handleBackButton}
             className="text-[#9b87f5] border-[#9b87f5]/20 hover:bg-[#9b87f5]/5"
             size="sm"
           >

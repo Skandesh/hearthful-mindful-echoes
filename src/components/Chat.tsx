@@ -1,4 +1,4 @@
-
+<lov-codelov-code>
 import { useRef, useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { generateAIResponse } from "./chat/ChatService";
@@ -42,7 +42,8 @@ export default function Chat() {
     affirmationSession,
     startAffirmationSession,
     handleAffirmationComplete,
-    toggleFullscreen
+    toggleFullscreen,
+    resetAffirmationSession
   } = useAffirmations();
   const { 
     userAffirmations, 
@@ -63,11 +64,16 @@ export default function Chat() {
     loading,
     setLoading,
     handleSubmit,
-    handleSuggestedPrompt
+    handleSuggestedPrompt,
+    resetMessages
   } = useChatMessages();
 
-  // Voice input handling
-  const { isRecording, handleStartRecording, handleStopRecording } = useVoiceInput(setLoading, setMessage);
+  // Voice input handling with English language setting
+  const { isRecording, handleStartRecording, handleStopRecording } = useVoiceInput(
+    setLoading, 
+    setMessage, 
+    "en-US" // Explicitly set English as the recognition language
+  );
 
   // Check authentication status
   useEffect(() => {
@@ -253,7 +259,7 @@ export default function Chat() {
     setShowChat(true);
   };
 
-  // Create a wrapper function to match the expected signature
+  // Handle toggling favorites
   const handleToggleFavorite = async (id: string) => {
     // Check authentication
     if (!isAuthenticated) {
@@ -336,6 +342,32 @@ export default function Chat() {
     }
   };
 
+  // Handle back button click - clear all session data
+  const handleBackClick = () => {
+    // Stop any playing audio
+    stopAudio();
+    stopBackgroundMusic();
+    
+    // Reset affirmation session
+    resetAffirmationSession();
+    
+    // Reset messages to initial state
+    resetMessages();
+    
+    // Clear input field
+    setMessage("");
+    
+    // Return to home screen
+    setShowChat(false);
+    
+    // Notify user
+    toast({
+      title: "Session Ended",
+      description: "Your affirmation session was ended",
+      duration: 3000
+    });
+  };
+
   // If still loading auth status, show a loading spinner
   if (authLoading) {
     return (
@@ -375,7 +407,7 @@ export default function Chat() {
       onStopAudio={stopAudio}
       onStartRecording={handleStartRecording}
       onStopRecording={handleStopRecording}
-      onBackClick={() => setShowChat(false)}
+      onBackClick={handleBackClick}
       onSuggestedPrompt={handleSuggestedPrompt}
       onCreateAffirmations={createAffirmations}
       onToggleFavorite={handleToggleFavorite}
@@ -385,3 +417,4 @@ export default function Chat() {
     />
   );
 }
+</lov-code>

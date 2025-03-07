@@ -3,10 +3,11 @@ import { useState, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { transcribeAudio } from "./ChatService";
 
-export function useRecording() {
+export function useRecording(language: string = "en-US") {
   const [isRecording, setIsRecording] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
   const { toast } = useToast();
 
   const startRecording = async () => {
@@ -50,7 +51,7 @@ export function useRecording() {
       reader.onloadend = async () => {
         const base64Audio = (reader.result as string).split(',')[1];
         try {
-          const transcriptionData = await transcribeAudio(base64Audio);
+          const transcriptionData = await transcribeAudio(base64Audio, language);
           if (transcriptionData?.text) {
             resolve(transcriptionData.text);
           } else {

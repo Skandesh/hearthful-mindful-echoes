@@ -15,9 +15,12 @@ export const generateAIResponse = async (userInput: string) => {
   return data.response;
 };
 
-export const transcribeAudio = async (audioBase64: string) => {
+export const transcribeAudio = async (audioBase64: string, language: string = "en-US") => {
   const { data, error } = await supabase.functions.invoke('transcribe-audio', {
-    body: { audio: audioBase64 }
+    body: { 
+      audio: audioBase64,
+      language: language // Pass language parameter to the edge function
+    }
   });
 
   if (error) throw error;

@@ -10,6 +10,11 @@ export function useChatMessages() {
   const [messages, setMessages] = useState<Message[]>([]);
   const { toast } = useToast();
 
+  // Reset messages to empty state
+  const resetMessages = () => {
+    setMessages([]);
+  };
+
   // Helper function to check if a user message matches an affirmation
   const matchesAffirmation = (userMessage: string, affirmation: string) => {
     // Normalize both strings for comparison
@@ -142,6 +147,7 @@ export function useChatMessages() {
     setLoading,
     handleSubmit,
     handleSuggestedPrompt,
-    matchesAffirmation
+    matchesAffirmation,
+    resetMessages
   };
 }

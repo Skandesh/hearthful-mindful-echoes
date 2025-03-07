@@ -2,8 +2,12 @@
 import { useRecording } from "./useRecording";
 import { useToast } from "@/hooks/use-toast";
 
-export function useVoiceInput(setLoading: (loading: boolean) => void, setMessage: (message: string) => void) {
-  const { isRecording, startRecording, stopRecording, processRecording } = useRecording();
+export function useVoiceInput(
+  setLoading: (loading: boolean) => void, 
+  setMessage: (message: string) => void,
+  language: string = "en-US" // Default to US English
+) {
+  const { isRecording, startRecording, stopRecording, processRecording } = useRecording(language);
   const { toast } = useToast();
 
   const handleStartRecording = async () => {

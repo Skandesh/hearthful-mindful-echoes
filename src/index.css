@@ -35,6 +35,16 @@
     @apply bg-white/50 backdrop-blur-sm border border-white/20 shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02];
   }
 
+  .glass-nav {
+    @apply bg-white/70 backdrop-blur-md shadow-sm border-b border-white/20;
+    transition: all 0.3s ease;
+  }
+
+  .glass-nav-transparent {
+    @apply bg-transparent backdrop-blur-none border-transparent;
+    transition: all 0.3s ease;
+  }
+
   .container-custom {
     @apply max-w-7xl mx-auto px-5 sm:px-6 lg:px-8;
   }

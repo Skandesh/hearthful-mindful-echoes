@@ -11,9 +11,21 @@ import { useToast } from "@/hooks/use-toast";
 
 const Navigation = () => {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { user } = useContext(AuthContext);
   const location = useLocation();
   const { toast } = useToast();
+
+  // Handle scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      const isScrolled = window.scrollY > 10;
+      setScrolled(isScrolled);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     // Close mobile menu when route changes
@@ -38,35 +50,47 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="bg-white/95 backdrop-blur-md shadow-sm fixed top-0 left-0 right-0 z-50 border-b border-[#9b87f5]/10 h-16">
+    <nav 
+      className={`fixed top-0 left-0 right-0 z-50 h-16 transition-all duration-300 ${
+        scrolled 
+          ? "bg-white/70 backdrop-blur-md shadow-sm border-b border-[#9b87f5]/10" 
+          : "bg-transparent"
+      }`}
+    >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex-shrink-0 flex items-center">
             <Link to="/" className="flex items-center">
               <Logo />
-              <span className="ml-2 text-xl font-bold text-primary-foreground">Hearth</span>
+              <span className={`ml-2 text-xl font-bold ${scrolled ? 'text-primary-foreground' : 'text-white'}`}>Hearth</span>
             </Link>
           </div>
           
           <div className="hidden md:flex items-center gap-6">
-            <Link to="/" className="text-gray-600 hover:text-[#9b87f5] transition-colors px-3 py-2">
+            <Link to="/" className={`transition-colors px-3 py-2 ${scrolled ? 'text-gray-600 hover:text-[#9b87f5]' : 'text-white/90 hover:text-white'}`}>
               Home
             </Link>
-            <Link to="/app" className="text-gray-600 hover:text-[#9b87f5] transition-colors px-3 py-2">
+            <Link to="/app" className={`transition-colors px-3 py-2 ${scrolled ? 'text-gray-600 hover:text-[#9b87f5]' : 'text-white/90 hover:text-white'}`}>
               App
             </Link>
             {user ? (
               <Button 
                 onClick={handleLogout}
                 variant="outline" 
-                className="border-[#9b87f5]/20 text-[#9b87f5] hover:bg-[#9b87f5]/5"
+                className={scrolled 
+                  ? "border-[#9b87f5]/20 text-[#9b87f5] hover:bg-[#9b87f5]/5"
+                  : "border-white/20 text-white hover:bg-white/10"
+                }
               >
                 Logout
               </Button>
             ) : (
               <Button 
                 asChild
-                className="bg-gradient-to-r from-[#9b87f5] to-[#7E69AB] hover:opacity-90 text-white"
+                className={scrolled
+                  ? "bg-gradient-to-r from-[#9b87f5] to-[#7E69AB] hover:opacity-90 text-white"
+                  : "bg-white hover:bg-white/90 text-[#9b87f5]"
+                }
               >
                 <Link to="/auth">
                   Login
@@ -78,7 +102,11 @@ const Navigation = () => {
           <div className="md:hidden flex items-center">
             <button 
               onClick={() => setOpen(!open)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
+              className={`inline-flex items-center justify-center p-2 rounded-md ${
+                scrolled 
+                  ? "text-gray-400 hover:text-gray-500 hover:bg-gray-100" 
+                  : "text-white hover:text-white/80 hover:bg-white/10"
+              }`}
             >
               <span className="sr-only">Open main menu</span>
               {open ? <X className="block h-6 w-6" /> : <Menu className="block h-6 w-6" />}
@@ -93,7 +121,7 @@ const Navigation = () => {
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
           transition={{ duration: 0.3 }}
-          className="md:hidden bg-white/95 backdrop-blur-md"
+          className="md:hidden bg-white/95 backdrop-blur-md shadow-md"
         >
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             <Link 

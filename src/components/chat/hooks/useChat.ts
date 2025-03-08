@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Message, AudioOptions } from "../types";
 import { useChatMessages } from "../useChatMessages";
 import { useVoiceInput } from "../useVoiceInput";
@@ -48,10 +48,12 @@ export function useChat() {
     "en-US"
   );
 
-  // Fetch user data when authenticated
-  if (isAuthenticated && user) {
-    fetchUserAffirmations();
-  }
+  // Fetch user data when authenticated - moving this to useEffect
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      fetchUserAffirmations();
+    }
+  }, [isAuthenticated, user, fetchUserAffirmations]);
 
   // Message submission handling
   const handleMessageSubmit = async (e: React.FormEvent, options: any) => {

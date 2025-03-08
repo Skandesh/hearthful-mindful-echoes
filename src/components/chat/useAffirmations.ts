@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { AffirmationSession } from "./types";
 import { generateAIResponse } from "./ChatService";
 
@@ -14,11 +14,11 @@ export function useAffirmations() {
 
   const [affirmationSession, setAffirmationSession] = useState<AffirmationSession>(initialSession);
 
-  const resetAffirmationSession = () => {
+  const resetAffirmationSession = useCallback(() => {
     setAffirmationSession(initialSession);
-  };
+  }, []);
 
-  const startAffirmationSession = async (mood: string): Promise<string> => {
+  const startAffirmationSession = useCallback(async (mood: string): Promise<string> => {
     // Generate affirmations based on mood
     try {
       const basePrompt = "Generate 5 positive daily affirmations";
@@ -53,9 +53,9 @@ export function useAffirmations() {
       console.error("Failed to start affirmation session:", error);
       throw error;
     }
-  };
+  }, []);
 
-  const handleAffirmationComplete = async (): Promise<string | null> => {
+  const handleAffirmationComplete = useCallback(async (): Promise<string | null> => {
     if (!affirmationSession.isActive) return null;
     
     const nextIndex = affirmationSession.index + 1;
@@ -76,16 +76,16 @@ export function useAffirmations() {
     });
     
     return nextAffirmation;
-  };
+  }, [affirmationSession, resetAffirmationSession]);
 
-  const toggleFullscreen = () => {
+  const toggleFullscreen = useCallback(() => {
     if (affirmationSession.isActive) {
       setAffirmationSession({
         ...affirmationSession,
         isFullscreen: !affirmationSession.isFullscreen
       });
     }
-  };
+  }, [affirmationSession]);
 
   return {
     affirmationSession,

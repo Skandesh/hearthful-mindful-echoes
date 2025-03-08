@@ -1,5 +1,5 @@
 
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { Message, AudioOptions } from "./chat/types";
 import { ChatContainer } from "./chat/ChatContainer";
 import { useSessionManagement } from "./chat/useSessionManagement";
@@ -51,6 +51,17 @@ export default function Chat() {
     startAffirmationSession
   });
 
+  // Scroll to bottom after messages update
+  useEffect(() => {
+    const scrollToBottom = () => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+    
+    if (chat.messages.length > 0 && !chat.loading) {
+      setTimeout(scrollToBottom, 100);
+    }
+  }, [chat.messages, chat.loading]);
+
   // Message submission handler with session context
   const handleMessageSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,11 +75,6 @@ export default function Chat() {
       user: chat.user
     });
     setShowChat(true);
-    
-    // Scroll to bottom after message submission
-    setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 100);
   };
   
   // Handle creating affirmations

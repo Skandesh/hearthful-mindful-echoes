@@ -23,7 +23,7 @@ export const HeroSection = ({
   }, []);
   
   return (
-    <AuroraBackground className="py-20 md:py-24 mt-16">
+    <AuroraBackground className="pt-24 pb-16 md:pt-28 md:pb-20">
       <div className="container-custom">
         <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
           {/* Text Content */}
@@ -110,7 +110,7 @@ export const HeroSection = ({
         </div>
 
         {/* Testimonial Cards Section */}
-        <div className="relative max-w-5xl mx-auto mt-16 mb-4">
+        <div className="relative max-w-5xl mx-auto mt-16 mb-8">
           <motion.div 
             initial={{ opacity: 0, y: 20 }} 
             animate={{ opacity: 1, y: 0 }} 

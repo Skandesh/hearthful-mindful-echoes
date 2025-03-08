@@ -19,10 +19,10 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-[#F7F5F3]">
-      {/* Hero Section */}
+      {/* Hero Section with proper spacing for the navbar */}
       <HeroSection user={user} startPath={startPath} />
 
-      {/* Stats Section - now properly spaced */}
+      {/* Stats Section */}
       <StatsSection />
 
       {/* How It Works */}

@@ -16,10 +16,10 @@ export const StatCard = ({ number, label, gradient }: StatCardProps) => {
       transition={{ duration: 0.5 }}
       className="text-center p-3 md:p-4"
     >
-      <h3 className={`text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r ${gradient} bg-clip-text text-transparent mb-1 md:mb-2`}>
+      <h3 className={`text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r ${gradient} bg-clip-text text-transparent mb-2`}>
         {number}
       </h3>
-      <p className="text-gray-600 text-xs md:text-sm">{label}</p>
+      <p className="text-gray-600 text-sm md:text-base">{label}</p>
     </motion.div>
   );
 };

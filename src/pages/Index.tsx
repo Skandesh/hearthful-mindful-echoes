@@ -22,7 +22,7 @@ const Index = () => {
       {/* Hero Section */}
       <HeroSection user={user} startPath={startPath} />
 
-      {/* Stats Section */}
+      {/* Stats Section - now properly spaced */}
       <StatsSection />
 
       {/* How It Works */}

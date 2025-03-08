@@ -30,14 +30,14 @@ export const TestimonialCard = ({ quote, author, iconName, animate, delay }: Tes
       initial={{ opacity: 0, y: 30 }}
       animate={animate ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
       transition={{ duration: 0.5, delay }}
-      className="bg-white/80 backdrop-blur-sm p-5 md:p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-[#9b87f5]/10"
+      className="bg-white/80 backdrop-blur-sm p-5 md:p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-[#9b87f5]/10 h-full flex flex-col"
     >
       <div className="flex items-center mb-3 md:mb-4">
         <div className="p-2 rounded-full bg-[#9b87f5]/10">
           {getIcon()}
         </div>
       </div>
-      <p className="text-gray-700 mb-3 md:mb-4 italic text-sm md:text-base">"{quote}"</p>
+      <p className="text-gray-700 mb-3 md:mb-4 italic text-sm md:text-base flex-grow">&ldquo;{quote}&rdquo;</p>
       <p className="text-[#543ab7] font-medium text-sm md:text-base">{author}</p>
     </motion.div>
   );

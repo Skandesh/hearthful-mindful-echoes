@@ -85,11 +85,11 @@ export function ChatContainer({
   onToggleFullscreen,
 }: ChatContainerProps) {
   return (
-    <div className="max-w-2xl mx-auto p-6 min-h-[calc(100vh-5rem)]">
+    <div className="max-w-2xl mx-auto p-6 min-h-[calc(100vh-5rem)] flex flex-col justify-center">
       <WavyBackground />
-      <Card className="p-10 w-full bg-white/70 backdrop-blur-xl shadow-xl border-primary/20">
+      <Card className="p-6 md:p-8 lg:p-10 w-full bg-white/70 backdrop-blur-xl shadow-xl border-primary/20 relative z-10">
         {user && (
-          <div className="flex justify-end mb-6">
+          <div className="flex justify-end mb-4 md:mb-6">
             <Button
               variant="ghost"
               size="sm"

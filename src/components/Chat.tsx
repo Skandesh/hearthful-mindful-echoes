@@ -53,6 +53,7 @@ export default function Chat() {
 
   // Message submission handler with session context
   const handleMessageSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     await chat.handleMessageSubmit(e, {
       affirmationSession,
       saveAffirmation: chat.saveAffirmation,
@@ -63,6 +64,11 @@ export default function Chat() {
       user: chat.user
     });
     setShowChat(true);
+    
+    // Scroll to bottom after message submission
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
   };
   
   // Handle creating affirmations

@@ -19,14 +19,14 @@ export function MessageList({
   onStopAudio 
 }: MessageListProps) {
   return (
-    <div className="space-y-5 max-h-[350px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-[#9b87f5]/20 scrollbar-track-transparent">
+    <div className="space-y-4 max-h-[350px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-[#9b87f5]/20 scrollbar-track-transparent">
       {messages.map((msg, index) => (
         <div
           key={index}
-          className={`p-4 rounded-xl transition-all duration-300 ${
+          className={`p-3 md:p-4 rounded-xl transition-all duration-300 ${
             msg.type === 'user'
-              ? 'bg-white/70 ml-6 border border-[#9b87f5]/10 shadow-sm hover:shadow'
-              : 'bg-gradient-to-r from-[#9b87f5]/10 to-[#543ab7]/10 mr-6 shadow-inner'
+              ? 'bg-white/70 ml-4 md:ml-6 border border-[#9b87f5]/10 shadow-sm hover:shadow'
+              : 'bg-gradient-to-r from-[#9b87f5]/10 to-[#543ab7]/10 mr-4 md:mr-6 shadow-inner'
           } text-primary-foreground`}
         >
           <div className="flex justify-between items-start mb-2">
@@ -46,13 +46,13 @@ export function MessageList({
               </Button>
             )}
           </div>
-          <div className="text-gray-800 leading-relaxed">
+          <div className="text-gray-800 text-sm md:text-base leading-relaxed">
             {msg.content}
           </div>
         </div>
       ))}
       {loading && (
-        <div className="flex items-center justify-center p-5">
+        <div className="flex items-center justify-center p-4 md:p-5">
           <div className="flex space-x-2">
             <div className="w-2.5 h-2.5 bg-[#9b87f5] rounded-full animate-bounce [animation-delay:-0.3s]"></div>
             <div className="w-2.5 h-2.5 bg-[#9b87f5] rounded-full animate-bounce [animation-delay:-0.15s]"></div>
@@ -61,7 +61,7 @@ export function MessageList({
         </div>
       )}
       {messages.length === 0 && !loading && (
-        <div className="text-center py-10 text-gray-500">
+        <div className="text-center py-8 md:py-10 text-gray-500">
           <p>Your conversation will appear here</p>
         </div>
       )}

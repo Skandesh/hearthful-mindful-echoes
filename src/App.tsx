@@ -1,6 +1,6 @@
 
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from "react-router-dom";
-import { createContext, useEffect, useState, useContext } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { createContext, useEffect, useState } from "react";
 import { Toaster } from "sonner";
 import { supabase } from "./integrations/supabase/client";
 

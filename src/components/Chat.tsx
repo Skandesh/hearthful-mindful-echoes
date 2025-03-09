@@ -1,5 +1,5 @@
 
-import { useRef } from "react";
+import { useRef, useEffect, useCallback } from "react";
 import { Message, AudioOptions } from "./chat/types";
 import { ChatContainer } from "./chat/ChatContainer";
 import { useSessionManagement } from "./chat/useSessionManagement";
@@ -51,8 +51,15 @@ export default function Chat() {
     startAffirmationSession
   });
 
+  // Scroll to bottom whenever messages change
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [chat.messages]);
+
   // Message submission handler with session context
-  const handleMessageSubmit = async (e: React.FormEvent) => {
+  const handleMessageSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     await chat.handleMessageSubmit(e, {
       affirmationSession,
@@ -64,27 +71,22 @@ export default function Chat() {
       user: chat.user
     });
     setShowChat(true);
-    
-    // Scroll to bottom after message submission
-    setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 100);
-  };
+  }, [chat, affirmationSession, startAffirmationSession, handleAffirmationComplete, setShowChat]);
   
   // Handle creating affirmations
-  const handleCreateAffirmations = async () => {
+  const handleCreateAffirmations = useCallback(async () => {
     await createAffirmations(affirmationSession, startAffirmationSession);
-  };
+  }, [createAffirmations, affirmationSession, startAffirmationSession]);
 
   // Play audio for messages
-  const handlePlayAudio = (message: Message) => {
+  const handlePlayAudio = useCallback((message: Message) => {
     const options: AudioOptions = {
       voiceId: selectedVoice,
       backgroundMusic: enableBackgroundMusic
     };
     
     playAudio(message, options);
-  };
+  }, [playAudio, selectedVoice, enableBackgroundMusic]);
 
   // If still loading auth status, show a loading spinner
   if (chat.authLoading) {

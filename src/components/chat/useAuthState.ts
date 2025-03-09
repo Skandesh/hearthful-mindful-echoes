@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -54,9 +54,9 @@ export function useAuthState() {
     return () => {
       authListener.subscription.unsubscribe();
     };
-  }, [navigate]);
+  }, [navigate, toast]);
 
-  const requireAuth = (featureName?: string) => {
+  const requireAuth = useCallback((featureName?: string) => {
     if (!authState.isAuthenticated) {
       toast({
         title: "Authentication Required",
@@ -69,7 +69,7 @@ export function useAuthState() {
       return false;
     }
     return true;
-  };
+  }, [authState.isAuthenticated, navigate, toast]);
 
   return {
     ...authState,

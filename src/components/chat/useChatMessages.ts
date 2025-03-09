@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Message } from "./types";
 import { generateAIResponse } from "./ChatService";
@@ -11,12 +11,12 @@ export function useChatMessages() {
   const { toast } = useToast();
 
   // Reset messages to empty state
-  const resetMessages = () => {
+  const resetMessages = useCallback(() => {
     setMessages([]);
-  };
+  }, []);
 
   // Helper function to check if a user message matches an affirmation
-  const matchesAffirmation = (userMessage: string, affirmation: string) => {
+  const matchesAffirmation = useCallback((userMessage: string, affirmation: string) => {
     // Normalize both strings for comparison
     const normalizeText = (text: string) => {
       return text
@@ -30,15 +30,15 @@ export function useChatMessages() {
     const normalizedAffirmation = normalizeText(affirmation);
     
     return normalizedInput === normalizedAffirmation;
-  };
+  }, []);
 
-  const handleSuggestedPrompt = async (prompt: string) => {
+  const handleSuggestedPrompt = useCallback(async (prompt: string) => {
     setMessage(prompt);
     const fakeEvent = { preventDefault: () => {} } as React.FormEvent;
     await handleSubmit(fakeEvent);
-  };
+  }, []);
 
-  const handleSubmit = async (e: React.FormEvent, options?: {
+  const handleSubmit = useCallback(async (e: React.FormEvent, options?: {
     affirmationSession?: any,
     saveAffirmation?: Function,
     startAffirmationSession?: Function,
@@ -136,7 +136,7 @@ export function useChatMessages() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [message, messages, matchesAffirmation, toast]);
 
   return {
     message,

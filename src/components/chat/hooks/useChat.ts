@@ -1,6 +1,5 @@
-
-import { useState } from "react";
-import { Message, AudioOptions } from "../types";
+import { useState, useCallback, useEffect } from "react";
+import { Message } from "../types";
 import { useChatMessages } from "../useChatMessages";
 import { useVoiceInput } from "../useVoiceInput";
 import { useAuthState } from "../useAuthState";
@@ -48,23 +47,18 @@ export function useChat() {
     "en-US"
   );
 
-  // Fetch user data when authenticated
-  if (isAuthenticated && user) {
-    fetchUserAffirmations();
-  }
-
   // Message submission handling
-  const handleMessageSubmit = async (e: React.FormEvent, options: any) => {
+  const handleMessageSubmit = useCallback(async (e: React.FormEvent, options: any) => {
     // Check authentication
     if (!requireAuth("chat messaging")) {
       return;
     }
     
     await handleSubmit(e, options);
-  };
+  }, [requireAuth, handleSubmit]);
 
   // Handle toggling favorites
-  const handleToggleFavorite = async (id: string) => {
+  const handleToggleFavorite = useCallback(async (id: string) => {
     // Check authentication
     if (!requireAuth("favorites")) {
       return Promise.resolve();
@@ -79,7 +73,14 @@ export function useChat() {
     }
     
     return Promise.resolve();
-  };
+  }, [requireAuth, userAffirmations, favoriteAffirmations, toggleFavorite]);
+
+  // Fetch user data when component mounts, not on every render
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      fetchUserAffirmations();
+    }
+  }, [isAuthenticated, user, fetchUserAffirmations]);
 
   return {
     // State

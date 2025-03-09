@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { UserAffirmation, UserPlan } from './types';
@@ -32,7 +32,7 @@ export function useUserAffirmations() {
   };
   
   // Fetch user affirmations
-  const fetchUserAffirmations = async () => {
+  const fetchUserAffirmations = useCallback(async () => {
     setLoading(true);
     setError(null);
     
@@ -122,10 +122,10 @@ export function useUserAffirmations() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
   
   // Save a new affirmation to the database
-  const saveAffirmation = async (affirmation: string) => {
+  const saveAffirmation = useCallback(async (affirmation: string) => {
     const user = await getCurrentUser();
     
     if (!user) {
@@ -198,10 +198,10 @@ export function useUserAffirmations() {
       });
       return false;
     }
-  };
+  }, [fetchUserAffirmations, toast, userPlan]);
   
   // Toggle favorite status
-  const toggleFavorite = async (affirmationId: string, currentStatus: boolean) => {
+  const toggleFavorite = useCallback(async (affirmationId: string, currentStatus: boolean) => {
     try {
       const { error } = await supabase
         .from('user_affirmations')
@@ -236,12 +236,12 @@ export function useUserAffirmations() {
         duration: 4000
       });
     }
-  };
+  }, [fetchUserAffirmations, toast]);
   
   // Initial fetch
   useEffect(() => {
     fetchUserAffirmations();
-  }, []);
+  }, [fetchUserAffirmations]);
   
   return {
     userAffirmations,

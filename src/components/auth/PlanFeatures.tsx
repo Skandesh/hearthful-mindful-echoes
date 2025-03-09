@@ -27,6 +27,14 @@ export const PlanFeatures: React.FC<PlanFeaturesProps> = ({ planType }) => {
             <li className="flex items-center">• Background music</li>
           </>
         )}
+        {planType === 'premium' && (
+          <>
+            <li className="flex items-center">• All Pro features</li>
+            <li className="flex items-center">• Advanced emotion tracking</li>
+            <li className="flex items-center">• Custom coaching sessions</li>
+            <li className="flex items-center">• Premium voice customization</li>
+          </>
+        )}
       </ul>
     </div>
   );

@@ -7,6 +7,7 @@ import { supabase } from "./integrations/supabase/client";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
+import Profile from "./pages/Profile";
 import Navigation from "./components/Navigation";
 import Chat from "./components/Chat";
 
@@ -71,6 +72,11 @@ function App() {
             <Route path="/app" element={
               <ProtectedRoute>
                 <Chat />
+              </ProtectedRoute>
+            } />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <Profile />
               </ProtectedRoute>
             } />
             <Route path="/auth" element={

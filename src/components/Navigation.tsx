@@ -2,7 +2,7 @@
 import { useState, useEffect, useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 import { AuthContext } from "@/App";
@@ -56,13 +56,22 @@ const Navigation = () => {
               App
             </Link>
             {user ? (
-              <Button 
-                onClick={handleLogout}
-                variant="outline" 
-                className="border-[#9b87f5]/20 text-[#9b87f5] hover:bg-[#9b87f5]/5"
-              >
-                Logout
-              </Button>
+              <>
+                <Link 
+                  to="/profile" 
+                  className="text-gray-600 hover:text-[#9b87f5] transition-colors px-3 py-2 flex items-center gap-1.5"
+                >
+                  <User className="w-4 h-4" />
+                  Profile
+                </Link>
+                <Button 
+                  onClick={handleLogout}
+                  variant="outline" 
+                  className="border-[#9b87f5]/20 text-[#9b87f5] hover:bg-[#9b87f5]/5"
+                >
+                  Logout
+                </Button>
+              </>
             ) : (
               <Button 
                 asChild
@@ -109,12 +118,21 @@ const Navigation = () => {
               App
             </Link>
             {user ? (
-              <button 
-                onClick={handleLogout}
-                className="w-full text-left block px-3 py-2 rounded-md hover:bg-[#9b87f5]/5 text-gray-600 hover:text-[#9b87f5]"
-              >
-                Logout
-              </button>
+              <>
+                <Link 
+                  to="/profile" 
+                  className="block px-3 py-2 rounded-md hover:bg-[#9b87f5]/5 text-gray-600 hover:text-[#9b87f5] flex items-center gap-2"
+                >
+                  <User className="w-4 h-4" />
+                  Profile
+                </Link>
+                <button 
+                  onClick={handleLogout}
+                  className="w-full text-left block px-3 py-2 rounded-md hover:bg-[#9b87f5]/5 text-gray-600 hover:text-[#9b87f5]"
+                >
+                  Logout
+                </button>
+              </>
             ) : (
               <Link 
                 to="/auth" 

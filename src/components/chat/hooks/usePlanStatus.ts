@@ -12,10 +12,12 @@ export function usePlanStatus() {
 
   const fetchPlanDetails = useCallback(async () => {
     try {
+      setLoading(true);
       const user = await getCurrentUser();
       
       if (!user) {
         setUserPlan(null);
+        setLoading(false);
         return null;
       }
       
@@ -28,6 +30,7 @@ export function usePlanStatus() {
           planData = await createDefaultPlan(user.id);
         } catch (e: any) {
           console.error('Error creating default plan:', e.message);
+          setLoading(false);
           return null;
         }
       }

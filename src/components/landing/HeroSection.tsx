@@ -44,7 +44,7 @@ export const HeroSection = ({
           }} transition={{
             duration: 0.5,
             delay: 0.1
-          }} className="text-3xl md:text-5xl font-bold leading-tight lg:text-7xl mx-0 my-[9px] px-0 py-0">
+          }} className="text-2xl md:text-5xl font-bold leading-tight lg:text-7xl mx-0 my-[9px] px-0 py-0">
               Transform Your Mind with{" "}
               <span className="gradient-text bg-gradient-to-r from-[#9b87f5] via-[#543ab7] to-[#00acc1]">
                 AI-Powered Affirmations

@@ -3,8 +3,8 @@ import { StatCard } from "./StatCard";
 
 export const StatsSection = () => {
   return (
-    <section id="stats" className="container-custom py-16 md:py-20 bg-gradient-to-b from-[#F7F5F3] to-[#E7F0FD]">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 lg:gap-8 max-w-5xl mx-auto">
+    <section id="stats" className="container-custom py-12 md:py-16 bg-gradient-to-b from-[#F7F5F3] to-[#E7F0FD]">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 lg:gap-8 max-w-5xl mx-auto">
         <StatCard
           number="10k+"
           label="Active Users"

@@ -1,4 +1,3 @@
-
 import { Heart, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { AuroraBackground } from "@/components/ui/aurora-background";
@@ -23,7 +22,7 @@ export const HeroSection = ({
   }, []);
   
   return (
-    <AuroraBackground className="py-24 md:py-32">
+    <AuroraBackground className="pt-32 pb-24 md:pt-36 md:pb-32">
       <div className="container-custom">
         <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
           {/* Text Content */}
@@ -42,7 +41,7 @@ export const HeroSection = ({
               initial={{ opacity: 0, y: 20 }} 
               animate={{ opacity: 1, y: 0 }} 
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-2xl md:text-4xl lg:text-5xl xl:text-7xl font-bold leading-tight"
+              className="text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight"
             >
               Transform Your Mind with{" "}
               <span className="gradient-text bg-gradient-to-r from-[#9b87f5] via-[#543ab7] to-[#00acc1]">

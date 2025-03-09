@@ -19,7 +19,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-[#F7F5F3]">
-      {/* Hero Section */}
+      {/* Hero Section - The pt-16 ensures it starts below the navbar */}
       <HeroSection user={user} startPath={startPath} />
 
       {/* Stats Section */}

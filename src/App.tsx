@@ -1,5 +1,6 @@
+
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { createContext, useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import { Toaster } from "sonner";
 import { supabase } from "./integrations/supabase/client";
 
@@ -8,20 +9,24 @@ import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import Dashboard from "./pages/Dashboard";
-import Navigation from "./components/Navigation";
+import { Navigation } from "./components/Navigation";
 import Chat from "./components/Chat";
-
-export const AuthContext = createContext<{
-  user: any;
-  loading: boolean;
-}>({
-  user: null,
-  loading: true,
-});
+import { AuthProvider } from "./components/auth/AuthProvider";
 
 // Protected route component that redirects to /auth if not logged in
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user, loading } = useContext(AuthContext);
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    async function getUser() {
+      const { data } = await supabase.auth.getSession();
+      setUser(data.session?.user || null);
+      setLoading(false);
+    }
+    
+    getUser();
+  }, []);
   
   if (loading) {
     return (
@@ -39,32 +44,9 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 function App() {
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function getUser() {
-      const { data } = await supabase.auth.getSession();
-      setUser(data.session?.user || null);
-      setLoading(false);
-      
-      const { data: authListener } = supabase.auth.onAuthStateChange(
-        (_, session) => {
-          setUser(session?.user || null);
-        }
-      );
-      
-      return () => {
-        authListener.subscription.unsubscribe();
-      };
-    }
-    
-    getUser();
-  }, []);
-
   return (
-    <AuthContext.Provider value={{ user, loading }}>
-      <Router>
+    <Router>
+      <AuthProvider>
         <div className="min-h-screen">
           <Navigation />
           <Routes>
@@ -84,15 +66,13 @@ function App() {
                 <Dashboard />
               </ProtectedRoute>
             } />
-            <Route path="/auth" element={
-              user ? <Navigate to="/app" /> : <Auth />
-            } />
+            <Route path="/auth" element={<Auth />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
         <Toaster richColors />
-      </Router>
-    </AuthContext.Provider>
+      </AuthProvider>
+    </Router>
   );
 }
 

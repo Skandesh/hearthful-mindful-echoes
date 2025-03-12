@@ -1,3 +1,4 @@
+
 import { Heart, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { AuroraBackground } from "@/components/ui/aurora-background";
@@ -108,7 +109,7 @@ export const HeroSection = ({
           </motion.div>
         </div>
 
-        {/* Testimonial Cards Section */}
+        {/* Testimonial Cards Section - Fixed layout */}
         <div className="relative max-w-5xl mx-auto mt-20 mb-8">
           <motion.div 
             initial={{ opacity: 0, y: 20 }} 

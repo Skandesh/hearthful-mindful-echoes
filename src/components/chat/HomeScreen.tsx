@@ -1,7 +1,6 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeftCircle, ArrowRightCircle, Mic, Lightbulb, Music2, Crown } from "lucide-react";
+import { ArrowLeftCircle, ArrowRightCircle, Mic, Lightbulb, Music2, Crown, AlertCircle } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -18,6 +17,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface HomeScreenProps {
   message: string;
@@ -58,6 +58,21 @@ export function HomeScreen({
   onBackgroundMusicChange,
   onCreateAffirmations,
 }: HomeScreenProps) {
+  const [showInputAlert, setShowInputAlert] = useState(false);
+
+  const handleMessageChange = (value: string) => {
+    onMessageChange(value);
+    if (showInputAlert) setShowInputAlert(false);
+  };
+
+  const handleCreateClick = () => {
+    if (!message || message.trim() === '') {
+      setShowInputAlert(true);
+      return;
+    }
+    onCreateAffirmations();
+  };
+
   return (
     <div className="flex flex-col space-y-8 md:space-y-10">
       <div className="text-center space-y-3 md:space-y-4">
@@ -82,9 +97,11 @@ export function HomeScreen({
           <input
             type="text"
             value={message}
-            onChange={(e) => onMessageChange(e.target.value)}
+            onChange={(e) => handleMessageChange(e.target.value)}
             placeholder="Share your thoughts or feelings..."
-            className="w-full p-3 md:p-5 pr-12 md:pr-14 rounded-full border border-[#9b87f5]/20 bg-white/90 focus:outline-none focus:ring-2 focus:ring-[#9b87f5]/50 shadow-sm transition-all duration-300 group-hover:shadow-md text-sm md:text-base"
+            className={`w-full p-3 md:p-5 pr-12 md:pr-14 rounded-full border ${
+              showInputAlert ? "border-red-400 focus:ring-red-400" : "border-[#9b87f5]/20 focus:ring-[#9b87f5]/50"
+            } bg-white/90 focus:outline-none focus:ring-2 shadow-sm transition-all duration-300 group-hover:shadow-md text-sm md:text-base`}
           />
           <Button
             onClick={isRecording ? onStopRecording : onStartRecording}
@@ -98,6 +115,15 @@ export function HomeScreen({
           </Button>
         </div>
         <p className="mt-2 md:mt-3 text-xs text-center text-gray-500">Type or use your voice to tell us how you're feeling</p>
+        
+        {showInputAlert && (
+          <Alert variant="destructive" className="mt-3 bg-red-50 border-red-200">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Please share how you're feeling or what you need affirmations for.
+            </AlertDescription>
+          </Alert>
+        )}
       </div>
 
       <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 md:p-5 shadow-sm border border-[#9b87f5]/10 mx-4 md:mx-0">
@@ -178,7 +204,6 @@ export function HomeScreen({
         </div>
       </div>
 
-      {/* Enhanced Voice Selection and Background Music UI */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 px-4 md:px-0">
         <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 md:p-5 shadow-sm border border-[#9b87f5]/10">
           <h3 className="text-sm md:text-base font-medium text-primary-foreground mb-3 md:mb-4">Voice Selection</h3>
@@ -257,7 +282,7 @@ export function HomeScreen({
       </div>
 
       <Button 
-        onClick={onCreateAffirmations}
+        onClick={handleCreateClick}
         disabled={loading}
         className="w-full py-4 md:py-7 bg-gradient-to-r from-[#9b87f5] to-[#7E69AB] hover:from-[#8a75e8] hover:to-[#6d5999] text-white text-lg md:text-xl font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 mx-4 md:mx-0"
       >
@@ -273,3 +298,4 @@ export function HomeScreen({
     </div>
   );
 }
+

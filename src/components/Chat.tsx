@@ -34,7 +34,8 @@ export default function Chat() {
     enableBackgroundMusic,
     handleVoiceChange,
     handleBackgroundMusicChange,
-    getAvailableVoices
+    getAvailableVoices,
+    PremiumFeatureDialog
   } = useVoiceSelection(chat.userPlan);
 
   // Audio playback
@@ -98,42 +99,47 @@ export default function Chat() {
   }
 
   return (
-    <ChatContainer
-      user={chat.user}
-      showChat={showChat}
-      showHistory={showHistory}
-      messages={chat.messages}
-      message={chat.message}
-      isPlaying={isPlaying}
-      loading={chat.loading}
-      isRecording={chat.isRecording}
-      language={chat.language}
-      duration={chat.duration}
-      affirmationSession={affirmationSession}
-      userAffirmations={chat.userAffirmations}
-      favoriteAffirmations={chat.favoriteAffirmations}
-      userPlan={chat.userPlan}
-      voiceOptions={getAvailableVoices()}
-      selectedVoice={selectedVoice}
-      enableBackgroundMusic={enableBackgroundMusic}
-      messagesEndRef={messagesEndRef}
-      onMessageChange={chat.setMessage}
-      onSubmit={handleMessageSubmit}
-      onLanguageChange={chat.setLanguage}
-      onDurationChange={chat.setDuration}
-      onVoiceChange={handleVoiceChange}
-      onBackgroundMusicChange={handleBackgroundMusicChange}
-      onPlayAudio={handlePlayAudio}
-      onStopAudio={stopAudio}
-      onStartRecording={chat.handleStartRecording}
-      onStopRecording={chat.handleStopRecording}
-      onBackClick={handleBackClick}
-      onSuggestedPrompt={chat.handleSuggestedPrompt}
-      onCreateAffirmations={handleCreateAffirmations}
-      onToggleFavorite={chat.handleToggleFavorite}
-      onShowHistory={() => setShowHistory(true)}
-      onCloseHistory={() => setShowHistory(false)}
-      onToggleFullscreen={handleToggleFullscreen}
-    />
+    <>
+      <ChatContainer
+        user={chat.user}
+        showChat={showChat}
+        showHistory={showHistory}
+        messages={chat.messages}
+        message={chat.message}
+        isPlaying={isPlaying}
+        loading={chat.loading}
+        isRecording={chat.isRecording}
+        language={chat.language}
+        duration={chat.duration}
+        affirmationSession={affirmationSession}
+        userAffirmations={chat.userAffirmations}
+        favoriteAffirmations={chat.favoriteAffirmations}
+        userPlan={chat.userPlan}
+        voiceOptions={getAvailableVoices()}
+        selectedVoice={selectedVoice}
+        enableBackgroundMusic={enableBackgroundMusic}
+        messagesEndRef={messagesEndRef}
+        onMessageChange={chat.setMessage}
+        onSubmit={handleMessageSubmit}
+        onLanguageChange={chat.setLanguage}
+        onDurationChange={chat.setDuration}
+        onVoiceChange={handleVoiceChange}
+        onBackgroundMusicChange={handleBackgroundMusicChange}
+        onPlayAudio={handlePlayAudio}
+        onStopAudio={stopAudio}
+        onStartRecording={chat.handleStartRecording}
+        onStopRecording={chat.handleStopRecording}
+        onBackClick={handleBackClick}
+        onSuggestedPrompt={chat.handleSuggestedPrompt}
+        onCreateAffirmations={handleCreateAffirmations}
+        onToggleFavorite={chat.handleToggleFavorite}
+        onShowHistory={() => setShowHistory(true)}
+        onCloseHistory={() => setShowHistory(false)}
+        onToggleFullscreen={handleToggleFullscreen}
+      />
+      
+      {/* Premium Feature Dialog */}
+      <PremiumFeatureDialog />
+    </>
   );
 }

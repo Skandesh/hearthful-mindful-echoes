@@ -26,6 +26,17 @@ export function useAffirmationCreation(chatState: any) {
     affirmationSession: any,
     startAffirmationSession: any
   ) => {
+    // Validate if prompt is empty
+    if (!message || message.trim() === '') {
+      toast({
+        variant: "destructive",
+        title: "Empty prompt",
+        description: "Please share how you're feeling or what you need affirmations for.",
+        duration: 3000
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       // Check if user is authenticated
@@ -82,8 +93,8 @@ export function useAffirmationCreation(chatState: any) {
       console.error('Error:', error);
       toast({
         variant: "destructive",
-        title: "Error",
-        description: error.message || "An unknown error occurred",
+        title: "Error creating affirmations",
+        description: error.message || "An unexpected error occurred. Please try again.",
         duration: 5000
       });
     } finally {

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { UserPlan, VoiceOption } from "../types";
@@ -20,6 +21,7 @@ export function useVoiceSelection(userPlan: UserPlan | null) {
   const [showPremiumDialog, setShowPremiumDialog] = useState(false);
   const [currentFeature, setCurrentFeature] = useState<string>('');
   const { toast } = useToast();
+
   const { 
     voiceOptions, 
     canAccessPremiumVoice, 
@@ -28,9 +30,11 @@ export function useVoiceSelection(userPlan: UserPlan | null) {
   } = usePremiumFeatures(userPlan);
 
   const handleVoiceChange = (voiceId: string) => {
-    // Check if this is a premium voice and user doesn't have premium access
     const voice = voiceOptions.find(v => v.id === voiceId);
-    if (voice?.premium && !(userPlan?.plan_type === 'premium' || userPlan?.plan_type === 'pro')) {
+    const isPremiumVoice = voice?.premium || false;
+    const hasPremiumAccess = userPlan?.plan_type === 'premium' || userPlan?.plan_type === 'pro';
+
+    if (isPremiumVoice && !hasPremiumAccess) {
       setCurrentFeature('premium voice');
       setShowPremiumDialog(true);
       return;
@@ -82,7 +86,7 @@ export function useVoiceSelection(userPlan: UserPlan | null) {
         <AlertDialogFooter className="flex flex-col sm:flex-row gap-2">
           <AlertDialogCancel className="sm:mt-0">Maybe Later</AlertDialogCancel>
           <AlertDialogAction asChild>
-            <Link to="/profile" className="bg-gradient-to-r from-[#9b87f5] to-[#543ab7] hover:opacity-90 text-white">
+            <Link to="/profile" className="bg-gradient-to-r from-[#9b87f5] to-[#7E69AB] hover:opacity-90 text-white">
               Upgrade Plan
             </Link>
           </AlertDialogAction>

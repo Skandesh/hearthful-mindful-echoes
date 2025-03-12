@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { generateAIResponse } from "../ChatService";
 import { useToast } from "@/hooks/use-toast";
@@ -9,7 +8,6 @@ export function useAffirmationCreation(chatState: any) {
   const [showInputAlert, setShowInputAlert] = useState(false);
   const { toast } = useToast();
 
-  // Destructure needed properties
   const {
     message,
     language,
@@ -22,10 +20,8 @@ export function useAffirmationCreation(chatState: any) {
     saveAffirmation
   } = chatState;
 
-  // Effect to scroll to alert when shown
   useEffect(() => {
     if (showInputAlert) {
-      // Find the alert element and scroll to it
       const alertElement = document.querySelector('[role="alert"]');
       if (alertElement) {
         alertElement.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -33,15 +29,12 @@ export function useAffirmationCreation(chatState: any) {
     }
   }, [showInputAlert]);
 
-  // Affirmation creation function
   const createAffirmations = async (
     affirmationSession: any,
     startAffirmationSession: any
   ) => {
-    // Reset alert state
     setShowInputAlert(false);
     
-    // Validate if prompt is empty
     if (!message || message.trim() === '') {
       setShowInputAlert(true);
       toast({
@@ -55,7 +48,6 @@ export function useAffirmationCreation(chatState: any) {
 
     setLoading(true);
     try {
-      // Check if user is authenticated
       if (!user) {
         toast({
           variant: "destructive",
@@ -67,17 +59,7 @@ export function useAffirmationCreation(chatState: any) {
         return;
       }
 
-      // Check if free trial user has reached their limit
-      // This is the key fix - making sure we're evaluating hasReachedLimit properly
       if (user && hasReachedLimit && userPlan?.plan_type === 'free') {
-        toast({
-          variant: "destructive",
-          title: "Free trial limit reached",
-          description: "You've reached your limit of 10 affirmations. Upgrade your plan to continue.",
-          duration: 5000
-        });
-        
-        // Add a message to the chat about the limit
         setMessages([
           { type: 'user', content: message },
           { 
@@ -86,6 +68,13 @@ export function useAffirmationCreation(chatState: any) {
           }
         ]);
         
+        toast({
+          variant: "destructive",
+          title: "Free trial limit reached",
+          description: "You've reached your limit of 10 affirmations. Please upgrade your plan to continue.",
+          duration: 5000
+        });
+        
         setShowChat(true);
         setLoading(false);
         return;
@@ -93,7 +82,6 @@ export function useAffirmationCreation(chatState: any) {
 
       let prompt = message || "Create affirmations for me";
       
-      // Add context from selections
       prompt += ` for a ${duration} session`;
       if (language !== "English") {
         prompt += ` in ${language}`;
@@ -105,12 +93,10 @@ export function useAffirmationCreation(chatState: any) {
         { type: 'ai', content: aiResponse }
       ]);
       
-      // Start affirmation session automatically
       if (!affirmationSession.isActive) {
         const mood = message || "positive";
         const firstAffirmation = await startAffirmationSession(mood);
         
-        // Save the affirmation if user is logged in
         if (user) {
           await saveAffirmation(firstAffirmation);
         }

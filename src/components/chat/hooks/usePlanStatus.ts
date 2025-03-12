@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { UserPlan } from '../types';
 import { getCurrentUser, fetchUserPlan, createDefaultPlan } from '../services/affirmationService';
@@ -52,11 +51,10 @@ export function usePlanStatus() {
     }
   }, [toast]);
 
-  // Check if user has reached their plan limit - fix how we calculate this
+  // Simplified check for plan limit
   const hasReachedLimit = useCallback(() => {
     if (!userPlan) return false;
-    
-    // Ensure we're comparing numbers properly
+    // Directly compare the values without any function wrapper
     return userPlan.affirmations_used >= userPlan.affirmations_limit;
   }, [userPlan]);
 
@@ -70,6 +68,6 @@ export function usePlanStatus() {
     loading,
     error,
     fetchPlanDetails,
-    hasReachedLimit: hasReachedLimit()  // Call the function to get the actual boolean value
+    hasReachedLimit: hasReachedLimit() // Get the actual boolean value
   };
 }

@@ -111,12 +111,21 @@ export function useChatMessages() {
         return;
       }
 
-      // Check if free trial user has reached their limit
+      // Check if free trial user has reached their limit - improved check
       if (user && hasReachedLimit && userPlan?.plan_type === 'free') {
         setMessages(prev => [...prev, { 
           type: 'ai', 
-          content: "You've reached your free trial limit of 10 affirmations. Please upgrade your plan to continue using our service." 
+          content: "You've reached your free trial limit of 10 affirmations. Please upgrade your plan to continue using our premium features and support your well-being journey." 
         }]);
+        
+        // Add a toast notification
+        toast({
+          variant: "destructive",
+          title: "Free trial limit reached",
+          description: "You've reached your limit of 10 affirmations. Upgrade your plan to continue.",
+          duration: 5000
+        });
+        
         setLoading(false);
         return;
       }

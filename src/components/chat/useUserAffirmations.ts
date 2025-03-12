@@ -23,6 +23,6 @@ export function useUserAffirmations() {
     saveAffirmation,
     toggleFavorite,
     fetchUserAffirmations,
-    hasReachedLimit
+    hasReachedLimit  // Pass along the boolean value
   };
 }

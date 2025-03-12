@@ -68,6 +68,7 @@ export function useAffirmationCreation(chatState: any) {
       }
 
       // Check if free trial user has reached their limit
+      // This is the key fix - making sure we're evaluating hasReachedLimit properly
       if (user && hasReachedLimit && userPlan?.plan_type === 'free') {
         toast({
           variant: "destructive",

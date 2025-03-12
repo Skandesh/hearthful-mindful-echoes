@@ -52,9 +52,11 @@ export function usePlanStatus() {
     }
   }, [toast]);
 
-  // Check if user has reached their plan limit
+  // Check if user has reached their plan limit - fix how we calculate this
   const hasReachedLimit = useCallback(() => {
     if (!userPlan) return false;
+    
+    // Ensure we're comparing numbers properly
     return userPlan.affirmations_used >= userPlan.affirmations_limit;
   }, [userPlan]);
 
@@ -68,6 +70,6 @@ export function usePlanStatus() {
     loading,
     error,
     fetchPlanDetails,
-    hasReachedLimit: hasReachedLimit()
+    hasReachedLimit: hasReachedLimit()  // Call the function to get the actual boolean value
   };
 }

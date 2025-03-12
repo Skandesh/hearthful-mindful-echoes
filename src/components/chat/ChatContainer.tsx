@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ClipboardList, Moon } from "lucide-react";
@@ -27,6 +26,7 @@ interface ChatContainerProps {
   voiceOptions: VoiceOption[];
   selectedVoice: string;
   enableBackgroundMusic: boolean;
+  showInputAlert?: boolean;
   messagesEndRef: RefObject<HTMLDivElement>;
   onMessageChange: (message: string) => void;
   onSubmit: (e: React.FormEvent) => void;
@@ -45,6 +45,7 @@ interface ChatContainerProps {
   onShowHistory: () => void;
   onCloseHistory: () => void;
   onToggleFullscreen: () => void;
+  onClearAlert?: () => void;
 }
 
 export function ChatContainer({
@@ -65,6 +66,7 @@ export function ChatContainer({
   voiceOptions,
   selectedVoice,
   enableBackgroundMusic,
+  showInputAlert,
   messagesEndRef,
   onMessageChange,
   onSubmit,
@@ -83,6 +85,7 @@ export function ChatContainer({
   onShowHistory,
   onCloseHistory,
   onToggleFullscreen,
+  onClearAlert,
 }: ChatContainerProps) {
   return (
     <div className="max-w-2xl mx-auto p-6 min-h-[calc(100vh-5rem)] flex flex-col justify-center">

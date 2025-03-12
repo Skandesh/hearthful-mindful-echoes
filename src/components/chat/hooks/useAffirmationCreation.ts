@@ -1,11 +1,12 @@
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { generateAIResponse } from "../ChatService";
 import { useToast } from "@/hooks/use-toast";
 
 export function useAffirmationCreation(chatState: any) {
   const [showChat, setShowChat] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [showInputAlert, setShowInputAlert] = useState(false);
   const { toast } = useToast();
 
   // Destructure needed properties
@@ -21,13 +22,28 @@ export function useAffirmationCreation(chatState: any) {
     saveAffirmation
   } = chatState;
 
+  // Effect to scroll to alert when shown
+  useEffect(() => {
+    if (showInputAlert) {
+      // Find the alert element and scroll to it
+      const alertElement = document.querySelector('[role="alert"]');
+      if (alertElement) {
+        alertElement.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+  }, [showInputAlert]);
+
   // Affirmation creation function
   const createAffirmations = async (
     affirmationSession: any,
     startAffirmationSession: any
   ) => {
+    // Reset alert state
+    setShowInputAlert(false);
+    
     // Validate if prompt is empty
     if (!message || message.trim() === '') {
+      setShowInputAlert(true);
       toast({
         variant: "destructive",
         title: "Empty prompt",
@@ -59,6 +75,17 @@ export function useAffirmationCreation(chatState: any) {
           description: "You've reached your limit of 10 affirmations. Upgrade your plan to continue.",
           duration: 5000
         });
+        
+        // Add a message to the chat about the limit
+        setMessages([
+          { type: 'user', content: message },
+          { 
+            type: 'ai', 
+            content: "You've reached your free trial limit of 10 affirmations. Please upgrade your plan to continue using our premium features. Your ongoing well-being journey deserves unlimited support!" 
+          }
+        ]);
+        
+        setShowChat(true);
         setLoading(false);
         return;
       }
@@ -105,8 +132,10 @@ export function useAffirmationCreation(chatState: any) {
   return {
     showChat,
     showHistory,
+    showInputAlert,
     setShowChat,
     setShowHistory,
+    setShowInputAlert,
     createAffirmations
   };
 }

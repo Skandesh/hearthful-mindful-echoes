@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeftCircle, ArrowRightCircle, Mic, Lightbulb, Music2, Crown, AlertCircle } from "lucide-react";
 import {
@@ -28,6 +28,7 @@ interface HomeScreenProps {
   voiceOptions: VoiceOption[];
   selectedVoice: string;
   enableBackgroundMusic: boolean;
+  showInputAlert?: boolean;
   onMessageChange: (message: string) => void;
   onStartRecording: () => void;
   onStopRecording: () => void;
@@ -37,6 +38,7 @@ interface HomeScreenProps {
   onVoiceChange: (value: string) => void;
   onBackgroundMusicChange: (value: boolean) => void;
   onCreateAffirmations: () => void;
+  onClearAlert?: () => void;
 }
 
 export function HomeScreen({
@@ -48,6 +50,7 @@ export function HomeScreen({
   voiceOptions,
   selectedVoice,
   enableBackgroundMusic,
+  showInputAlert = false,
   onMessageChange,
   onStartRecording,
   onStopRecording,
@@ -57,18 +60,30 @@ export function HomeScreen({
   onVoiceChange,
   onBackgroundMusicChange,
   onCreateAffirmations,
+  onClearAlert,
 }: HomeScreenProps) {
-  const [showInputAlert, setShowInputAlert] = useState(false);
+  const [localShowInputAlert, setLocalShowInputAlert] = useState(false);
+  const effectiveShowAlert = showInputAlert || localShowInputAlert;
+
+  useEffect(() => {
+    if (message && effectiveShowAlert) {
+      setLocalShowInputAlert(false);
+      if (onClearAlert) onClearAlert();
+    }
+  }, [message, effectiveShowAlert, onClearAlert]);
 
   const handleMessageChange = (value: string) => {
     onMessageChange(value);
-    if (showInputAlert) setShowInputAlert(false);
+    if (effectiveShowAlert) {
+      setLocalShowInputAlert(false);
+      if (onClearAlert) onClearAlert();
+    }
   };
 
   const handleCreateClick = () => {
     if (!message || message.trim() === '') {
-      setShowInputAlert(true);
-      return;
+      setLocalShowInputAlert(true);
+      if (onClearAlert) onClearAlert();
     }
     onCreateAffirmations();
   };
@@ -100,7 +115,7 @@ export function HomeScreen({
             onChange={(e) => handleMessageChange(e.target.value)}
             placeholder="Share your thoughts or feelings..."
             className={`w-full p-3 md:p-5 pr-12 md:pr-14 rounded-full border ${
-              showInputAlert ? "border-red-400 focus:ring-red-400" : "border-[#9b87f5]/20 focus:ring-[#9b87f5]/50"
+              effectiveShowAlert ? "border-red-400 focus:ring-red-400" : "border-[#9b87f5]/20 focus:ring-[#9b87f5]/50"
             } bg-white/90 focus:outline-none focus:ring-2 shadow-sm transition-all duration-300 group-hover:shadow-md text-sm md:text-base`}
           />
           <Button
@@ -116,8 +131,8 @@ export function HomeScreen({
         </div>
         <p className="mt-2 md:mt-3 text-xs text-center text-gray-500">Type or use your voice to tell us how you're feeling</p>
         
-        {showInputAlert && (
-          <Alert variant="destructive" className="mt-3 bg-red-50 border-red-200">
+        {effectiveShowAlert && (
+          <Alert variant="destructive" className="mt-3 bg-red-50 border-red-200" id="input-alert">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
               Please share how you're feeling or what you need affirmations for.
@@ -298,4 +313,3 @@ export function HomeScreen({
     </div>
   );
 }
-

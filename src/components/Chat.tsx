@@ -3,7 +3,7 @@ import { useRef, useEffect, useCallback } from "react";
 import { Message, AudioOptions } from "./chat/types";
 import { ChatContainer } from "./chat/ChatContainer";
 import { useSessionManagement } from "./chat/useSessionManagement";
-import { useVoiceSelection } from "./chat/useVoiceSelection";
+import { useVoiceSelection } from "./chat/hooks/useVoiceSelection";
 import { useChat } from "./chat/hooks/useChat";
 import { useAffirmationCreation } from "./chat/hooks/useAffirmationCreation";
 import { useAudioPlayback } from "./chat/hooks/useAudioPlayback";
@@ -46,7 +46,11 @@ export default function Chat() {
   } = useAudioPlayback(chat.userPlan);
 
   // Affirmation creation
-  const { createAffirmations } = useAffirmationCreation({
+  const { 
+    createAffirmations, 
+    showInputAlert, 
+    setShowInputAlert 
+  } = useAffirmationCreation({
     ...chat,
     affirmationSession,
     startAffirmationSession
@@ -118,6 +122,7 @@ export default function Chat() {
         voiceOptions={getAvailableVoices()}
         selectedVoice={selectedVoice}
         enableBackgroundMusic={enableBackgroundMusic}
+        showInputAlert={showInputAlert}
         messagesEndRef={messagesEndRef}
         onMessageChange={chat.setMessage}
         onSubmit={handleMessageSubmit}
@@ -136,6 +141,7 @@ export default function Chat() {
         onShowHistory={() => setShowHistory(true)}
         onCloseHistory={() => setShowHistory(false)}
         onToggleFullscreen={handleToggleFullscreen}
+        onClearAlert={() => setShowInputAlert(false)}
       />
       
       {/* Premium Feature Dialog */}

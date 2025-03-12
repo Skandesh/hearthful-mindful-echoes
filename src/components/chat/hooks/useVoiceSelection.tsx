@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { UserPlan, VoiceOption } from "./types";
-import { usePremiumFeatures } from "./usePremiumFeatures";
+import { UserPlan, VoiceOption } from "../types";
+import { usePremiumFeatures } from "../usePremiumFeatures";
 import { 
   AlertDialogAction, 
   AlertDialogCancel, 

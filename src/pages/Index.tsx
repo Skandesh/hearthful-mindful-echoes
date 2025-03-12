@@ -1,6 +1,5 @@
 
-import { useContext } from "react";
-import { AuthContext } from "@/App";
+import { useAuth } from "@/components/auth/AuthProvider";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { StatsSection } from "@/components/landing/StatsSection";
 import { ProcessSection } from "@/components/landing/ProcessSection";
@@ -12,7 +11,7 @@ import { CtaSection } from "@/components/landing/CtaSection";
 import { Footer } from "@/components/landing/Footer";
 
 const Index = () => {
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
 
   // Determine the path for the "Get Started" button
   const startPath = user ? "/app" : "/auth";

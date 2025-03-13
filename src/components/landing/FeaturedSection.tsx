@@ -1,23 +1,44 @@
 
+import { motion } from "framer-motion";
+
 export const FeaturedSection = () => {
   return (
-    <section className="container-custom py-8 sm:py-10 md:py-12 lg:py-16 bg-gradient-to-b from-[#F1F0FB] to-[#F7F5F3] px-4 sm:px-6">
-      <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-8 md:mb-10">
-        <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-primary-foreground mb-3 sm:mb-4 md:mb-6">
+    <section className="container-custom py-12 sm:py-16 md:py-20 bg-gradient-to-b from-[#F1F0FB] to-[#F7F5F3] px-4 sm:px-6">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+        className="text-center max-w-2xl mx-auto mb-8 sm:mb-10 md:mb-12"
+      >
+        <h3 className="text-xl sm:text-2xl md:text-3xl font-semibold text-primary-foreground mb-4 sm:mb-5">
           Featured In
         </h3>
-        <p className="text-sm sm:text-base text-muted-foreground">
+        <p className="text-sm sm:text-base md:text-lg text-muted-foreground">
           Hearth has been recognized by leading publications for its innovative approach to mental wellness
         </p>
-      </div>
+      </motion.div>
       
-      <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-6 md:gap-8 lg:gap-12">
-        {['Forbes', 'TechCrunch', 'Wired', 'Fast Company', 'Psychology Today'].map((name) => (
-          <div key={name} className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-gray-300 hover:text-gray-500 transition-colors duration-300">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="flex flex-wrap justify-center items-center gap-6 sm:gap-8 md:gap-10 lg:gap-14"
+      >
+        {['Forbes', 'TechCrunch', 'Wired', 'Fast Company', 'Psychology Today'].map((name, index) => (
+          <motion.div 
+            key={name}
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.3, delay: 0.1 * index }}
+            className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-300 hover:text-gray-500 transition-colors duration-300"
+          >
             {name}
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </section>
   );
 };

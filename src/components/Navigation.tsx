@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/components/auth/AuthProvider";
@@ -34,11 +35,11 @@ export function Navigation() {
 
   return (
     <header className="bg-background sticky top-0 z-50 w-full border-b">
-      <div className="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
-        <Link to="/" className="hidden font-bold sm:block">
+      <div className="container-custom flex h-16 items-center justify-between">
+        <Link to="/" className="font-bold text-lg sm:text-xl">
           Affirmation App
         </Link>
-        <div className="flex flex-1 items-center justify-end space-x-4">
+        <div className="flex items-center space-x-4">
           <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
             {navigation.map((item) => (
               <Link
@@ -60,64 +61,70 @@ export function Navigation() {
                 </Link>
               ))}
           </nav>
-          {isAuthenticated ? (
-            <Button variant="outline" size="sm" onClick={handleLogout}>
-              Log Out
-            </Button>
-          ) : (
-            <Link to="/auth">
-              <Button variant="outline" size="sm">
-                Sign In
+          <div className="hidden md:block">
+            {isAuthenticated ? (
+              <Button variant="outline" size="sm" onClick={handleLogout}>
+                Log Out
               </Button>
-            </Link>
-          )}
+            ) : (
+              <Link to="/auth">
+                <Button variant="outline" size="sm">
+                  Sign In
+                </Button>
+              </Link>
+            )}
+          </div>
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild className="md:hidden">
               <Button variant="ghost" size="sm" className="px-2">
-                <Menu className="h-4 w-4" />
+                <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="sm:max-w-xs">
-              <SheetHeader>
+            <SheetContent side="right" className="w-[80vw] sm:max-w-sm">
+              <SheetHeader className="text-left">
                 <SheetTitle>Menu</SheetTitle>
                 <SheetDescription>
                   Navigate through the app and manage your account.
                 </SheetDescription>
               </SheetHeader>
-              <div className="divide-y divide-border space-y-2 py-4">
-                {navigation.map((item) => (
-                  <Link
-                    key={item.href}
-                    to={item.href}
-                    className="block py-2 text-sm font-medium transition-colors hover:text-primary"
-                    onClick={() => setOpen(false)}
-                  >
-                    {item.name}
-                  </Link>
-                ))}
-                {isAuthenticated &&
-                  userNavigation.map((item) => (
+              <div className="space-y-6 py-6">
+                <div className="flex flex-col space-y-3">
+                  {navigation.map((item) => (
                     <Link
                       key={item.href}
                       to={item.href}
-                      className="block py-2 text-sm font-medium transition-colors hover:text-primary"
+                      className="text-base font-medium transition-colors hover:text-primary"
                       onClick={() => setOpen(false)}
                     >
                       {item.name}
                     </Link>
                   ))}
+                  {isAuthenticated &&
+                    userNavigation.map((item) => (
+                      <Link
+                        key={item.href}
+                        to={item.href}
+                        className="text-base font-medium transition-colors hover:text-primary"
+                        onClick={() => setOpen(false)}
+                      >
+                        {item.name}
+                      </Link>
+                    ))}
+                </div>
+                <div className="pt-4">
+                  {isAuthenticated ? (
+                    <Button variant="default" size="default" onClick={handleLogout} className="w-full">
+                      Log Out
+                    </Button>
+                  ) : (
+                    <Link to="/auth" className="w-full" onClick={() => setOpen(false)}>
+                      <Button variant="default" size="default" className="w-full">
+                        Sign In
+                      </Button>
+                    </Link>
+                  )}
+                </div>
               </div>
-              {isAuthenticated ? (
-                <Button variant="outline" size="sm" onClick={handleLogout}>
-                  Log Out
-                </Button>
-              ) : (
-                <Link to="/auth">
-                  <Button variant="outline" size="sm">
-                    Sign In
-                  </Button>
-                </Link>
-              )}
             </SheetContent>
           </Sheet>
         </div>

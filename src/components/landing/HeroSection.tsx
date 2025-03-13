@@ -23,11 +23,11 @@ export const HeroSection = ({
   }, []);
   
   return (
-    <AuroraBackground className="pt-24 pb-16 md:pt-32 md:pb-24 lg:pt-36 lg:pb-32 px-4 sm:px-6">
+    <AuroraBackground className="pt-28 md:pt-32 pb-16 md:pb-24 lg:pb-32 px-4 sm:px-6">
       <div className="container-custom">
-        <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8 lg:gap-12">
+        <div className="flex flex-col md:flex-row items-center gap-8 md:gap-10 lg:gap-12">
           {/* Text Content */}
-          <div className="text-center md:text-left md:w-1/2 space-y-3 sm:space-y-4 relative z-10">
+          <div className="text-center md:text-left md:w-1/2 space-y-4 md:space-y-5 relative z-10">
             <motion.div 
               initial={{ opacity: 0, y: 20 }} 
               animate={{ opacity: 1, y: 0 }} 
@@ -42,7 +42,7 @@ export const HeroSection = ({
               initial={{ opacity: 0, y: 20 }} 
               animate={{ opacity: 1, y: 0 }} 
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold leading-tight"
+              className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-tight"
             >
               Transform Your Mind with{" "}
               <span className="gradient-text bg-gradient-to-r from-[#9b87f5] via-[#543ab7] to-[#00acc1]">
@@ -54,7 +54,7 @@ export const HeroSection = ({
               initial={{ opacity: 0, y: 20 }} 
               animate={{ opacity: 1, y: 0 }} 
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-lg mx-auto md:mx-0 mt-2"
+              className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-lg mx-auto md:mx-0"
             >
               Experience personalized emotional healing through AI-generated affirmations, 
               delivered in a soothing voice with perfect timing and rhythm.
@@ -64,21 +64,21 @@ export const HeroSection = ({
               initial={{ opacity: 0, y: 20 }} 
               animate={{ opacity: 1, y: 0 }} 
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="flex flex-col sm:flex-row justify-center md:justify-start gap-3 sm:gap-4 pt-4 sm:pt-6"
+              className="flex flex-col sm:flex-row justify-center md:justify-start gap-4 pt-4 sm:pt-6"
             >
               <Button 
                 asChild 
-                className="inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 rounded-lg bg-gradient-to-r from-[#9b87f5] to-[#543ab7] hover:opacity-90 text-white transition-all duration-300 hover:scale-105 text-sm sm:text-base"
+                className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-gradient-to-r from-[#9b87f5] to-[#543ab7] hover:opacity-90 text-white transition-all duration-300 hover:scale-105 text-sm sm:text-base"
               >
                 <Link to={startPath}>
                   Get Started {user ? "Now" : "Free"}
-                  <ChevronRight className="ml-1 sm:ml-2 w-3 h-3 sm:w-4 sm:h-4" />
+                  <ChevronRight className="ml-1.5 w-4 h-4" />
                 </Link>
               </Button>
               <Button 
                 asChild 
                 variant="outline" 
-                className="inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 rounded-lg border border-[#9b87f5]/20 hover:bg-[#9b87f5]/5 transition-all duration-300 hover:scale-105 text-sm sm:text-base mt-2 sm:mt-0"
+                className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg border border-[#9b87f5]/20 hover:bg-[#9b87f5]/5 transition-all duration-300 hover:scale-105 text-sm sm:text-base mt-0"
               >
                 <a href="#features">
                   See How It Works
@@ -99,7 +99,7 @@ export const HeroSection = ({
               <img 
                 src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80" 
                 alt="Person meditating peacefully" 
-                className="relative rounded-2xl w-full h-auto object-cover shadow-xl transition-all duration-300 hover:shadow-2xl z-10 aspect-[4/3] md:aspect-auto" 
+                className="relative rounded-2xl w-full h-auto object-cover shadow-xl transition-all duration-300 hover:shadow-2xl z-10 aspect-[4/3]" 
               />
               
               {/* Decorative elements */}

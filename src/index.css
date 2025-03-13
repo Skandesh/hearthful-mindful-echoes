@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
 
 @tailwind base;
@@ -19,6 +18,16 @@
 
   * {
     @apply border-border;
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
   }
 
   body {
@@ -28,10 +37,17 @@
     margin: 0;
     padding: 0;
     overflow-x: hidden; /* Prevent horizontal scrolling */
+    min-height: 100vh;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply tracking-tight;
+    @apply tracking-tight font-semibold;
+    word-wrap: break-word;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
   }
 
   /* Fixed navbar spacing */
@@ -44,7 +60,7 @@
   }
 
   .container-custom {
-    @apply w-full max-w-7xl mx-auto px-5 sm:px-6 lg:px-8;
+    @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
 
   .feature-icon {
@@ -155,52 +171,49 @@
     @apply flex flex-col sm:flex-row;
   }
 
-  /* Mobile-first grid */
   .grid-responsive {
     @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6;
   }
   
-  /* Fix for section alignment */
-  .section-container {
-    @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  /* Mobile break points */
+  .mobile-p {
+    @apply px-4 sm:px-6 py-6 sm:py-8 md:py-10;
   }
   
-  /* Ensure consistent card heights */
-  .equal-height-cards {
-    @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6;
+  .mobile-m {
+    @apply mx-4 sm:mx-6 my-6 sm:my-8 md:my-10;
   }
   
-  .equal-height-cards > * {
-    @apply h-full;
+  /* Text sizing for mobile first */
+  .heading-responsive {
+    @apply text-2xl sm:text-3xl md:text-4xl lg:text-5xl;
   }
-
-  /* Content that should appear below navbar */
-  .below-navbar {
-    margin-top: 4rem; /* Adjust based on navbar height */
+  
+  .subheading-responsive {
+    @apply text-lg sm:text-xl md:text-2xl;
   }
-
-  /* Responsive padding for sections */
-  .responsive-section {
-    @apply py-6 sm:py-10 md:py-16 lg:py-20;
+  
+  .paragraph-responsive {
+    @apply text-sm sm:text-base md:text-lg;
   }
-
-  /* Proper responsive section spacing */
-  .section-spacing {
-    @apply my-12 sm:my-16 md:my-20;
+  
+  /* Fix for hero section specific spacing */
+  .hero-container {
+    @apply pt-24 md:pt-32 pb-12 md:pb-20;
   }
-
-  /* Stats section with proper grid */
-  .stats-grid {
-    @apply grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 px-4 md:px-0;
+  
+  /* Ensure images don't break layout */
+  .img-responsive {
+    @apply max-w-full h-auto object-cover;
   }
-
-  /* Testimonial grid fix */
-  .testimonial-grid {
-    @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6;
+  
+  /* Ensure consistent card sizing */
+  .card-responsive {
+    @apply p-4 sm:p-6 md:p-8 rounded-xl;
   }
-
-  /* Fix for overflowing sections */
-  .section-wrapper {
-    @apply max-w-full overflow-hidden;
+  
+  /* Fix for buttons on mobile */
+  .btn-responsive {
+    @apply px-4 sm:px-5 py-2 sm:py-2.5 text-sm sm:text-base;
   }
 }

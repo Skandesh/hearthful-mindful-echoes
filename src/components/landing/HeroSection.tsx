@@ -23,26 +23,26 @@ export const HeroSection = ({
   }, []);
   
   return (
-    <AuroraBackground className="pt-32 pb-24 md:pt-36 md:pb-32">
+    <AuroraBackground className="pt-24 pb-16 md:pt-32 md:pb-24 lg:pt-36 lg:pb-32 px-4 sm:px-6">
       <div className="container-custom">
-        <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
+        <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8 lg:gap-12">
           {/* Text Content */}
-          <div className="text-center md:text-left md:w-1/2 space-y-4 relative z-10">
+          <div className="text-center md:text-left md:w-1/2 space-y-3 sm:space-y-4 relative z-10">
             <motion.div 
               initial={{ opacity: 0, y: 20 }} 
               animate={{ opacity: 1, y: 0 }} 
               transition={{ duration: 0.5 }}
-              className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 backdrop-blur-md text-primary-foreground mb-2 hover-lift"
+              className="inline-flex items-center px-3 py-1 md:px-4 md:py-1.5 rounded-full bg-primary/10 backdrop-blur-md text-primary-foreground mb-2 hover-lift"
             >
-              <Heart className="w-4 h-4 mr-2" />
-              <span className="text-sm font-medium">Begin Your Healing Journey</span>
+              <Heart className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5" />
+              <span className="text-xs sm:text-sm font-medium">Begin Your Healing Journey</span>
             </motion.div>
             
             <motion.h1 
               initial={{ opacity: 0, y: 20 }} 
               animate={{ opacity: 1, y: 0 }} 
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight"
+              className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold leading-tight"
             >
               Transform Your Mind with{" "}
               <span className="gradient-text bg-gradient-to-r from-[#9b87f5] via-[#543ab7] to-[#00acc1]">
@@ -54,7 +54,7 @@ export const HeroSection = ({
               initial={{ opacity: 0, y: 20 }} 
               animate={{ opacity: 1, y: 0 }} 
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-base md:text-lg lg:text-xl text-muted-foreground max-w-lg mt-3"
+              className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-lg mx-auto md:mx-0 mt-2"
             >
               Experience personalized emotional healing through AI-generated affirmations, 
               delivered in a soothing voice with perfect timing and rhythm.
@@ -64,21 +64,21 @@ export const HeroSection = ({
               initial={{ opacity: 0, y: 20 }} 
               animate={{ opacity: 1, y: 0 }} 
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="flex flex-col sm:flex-row justify-center md:justify-start gap-4 pt-6"
+              className="flex flex-col sm:flex-row justify-center md:justify-start gap-3 sm:gap-4 pt-4 sm:pt-6"
             >
               <Button 
                 asChild 
-                className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-gradient-to-r from-[#9b87f5] to-[#543ab7] hover:opacity-90 text-white transition-all duration-300 hover:scale-105"
+                className="inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 rounded-lg bg-gradient-to-r from-[#9b87f5] to-[#543ab7] hover:opacity-90 text-white transition-all duration-300 hover:scale-105 text-sm sm:text-base"
               >
                 <Link to={startPath}>
                   Get Started {user ? "Now" : "Free"}
-                  <ChevronRight className="ml-2 w-4 h-4" />
+                  <ChevronRight className="ml-1 sm:ml-2 w-3 h-3 sm:w-4 sm:h-4" />
                 </Link>
               </Button>
               <Button 
                 asChild 
                 variant="outline" 
-                className="inline-flex items-center justify-center px-6 py-3 rounded-lg border border-[#9b87f5]/20 hover:bg-[#9b87f5]/5 transition-all duration-300 hover:scale-105"
+                className="inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 rounded-lg border border-[#9b87f5]/20 hover:bg-[#9b87f5]/5 transition-all duration-300 hover:scale-105 text-sm sm:text-base mt-2 sm:mt-0"
               >
                 <a href="#features">
                   See How It Works
@@ -92,30 +92,30 @@ export const HeroSection = ({
             initial={{ opacity: 0, scale: 0.9 }} 
             animate={{ opacity: 1, scale: 1 }} 
             transition={{ duration: 0.7, delay: 0.3 }}
-            className="md:w-1/2 mt-8 md:mt-0"
+            className="md:w-1/2 mt-8 md:mt-0 w-full max-w-md mx-auto md:max-w-none"
           >
             <div className="relative">
               <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-[#9b87f5] to-[#543ab7] opacity-75 blur-sm"></div>
               <img 
                 src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80" 
                 alt="Person meditating peacefully" 
-                className="relative rounded-2xl w-full h-auto object-cover shadow-xl transition-all duration-300 hover:shadow-2xl z-10" 
+                className="relative rounded-2xl w-full h-auto object-cover shadow-xl transition-all duration-300 hover:shadow-2xl z-10 aspect-[4/3] md:aspect-auto" 
               />
               
               {/* Decorative elements */}
-              <div className="absolute -top-5 -right-5 w-20 h-20 rounded-full bg-gradient-to-r from-[#9b87f5]/50 to-[#543ab7]/50 blur-xl z-0"></div>
-              <div className="absolute -bottom-7 -left-7 w-28 h-28 rounded-full bg-gradient-to-r from-[#00acc1]/30 to-[#543ab7]/30 blur-xl z-0"></div>
+              <div className="absolute -top-5 -right-5 w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-r from-[#9b87f5]/50 to-[#543ab7]/50 blur-xl z-0"></div>
+              <div className="absolute -bottom-7 -left-7 w-20 h-20 sm:w-28 sm:h-28 rounded-full bg-gradient-to-r from-[#00acc1]/30 to-[#543ab7]/30 blur-xl z-0"></div>
             </div>
           </motion.div>
         </div>
 
-        {/* Testimonial Cards Section - Fixed layout */}
-        <div className="relative max-w-5xl mx-auto mt-20 mb-8">
+        {/* Testimonial Cards Section */}
+        <div className="relative max-w-5xl mx-auto mt-12 sm:mt-16 md:mt-20 mb-4 sm:mb-8">
           <motion.div 
             initial={{ opacity: 0, y: 20 }} 
             animate={{ opacity: 1, y: 0 }} 
             transition={{ duration: 0.8, delay: 0.5 }}
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 px-2 sm:px-0"
           >
             {/* Testimonial Cards */}
             <TestimonialCard 

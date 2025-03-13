@@ -53,9 +53,8 @@ export function useChatMessages() {
     setLoading(true);
     try {
       const userMessage = { type: 'user' as const, content: message };
-      setMessages(prev => [...prev, userMessage]);
-      setMessage("");
-
+      
+      // Add the message but don't scroll for affirmation sessions
       const {
         affirmationSession,
         saveAffirmation,
@@ -65,11 +64,22 @@ export function useChatMessages() {
         userPlan,
         user
       } = options || {};
+      
+      // Only add the message to the list if we're not in an active affirmation session
+      // or if this is the first message that starts the session
+      const isStartingAffirmationSession = 
+        !affirmationSession?.isActive && 
+        message.toLowerCase().includes("yes") && 
+        messages[messages.length - 1]?.content.includes("affirmation session");
+      
+      if (!affirmationSession?.isActive || isStartingAffirmationSession) {
+        setMessages(prev => [...prev, userMessage]);
+      }
+      
+      setMessage("");
 
       // Handle affirmation session prompt
-      if (affirmationSession && !affirmationSession.isActive && 
-          message.toLowerCase().includes("yes") && 
-          messages[messages.length - 1]?.content.includes("affirmation session")) {
+      if (isStartingAffirmationSession) {
         const firstAffirmation = await startAffirmationSession?.("positive");
         const aiResponse = await generateAIResponse(firstAffirmation);
         setMessages(prev => [...prev, { type: 'ai', content: aiResponse }]);

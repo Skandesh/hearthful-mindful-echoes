@@ -33,21 +33,31 @@ export function AffirmationVisualizer({ isActive, currentAffirmation }: Affirmat
       speedY: number;
       color: string;
       alpha: number;
+      maxSize: number;
+      growth: number;
       
       constructor() {
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 5 + 1;
-        this.speedX = Math.random() * 3 - 1.5;
-        this.speedY = Math.random() * 3 - 1.5;
-        this.color = getRandomColor();
-        this.alpha = Math.random() * 0.5 + 0.5; // Varied opacity
+        this.size = Math.random() * 3 + 1;
+        this.maxSize = this.size + Math.random() * 3;
+        this.speedX = Math.random() * 1 - 0.5;
+        this.speedY = Math.random() * 1 - 0.5;
+        this.color = getRandomSoothingColor();
+        this.alpha = Math.random() * 0.4 + 0.2; // Softer opacity
+        this.growth = Math.random() * 0.03; // For pulsing effect
       }
       
-      update() {
+      update(time: number) {
         this.x += this.speedX;
         this.y += this.speedY;
         
+        // Gentle pulsing size based on time
+        this.size = this.size + Math.sin(time * 0.001 + this.x * 0.01) * this.growth;
+        if (this.size > this.maxSize) this.size = this.maxSize;
+        if (this.size < 1) this.size = 1;
+        
+        // Screen wrap
         if (this.x > canvas.width) this.x = 0;
         else if (this.x < 0) this.x = canvas.width;
         
@@ -67,155 +77,197 @@ export function AffirmationVisualizer({ isActive, currentAffirmation }: Affirmat
       }
     }
     
-    function getRandomColor() {
+    function getRandomSoothingColor() {
       const colors = [
-        '#9b87f5', // Primary Purple
-        '#7E69AB', // Secondary Purple
-        '#D6BCFA', // Light Purple
-        '#E5DEFF', // Soft Purple
-        '#F2FCE2', // Soft Green
-        '#FEF7CD', // Soft Yellow
-        '#FEC6A1', // Soft Orange
-        '#FFDEE2', // Soft Pink
+        'rgba(155, 135, 245, 0.6)', // Soft Purple
+        'rgba(126, 105, 171, 0.5)', // Muted Purple
+        'rgba(214, 188, 250, 0.4)', // Light Purple
+        'rgba(229, 222, 255, 0.5)', // Softer Purple
+        'rgba(242, 252, 226, 0.4)', // Soft Green
+        'rgba(254, 247, 205, 0.5)', // Soft Yellow
+        'rgba(156, 198, 233, 0.5)', // Soft Blue
+        'rgba(214, 234, 248, 0.4)', // Lighter Blue
       ];
       return colors[Math.floor(Math.random() * colors.length)];
     }
     
-    // Create premium music player-like background
-    function createGradientBackground() {
-      // Create a deep, rich gradient background
-      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      gradient.addColorStop(0, 'rgba(84, 58, 183, 0.9)'); // Deep purple top
-      gradient.addColorStop(1, 'rgba(0, 172, 193, 0.7)'); // Teal-ish bottom
+    // Create soothing gradient background
+    function createSoothingBackground(time: number) {
+      // Create a soft, soothing gradient background that slowly shifts
+      const gradient = ctx.createRadialGradient(
+        canvas.width * (0.5 + 0.1 * Math.sin(time * 0.0003)), 
+        canvas.height * (0.5 + 0.1 * Math.cos(time * 0.0004)),
+        0,
+        canvas.width * 0.5, 
+        canvas.height * 0.5,
+        canvas.width * 0.8
+      );
+      
+      // Shift gradient colors very slightly over time
+      const hue1 = (230 + 10 * Math.sin(time * 0.0002)) % 360; // Blue-ish range
+      const hue2 = (260 + 10 * Math.cos(time * 0.0003)) % 360; // Purple-ish range
+      
+      gradient.addColorStop(0, `hsla(${hue1}, 70%, 70%, 0.7)`);
+      gradient.addColorStop(1, `hsla(${hue2}, 80%, 40%, 0.7)`);
+      
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
-      // Add subtle noise texture for depth
-      for (let i = 0; i < canvas.width; i += 4) {
-        for (let j = 0; j < canvas.height; j += 4) {
-          if (Math.random() > 0.996) {
-            ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.2})`;
-            ctx.fillRect(i, j, 4, 4);
-          }
-        }
-      }
+      // Add subtle glow in the center
+      const centerGlow = ctx.createRadialGradient(
+        canvas.width * 0.5, 
+        canvas.height * 0.4,
+        0,
+        canvas.width * 0.5, 
+        canvas.height * 0.4,
+        canvas.width * 0.4
+      );
+      centerGlow.addColorStop(0, 'rgba(255, 255, 255, 0.15)');
+      centerGlow.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      ctx.fillStyle = centerGlow;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
     
-    // Draw audio-like waveform that moves with time
-    function drawWaveform(time: number) {
+    // Draw gentle flowing lines
+    function drawFlowingLines(time: number) {
       ctx.beginPath();
       
       // Horizontal center line
       const centerY = canvas.height * 0.75;
-      ctx.moveTo(0, centerY);
       
-      // Number of segments to draw
-      const segments = 40;
+      // Create more natural, organically flowing lines
+      const segments = 10;
       const width = canvas.width;
+      const lineSpacing = canvas.height * 0.1;
       
-      // Create a smoother, more professional looking waveform
-      for (let i = 0; i <= segments; i++) {
-        const x = (i / segments) * width;
-        const intensity = Math.sin(i * 0.2 + time * 0.002) * Math.sin(i * 0.1 - time * 0.001);
-        const amplitude = 20 * Math.sin(time * 0.001) + 10; // Varying amplitude
-        const y = centerY + intensity * amplitude;
+      for (let j = 0; j < 3; j++) {
+        const yOffset = j * lineSpacing - lineSpacing;
+        ctx.beginPath();
         
-        ctx.lineTo(x, y);
+        for (let i = 0; i <= segments; i++) {
+          const x = (i / segments) * width;
+          const intensity = 
+            Math.sin(i * 0.3 + time * 0.001 + j * 0.7) * 
+            Math.sin(i * 0.2 - time * 0.0008 + j * 0.4);
+          const amplitude = 10 * (Math.sin(time * 0.0005 + j) * 0.5 + 0.5);
+          const y = centerY + yOffset + intensity * amplitude;
+          
+          if (i === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+        }
+        
+        // Stylized stroke with gradient and varying alpha
+        const alpha = 0.1 + j * 0.1;
+        ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
       }
-      
-      // Stylized stroke
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
-      ctx.lineWidth = 2;
-      ctx.stroke();
     }
     
-    // Draw a pulsing progress bar
-    function drawProgressBar(time: number) {
-      const barHeight = 4;
-      const barY = canvas.height * 0.9;
-      const maxWidth = canvas.width * 0.8;
-      const startX = (canvas.width - maxWidth) / 2;
+    // Draw a gentle breathing circle
+    function drawBreathingCircle(time: number) {
+      const x = canvas.width * 0.5;
+      const y = canvas.height * 0.4;
       
-      // Background track
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-      ctx.fillRect(startX, barY, maxWidth, barHeight);
+      // Calculate breathing rhythm - slower, more meditative
+      const breathSize = 
+        40 + 
+        20 * Math.sin(time * 0.0004) * 
+        Math.pow(Math.sin(time * 0.0004), 2); // Pause at full breath
       
-      // Calculate progress based on time
-      const progress = (Math.sin(time * 0.001) + 1) / 2; // 0 to 1 oscillating
-      const progressWidth = maxWidth * progress;
+      // Main circle with soft gradient
+      const gradient = ctx.createRadialGradient(x, y, 0, x, y, breathSize);
+      gradient.addColorStop(0, 'rgba(255, 255, 255, 0.2)');
+      gradient.addColorStop(0.7, 'rgba(255, 255, 255, 0.05)');
+      gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
       
-      // Progress fill
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-      ctx.fillRect(startX, barY, progressWidth, barHeight);
+      ctx.beginPath();
+      ctx.arc(x, y, breathSize, 0, Math.PI * 2);
+      ctx.fillStyle = gradient;
+      ctx.fill();
+      
+      // Outer glow ring
+      ctx.beginPath();
+      ctx.arc(x, y, breathSize + 5, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
     }
     
     // Initialize particles
     function init() {
       particles = [];
-      for (let i = 0; i < 30; i++) {
+      for (let i = 0; i < 40; i++) {
         particles.push(new Particle());
       }
     }
     
     // Animation loop
     function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
       const currentTime = Date.now();
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       
       // Draw background
-      createGradientBackground();
+      createSoothingBackground(currentTime);
+      
+      // Draw breathing circle
+      drawBreathingCircle(currentTime);
+      
+      // Draw flowing lines
+      drawFlowingLines(currentTime);
       
       // Draw particles
       for (let i = 0; i < particles.length; i++) {
-        particles[i].update();
+        particles[i].update(currentTime);
         particles[i].draw();
       }
       
-      // Draw waveform and progress elements
-      drawWaveform(currentTime);
-      drawProgressBar(currentTime);
-      
       // Draw the main affirmation text
-      const lines = currentAffirmation.split('.').filter(line => line.trim() !== '');
-      
-      if (lines.length > 0) {
-        const mainLine = lines[0].trim();
+      if (currentAffirmation) {
+        const lines = currentAffirmation.split('.').filter(line => line.trim() !== '');
         
-        // Add text shadow for better readability
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
-        ctx.shadowBlur = 6;
-        ctx.shadowOffsetX = 1;
-        ctx.shadowOffsetY = 1;
-        
-        // Word wrap the text
-        const words = mainLine.split(' ');
-        let currentLine = '';
-        let y = canvas.height * 0.4;
-        
-        // Use a nicer font
-        ctx.font = '500 24px "Inter", sans-serif';
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-        ctx.textAlign = 'center';
-        
-        for (let i = 0; i < words.length; i++) {
-          const testLine = currentLine + words[i] + ' ';
-          const metrics = ctx.measureText(testLine);
-          if (metrics.width > canvas.width - 60 && i > 0) {
-            ctx.fillText(currentLine, canvas.width / 2, y);
-            currentLine = words[i] + ' ';
-            y += 35;
-          } else {
-            currentLine = testLine;
+        if (lines.length > 0) {
+          const mainLine = lines[0].trim();
+          
+          // Add text shadow for better readability
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+          ctx.shadowBlur = 6;
+          ctx.shadowOffsetX = 1;
+          ctx.shadowOffsetY = 1;
+          
+          // Word wrap the text
+          const words = mainLine.split(' ');
+          let currentLine = '';
+          let y = canvas.height * 0.4;
+          
+          // Use a nicer font
+          ctx.font = '500 24px "Inter", sans-serif';
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+          ctx.textAlign = 'center';
+          
+          for (let i = 0; i < words.length; i++) {
+            const testLine = currentLine + words[i] + ' ';
+            const metrics = ctx.measureText(testLine);
+            if (metrics.width > canvas.width - 60 && i > 0) {
+              ctx.fillText(currentLine, canvas.width / 2, y);
+              currentLine = words[i] + ' ';
+              y += 35;
+            } else {
+              currentLine = testLine;
+            }
           }
+          
+          ctx.fillText(currentLine, canvas.width / 2, y);
+          
+          // Reset shadow
+          ctx.shadowColor = 'transparent';
+          ctx.shadowBlur = 0;
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 0;
         }
-        
-        ctx.fillText(currentLine, canvas.width / 2, y);
-        
-        // Reset shadow
-        ctx.shadowColor = 'transparent';
-        ctx.shadowBlur = 0;
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 0;
       }
       
       animationFrameId = requestAnimationFrame(animate);

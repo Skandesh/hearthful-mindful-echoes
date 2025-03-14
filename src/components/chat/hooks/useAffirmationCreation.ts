@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { generateAIResponse } from "../ChatService";
 import { useToast } from "@/hooks/use-toast";
@@ -17,7 +18,9 @@ export function useAffirmationCreation(chatState: any) {
     setMessages,
     hasReachedLimit,
     userPlan,
-    saveAffirmation
+    saveAffirmation,
+    affirmationSession,
+    startAffirmationSession
   } = chatState;
 
   useEffect(() => {
@@ -29,10 +32,7 @@ export function useAffirmationCreation(chatState: any) {
     }
   }, [showInputAlert]);
 
-  const createAffirmations = async (
-    affirmationSession: any,
-    startAffirmationSession: any
-  ) => {
+  const createAffirmations = async () => {
     setShowInputAlert(false);
     
     if (!message || message.trim() === '') {
@@ -87,24 +87,26 @@ export function useAffirmationCreation(chatState: any) {
         prompt += ` in ${language}`;
       }
       
+      console.log("Generating affirmations with prompt:", prompt);
+      
       const aiResponse = await generateAIResponse(prompt);
       setMessages([
         { type: 'user', content: prompt },
         { type: 'ai', content: aiResponse }
       ]);
       
-      if (!affirmationSession.isActive) {
-        const mood = message || "positive";
-        const firstAffirmation = await startAffirmationSession(mood);
-        
-        if (user) {
-          await saveAffirmation(firstAffirmation);
-        }
+      console.log("Starting affirmation session with mood:", message);
+      const mood = message || "positive";
+      const firstAffirmation = await startAffirmationSession(mood);
+      console.log("First affirmation:", firstAffirmation);
+      
+      if (user) {
+        await saveAffirmation(firstAffirmation);
       }
       
       setShowChat(true);
     } catch (error: any) {
-      console.error('Error:', error);
+      console.error('Error creating affirmations:', error);
       toast({
         variant: "destructive",
         title: "Error creating affirmations",

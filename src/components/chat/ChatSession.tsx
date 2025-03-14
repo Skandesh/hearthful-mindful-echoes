@@ -58,8 +58,16 @@ export function ChatSession({
     }
   };
 
-  // Always show all messages, with proper handling for fullscreen mode
+  // Display all messages regardless of session state
   const displayMessages = messages;
+
+  console.log("Affirmation session state:", {
+    isActive: affirmationSession.isActive,
+    currentAffirmation: affirmationSession.currentAffirmation,
+    affirmations: affirmationSession.affirmations,
+    index: affirmationSession.index,
+    isFullscreen: affirmationSession.isFullscreen
+  });
 
   return (
     <div className={`transition-all duration-500 ${isFullscreenMode ? 'fixed inset-0 z-50 bg-black/80 flex items-center justify-center' : ''}`}>
@@ -77,14 +85,16 @@ export function ChatSession({
         isFullscreenMode={isFullscreenMode}
       />
       
-      {/* Visualization Component - Only show when session is active */}
+      {/* Visualization Component - Always show when session is active */}
       {affirmationSession.isActive && (
-        <AffirmationVisualizerWithControls
-          isActive={affirmationSession.isActive}
-          isFullscreenMode={isFullscreenMode}
-          currentAffirmation={affirmationSession.currentAffirmation}
-          onToggleFullscreen={onToggleFullscreen}
-        />
+        <div className="mb-6">
+          <AffirmationVisualizerWithControls
+            isActive={affirmationSession.isActive}
+            isFullscreenMode={isFullscreenMode}
+            currentAffirmation={affirmationSession.currentAffirmation}
+            onToggleFullscreen={onToggleFullscreen}
+          />
+        </div>
       )}
       
       {/* Chat History - Hide in fullscreen mode */}

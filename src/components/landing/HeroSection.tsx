@@ -23,11 +23,11 @@ export const HeroSection = ({
   }, []);
   
   return (
-    <AuroraBackground className="pt-28 md:pt-32 pb-16 md:pb-24 lg:pb-32 px-4 sm:px-6">
+    <AuroraBackground className="pt-20 md:pt-32 pb-12 md:pb-24 lg:pb-32 px-4 sm:px-6 overflow-hidden">
       <div className="container-custom">
-        <div className="flex flex-col md:flex-row items-center gap-8 md:gap-10 lg:gap-12">
+        <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10 lg:gap-12 w-full">
           {/* Text Content */}
-          <div className="text-center md:text-left md:w-1/2 space-y-4 md:space-y-5 relative z-10">
+          <div className="text-center md:text-left md:w-1/2 space-y-3 md:space-y-5 relative z-10 w-full">
             <motion.div 
               initial={{ opacity: 0, y: 20 }} 
               animate={{ opacity: 1, y: 0 }} 
@@ -64,11 +64,11 @@ export const HeroSection = ({
               initial={{ opacity: 0, y: 20 }} 
               animate={{ opacity: 1, y: 0 }} 
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="flex flex-col sm:flex-row justify-center md:justify-start gap-4 pt-4 sm:pt-6"
+              className="flex flex-wrap justify-center md:justify-start gap-3 sm:gap-4 pt-3 sm:pt-5 w-full"
             >
               <Button 
                 asChild 
-                className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-gradient-to-r from-[#9b87f5] to-[#543ab7] hover:opacity-90 text-white transition-all duration-300 hover:scale-105 text-sm sm:text-base"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-gradient-to-r from-[#9b87f5] to-[#543ab7] hover:opacity-90 text-white transition-all duration-300 hover:scale-105 text-sm sm:text-base"
               >
                 <Link to={startPath}>
                   Get Started {user ? "Now" : "Free"}
@@ -78,7 +78,7 @@ export const HeroSection = ({
               <Button 
                 asChild 
                 variant="outline" 
-                className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg border border-[#9b87f5]/20 hover:bg-[#9b87f5]/5 transition-all duration-300 hover:scale-105 text-sm sm:text-base mt-0"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-5 py-2.5 rounded-lg border border-[#9b87f5]/20 hover:bg-[#9b87f5]/5 transition-all duration-300 hover:scale-105 text-sm sm:text-base mt-2 sm:mt-0"
               >
                 <a href="#features">
                   See How It Works
@@ -115,7 +115,7 @@ export const HeroSection = ({
             initial={{ opacity: 0, y: 20 }} 
             animate={{ opacity: 1, y: 0 }} 
             transition={{ duration: 0.8, delay: 0.5 }}
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 px-2 sm:px-0"
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 px-0"
           >
             {/* Testimonial Cards */}
             <TestimonialCard 

@@ -17,7 +17,7 @@ const Index = () => {
   const startPath = user ? "/app" : "/auth";
 
   return (
-    <div className="min-h-screen bg-[#F7F5F3]">
+    <div className="min-h-screen bg-[#F7F5F3] w-full overflow-x-hidden">
       {/* Hero Section - The pt-16 ensures it starts below the navbar */}
       <HeroSection user={user} startPath={startPath} />
 

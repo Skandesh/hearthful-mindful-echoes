@@ -50,11 +50,7 @@ export default function Chat() {
     createAffirmations, 
     showInputAlert, 
     setShowInputAlert 
-  } = useAffirmationCreation({
-    ...chat,
-    affirmationSession,
-    startAffirmationSession
-  });
+  } = useAffirmationCreation(chat);
 
   // Scroll to bottom whenever messages change
   useEffect(() => {
@@ -80,8 +76,8 @@ export default function Chat() {
   
   // Handle creating affirmations
   const handleCreateAffirmations = useCallback(async () => {
-    await createAffirmations(affirmationSession, startAffirmationSession);
-  }, [createAffirmations, affirmationSession, startAffirmationSession]);
+    await createAffirmations();
+  }, [createAffirmations]);
 
   // Play audio for messages
   const handlePlayAudio = useCallback((message: Message) => {

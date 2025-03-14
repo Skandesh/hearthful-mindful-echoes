@@ -1,0 +1,117 @@
+
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  /* Layout utilities */
+  .navbar-offset {
+    padding-top: 4rem;
+  }
+
+  .container-custom {
+    @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .hover-lift {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
+  }
+
+  /* Animation utilities */
+  @keyframes gradientPosition {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  @keyframes shine {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  @keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .animate-gradient {
+    background-size: 200% auto;
+    animation: gradient 4s linear infinite;
+  }
+
+  /* Text utilities */
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary animate-gradient;
+  }
+
+  /* Responsive utilities */
+  .px-mobile {
+    @apply px-4 sm:px-0;
+  }
+
+  .py-mobile {
+    @apply py-6 sm:py-8 md:py-10;
+  }
+
+  .text-mobile {
+    @apply text-sm sm:text-base;
+  }
+
+  .heading-mobile {
+    @apply text-xl sm:text-2xl md:text-3xl lg:text-4xl;
+  }
+
+  .heading-responsive {
+    @apply text-2xl sm:text-3xl md:text-4xl lg:text-5xl;
+  }
+  
+  .subheading-responsive {
+    @apply text-lg sm:text-xl md:text-2xl;
+  }
+  
+  .paragraph-responsive {
+    @apply text-sm sm:text-base md:text-lg;
+  }
+
+  .section-spacing {
+    @apply my-10 sm:my-16 md:my-20;
+  }
+
+  .flex-responsive {
+    @apply flex flex-col sm:flex-row;
+  }
+
+  .grid-responsive {
+    @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6;
+  }
+  
+  .mobile-p {
+    @apply px-4 sm:px-6 py-6 sm:py-8 md:py-10;
+  }
+  
+  .mobile-m {
+    @apply mx-4 sm:mx-6 my-6 sm:my-8 md:my-10;
+  }
+  
+  .hero-container {
+    @apply pt-24 md:pt-32 pb-12 md:pb-20;
+  }
+  
+  .img-responsive {
+    @apply max-w-full h-auto object-cover;
+  }
+  
+  .btn-responsive {
+    @apply px-4 sm:px-5 py-2 sm:py-2.5 text-sm sm:text-base;
+  }
+}

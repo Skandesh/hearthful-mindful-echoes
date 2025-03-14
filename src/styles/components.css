@@ -1,0 +1,44 @@
+
+@layer components {
+  /* Card styles */
+  .glass-card {
+    @apply bg-white/50 backdrop-blur-sm border border-white/20 shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02];
+  }
+
+  .card {
+    @apply rounded-xl overflow-hidden;
+  }
+
+  .card-padding {
+    @apply p-4 sm:p-6 md:p-8;
+  }
+
+  .card-responsive {
+    @apply p-4 sm:p-6 md:p-8 rounded-xl;
+  }
+
+  /* Feature icon styles */
+  .feature-icon {
+    @apply relative overflow-hidden transition-all duration-500 rounded-lg;
+    background: linear-gradient(45deg, #E8A87C, #86B3D1);
+    background-size: 200% 200%;
+    animation: gradientPosition 3s ease infinite;
+  }
+
+  .feature-icon:hover {
+    background: linear-gradient(45deg, #86B3D1, #D8B4A0, #E8A87C, #C38D9E);
+    background-size: 300% 300%;
+    animation: gradientPosition 2s ease infinite;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  }
+
+  /* Form elements */
+  input, select, textarea {
+    @apply py-2.5;
+  }
+  
+  .btn, button {
+    @apply transition-all duration-300;
+  }
+}

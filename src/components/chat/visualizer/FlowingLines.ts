@@ -5,24 +5,38 @@ export function drawFlowingLines(
   canvasHeight: number, 
   time: number
 ) {
+  // Optimize by reducing calculations and segments based on canvas width
+  // Fewer segments for narrower canvases
+  const segments = canvasWidth < 600 ? 6 : 10;
+  
   // Horizontal center line
   const centerY = canvasHeight * 0.75;
   
   // Create more natural, organically flowing lines
-  const segments = 10;
   const width = canvasWidth;
   const lineSpacing = canvasHeight * 0.1;
   
-  for (let j = 0; j < 3; j++) {
+  // Precompute sine values for better performance
+  const timeFactorA = time * 0.001;
+  const timeFactorB = time * 0.0008;
+  const timeFactorC = time * 0.0005;
+  
+  // Draw fewer lines on smaller screens
+  const lineCount = canvasWidth < 400 ? 2 : 3;
+  
+  for (let j = 0; j < lineCount; j++) {
     const yOffset = j * lineSpacing - lineSpacing;
     ctx.beginPath();
     
     for (let i = 0; i <= segments; i++) {
       const x = (i / segments) * width;
+      const progress = i / segments;
+      
+      // Simplified calculations
       const intensity = 
-        Math.sin(i * 0.3 + time * 0.001 + j * 0.7) * 
-        Math.sin(i * 0.2 - time * 0.0008 + j * 0.4);
-      const amplitude = 10 * (Math.sin(time * 0.0005 + j) * 0.5 + 0.5);
+        Math.sin(progress * 3 + timeFactorA + j * 0.7) * 
+        Math.sin(progress * 2 - timeFactorB + j * 0.4);
+      const amplitude = 10 * (Math.sin(timeFactorC + j) * 0.5 + 0.5);
       const y = centerY + yOffset + intensity * amplitude;
       
       if (i === 0) {

@@ -14,6 +14,8 @@ export class Particle implements ParticleType {
   growth: number;
   canvasWidth: number;
   canvasHeight: number;
+  lastUpdate: number;
+  updateInterval: number;
   
   constructor(canvasWidth: number, canvasHeight: number) {
     this.canvasWidth = canvasWidth;
@@ -27,32 +29,54 @@ export class Particle implements ParticleType {
     this.color = getRandomSoothingColor();
     this.alpha = Math.random() * 0.4 + 0.2; // Softer opacity
     this.growth = Math.random() * 0.03; // For pulsing effect
+    this.lastUpdate = 0;
+    // Random update interval for each particle to stagger updates
+    this.updateInterval = Math.floor(Math.random() * 3) + 1;
   }
   
   update(time: number) {
+    // Optimize by updating less frequently based on particle's individual interval
+    if (time - this.lastUpdate < this.updateInterval * 16) { // 16ms is ~60fps
+      return;
+    }
+    
+    this.lastUpdate = time;
     this.x += this.speedX;
     this.y += this.speedY;
     
     // Gentle pulsing size based on time
-    this.size = this.size + Math.sin(time * 0.001 + this.x * 0.01) * this.growth;
+    // Use a simplified calculation for better performance
+    this.size = this.size + Math.sin(time * 0.001) * this.growth;
     if (this.size > this.maxSize) this.size = this.maxSize;
     if (this.size < 1) this.size = 1;
     
-    // Screen wrap
-    if (this.x > this.canvasWidth) this.x = 0;
-    else if (this.x < 0) this.x = this.canvasWidth;
+    // Optimize boundary checks by only doing one comparison per axis
+    if (this.x < 0) {
+      this.x = this.canvasWidth;
+    } else if (this.x > this.canvasWidth) {
+      this.x = 0;
+    }
     
-    if (this.y > this.canvasHeight) this.y = 0;
-    else if (this.y < 0) this.y = this.canvasHeight;
+    if (this.y < 0) {
+      this.y = this.canvasHeight;
+    } else if (this.y > this.canvasHeight) {
+      this.y = 0;
+    }
   }
   
   draw(ctx: CanvasRenderingContext2D) {
-    ctx.globalAlpha = this.alpha;
+    // Avoid globalAlpha changes when possible for better performance
+    if (this.alpha !== 1) {
+      ctx.globalAlpha = this.alpha;
+    }
+    
     ctx.fillStyle = this.color;
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-    ctx.closePath();
     ctx.fill();
-    ctx.globalAlpha = 1;
+    
+    if (this.alpha !== 1) {
+      ctx.globalAlpha = 1;
+    }
   }
 }

@@ -7,7 +7,7 @@ interface AffirmationVisualizerProps {
   currentAffirmation: string;
 }
 
-export function AffirmationVisualizer({ isActive, currentAffirmation }: AffirmationVisualizerProps) {
+function AffirmationVisualizerBase({ isActive, currentAffirmation }: AffirmationVisualizerProps) {
   const canvasRef = useVisualizer(isActive, currentAffirmation);
   
   return (
@@ -36,3 +36,6 @@ export function AffirmationVisualizer({ isActive, currentAffirmation }: Affirmat
     </div>
   );
 }
+
+// Use React.memo to prevent unnecessary re-renders
+export const AffirmationVisualizer = React.memo(AffirmationVisualizerBase);

@@ -1,4 +1,8 @@
 
+// Cache values for breathing animation
+let lastBreathSize = 0;
+let lastTimestamp = 0;
+
 export function drawBreathingCircle(
   ctx: CanvasRenderingContext2D, 
   canvasWidth: number, 
@@ -8,11 +12,18 @@ export function drawBreathingCircle(
   const x = canvasWidth * 0.5;
   const y = canvasHeight * 0.4;
   
-  // Calculate breathing rhythm - slower, more meditative
-  const breathSize = 
-    40 + 
-    20 * Math.sin(time * 0.0004) * 
-    Math.pow(Math.sin(time * 0.0004), 2); // Pause at full breath
+  // Only recalculate breathing rhythm every 50ms for better performance
+  if (time - lastTimestamp > 50) {
+    // Calculate breathing rhythm - slower, more meditative
+    lastBreathSize = 
+      40 + 
+      20 * Math.sin(time * 0.0004) * 
+      Math.pow(Math.sin(time * 0.0004), 2); // Pause at full breath
+    
+    lastTimestamp = time;
+  }
+  
+  const breathSize = lastBreathSize;
   
   // Main circle with soft gradient
   const gradient = ctx.createRadialGradient(x, y, 0, x, y, breathSize);
@@ -25,10 +36,12 @@ export function drawBreathingCircle(
   ctx.fillStyle = gradient;
   ctx.fill();
   
-  // Outer glow ring
-  ctx.beginPath();
-  ctx.arc(x, y, breathSize + 5, 0, Math.PI * 2);
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-  ctx.lineWidth = 2;
-  ctx.stroke();
+  // Outer glow ring - only draw if breathSize is big enough
+  if (breathSize > 5) {
+    ctx.beginPath();
+    ctx.arc(x, y, breathSize + 5, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
 }

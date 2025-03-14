@@ -11,7 +11,7 @@ interface AffirmationVisualizerWithControlsProps {
   onToggleFullscreen?: () => void;
 }
 
-export function AffirmationVisualizerWithControls({
+function AffirmationVisualizerWithControlsBase({
   isActive,
   isFullscreenMode,
   currentAffirmation,
@@ -40,3 +40,6 @@ export function AffirmationVisualizerWithControls({
     </div>
   );
 }
+
+// Use React.memo to prevent unnecessary re-renders
+export const AffirmationVisualizerWithControls = React.memo(AffirmationVisualizerWithControlsBase);

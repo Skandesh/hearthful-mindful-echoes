@@ -43,11 +43,6 @@ export function ChatSession({
   onStopRecording,
   onToggleFullscreen,
 }: ChatSessionProps) {
-  // Only show the most recent AI message during affirmation sessions
-  const recentMessages = affirmationSession.isActive 
-    ? messages.slice(-2) // Just the recent user and AI message
-    : messages;
-
   // Determine if we should show the affirmation in fullscreen mode
   const isFullscreenMode = affirmationSession.isActive && affirmationSession.isFullscreen;
   
@@ -62,6 +57,9 @@ export function ChatSession({
       onBackClick();
     }
   };
+
+  // Always show all messages, with proper handling for fullscreen mode
+  const displayMessages = messages;
 
   return (
     <div className={`transition-all duration-500 ${isFullscreenMode ? 'fixed inset-0 z-50 bg-black/80 flex items-center justify-center' : ''}`}>
@@ -79,19 +77,21 @@ export function ChatSession({
         isFullscreenMode={isFullscreenMode}
       />
       
-      {/* Visualization Component */}
-      <AffirmationVisualizerWithControls
-        isActive={affirmationSession.isActive}
-        isFullscreenMode={isFullscreenMode}
-        currentAffirmation={affirmationSession.currentAffirmation}
-        onToggleFullscreen={onToggleFullscreen}
-      />
+      {/* Visualization Component - Only show when session is active */}
+      {affirmationSession.isActive && (
+        <AffirmationVisualizerWithControls
+          isActive={affirmationSession.isActive}
+          isFullscreenMode={isFullscreenMode}
+          currentAffirmation={affirmationSession.currentAffirmation}
+          onToggleFullscreen={onToggleFullscreen}
+        />
+      )}
       
-      {/* Chat History */}
-      {!isFullscreenMode && (!affirmationSession.isActive || recentMessages.length > 0) && (
-        <div className={`bg-white/50 backdrop-blur-sm rounded-xl p-5 shadow-sm border border-[#9b87f5]/10 mb-8 ${affirmationSession.isActive ? 'max-h-32 overflow-y-auto opacity-60' : ''}`}>
+      {/* Chat History - Hide in fullscreen mode */}
+      {!isFullscreenMode && (
+        <div className="bg-white/50 backdrop-blur-sm rounded-xl p-5 shadow-sm border border-[#9b87f5]/10 mb-8">
           <MessageList
-            messages={recentMessages}
+            messages={displayMessages}
             isPlaying={isPlaying}
             loading={loading}
             onPlayAudio={onPlayAudio}
@@ -101,7 +101,7 @@ export function ChatSession({
         </div>
       )}
 
-      {/* Message Input */}
+      {/* Message Input - Hide in fullscreen mode */}
       {!isFullscreenMode && (
         <MessageInput
           message={message}

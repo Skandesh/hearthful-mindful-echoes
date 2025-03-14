@@ -18,6 +18,15 @@ export function MessageList({
   onPlayAudio, 
   onStopAudio 
 }: MessageListProps) {
+  // If there are no messages, show an empty state
+  if (messages.length === 0 && !loading) {
+    return (
+      <div className="text-center py-8 md:py-10 text-gray-500">
+        <p>Your conversation will appear here</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4 max-h-[350px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-[#9b87f5]/20 scrollbar-track-transparent">
       {messages.map((msg, index) => (
@@ -58,11 +67,6 @@ export function MessageList({
             <div className="w-2.5 h-2.5 bg-[#9b87f5] rounded-full animate-bounce [animation-delay:-0.15s]"></div>
             <div className="w-2.5 h-2.5 bg-[#9b87f5] rounded-full animate-bounce"></div>
           </div>
-        </div>
-      )}
-      {messages.length === 0 && !loading && (
-        <div className="text-center py-8 md:py-10 text-gray-500">
-          <p>Your conversation will appear here</p>
         </div>
       )}
     </div>

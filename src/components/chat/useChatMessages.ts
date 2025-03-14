@@ -65,22 +65,18 @@ export function useChatMessages() {
         user
       } = options || {};
       
-      // Only add the message to the list if we're not in an active affirmation session
-      // or if this is the first message that starts the session
+      // Add user message to the list
+      setMessages(prev => [...prev, userMessage]);
+      setMessage("");
+
+      // Handle affirmation session prompt
       const isStartingAffirmationSession = 
         !affirmationSession?.isActive && 
         message.toLowerCase().includes("yes") && 
         messages[messages.length - 1]?.content.includes("affirmation session");
       
-      if (!affirmationSession?.isActive || isStartingAffirmationSession) {
-        setMessages(prev => [...prev, userMessage]);
-      }
-      
-      setMessage("");
-
-      // Handle affirmation session prompt
-      if (isStartingAffirmationSession) {
-        const firstAffirmation = await startAffirmationSession?.("positive");
+      if (isStartingAffirmationSession && startAffirmationSession) {
+        const firstAffirmation = await startAffirmationSession("positive");
         const aiResponse = await generateAIResponse(firstAffirmation);
         setMessages(prev => [...prev, { type: 'ai', content: aiResponse }]);
         

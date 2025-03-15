@@ -2,6 +2,9 @@
 // Cache values for breathing animation
 let lastBreathSize = 0;
 let lastTimestamp = 0;
+let cachedGradient: CanvasGradient | null = null;
+let lastCanvasWidth = 0;
+let lastCanvasHeight = 0;
 
 export function drawBreathingCircle(
   ctx: CanvasRenderingContext2D, 
@@ -25,19 +28,28 @@ export function drawBreathingCircle(
   
   const breathSize = lastBreathSize;
   
-  // Main circle with soft gradient
-  const gradient = ctx.createRadialGradient(x, y, 0, x, y, breathSize);
-  gradient.addColorStop(0, 'rgba(255, 255, 255, 0.2)');
-  gradient.addColorStop(0.7, 'rgba(255, 255, 255, 0.05)');
-  gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+  // Skip drawing if breath is too small or canvas is tiny
+  if (breathSize < 3 || canvasWidth < 50 || canvasHeight < 50) return;
   
+  // Only recreate gradient if canvas size changes or first time
+  if (!cachedGradient || lastCanvasWidth !== canvasWidth || lastCanvasHeight !== canvasHeight) {
+    cachedGradient = ctx.createRadialGradient(x, y, 0, x, y, breathSize);
+    cachedGradient.addColorStop(0, 'rgba(255, 255, 255, 0.2)');
+    cachedGradient.addColorStop(0.7, 'rgba(255, 255, 255, 0.05)');
+    cachedGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    
+    lastCanvasWidth = canvasWidth;
+    lastCanvasHeight = canvasHeight;
+  }
+  
+  // Main circle with soft gradient
   ctx.beginPath();
   ctx.arc(x, y, breathSize, 0, Math.PI * 2);
-  ctx.fillStyle = gradient;
+  ctx.fillStyle = cachedGradient;
   ctx.fill();
   
-  // Outer glow ring - only draw if breathSize is big enough
-  if (breathSize > 5) {
+  // Only draw outer glow ring on larger screens and when breathSize is big enough
+  if (breathSize > 20 && canvasWidth > 300) {
     ctx.beginPath();
     ctx.arc(x, y, breathSize + 5, 0, Math.PI * 2);
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';

@@ -1,16 +1,35 @@
 
-import { useMemo } from 'react';
+// Cache for gradient colors to prevent recalculation on every frame
+let lastColorCalcTime = 0;
+let cachedColors = {
+  start: 'hsla(230, 70%, 70%, 0.7)',
+  end: 'hsla(260, 80%, 40%, 0.7)'
+};
 
-// Cache calculation of gradients for better performance
+// Only recalculate colors every 1000ms for better performance
 const calculateGradientColors = (time: number) => {
+  if (time - lastColorCalcTime < 1000) {
+    return cachedColors;
+  }
+  
   // Shift gradient colors very slightly over time (reduced frequency)
   const hue1 = (230 + 10 * Math.sin(time * 0.0001)) % 360; // Reduced from 0.0002
   const hue2 = (260 + 10 * Math.cos(time * 0.00015)) % 360; // Reduced from 0.0003
   
-  return {
+  cachedColors = {
     start: `hsla(${hue1}, 70%, 70%, 0.7)`,
     end: `hsla(${hue2}, 80%, 40%, 0.7)`
   };
+  
+  lastColorCalcTime = time;
+  return cachedColors;
+};
+
+// Cache for gradient positions
+let lastPosCalcTime = 0;
+let cachedPositions = {
+  x: 0,
+  y: 0
 };
 
 export function createSoothingBackground(
@@ -20,13 +39,18 @@ export function createSoothingBackground(
   time: number
 ) {
   // Calculate positions less frequently for better performance
-  const gradientX = canvasWidth * (0.5 + 0.1 * Math.sin(time * 0.0001)); // Reduced from 0.0003
-  const gradientY = canvasHeight * (0.5 + 0.1 * Math.cos(time * 0.0002)); // Reduced from 0.0004
-
+  if (time - lastPosCalcTime > 500) {
+    cachedPositions = {
+      x: canvasWidth * (0.5 + 0.1 * Math.sin(time * 0.0001)),
+      y: canvasHeight * (0.5 + 0.1 * Math.cos(time * 0.0002))
+    };
+    lastPosCalcTime = time;
+  }
+  
   // Create a soft, soothing gradient background that slowly shifts
   const gradient = ctx.createRadialGradient(
-    gradientX, 
-    gradientY,
+    cachedPositions.x, 
+    cachedPositions.y,
     0,
     canvasWidth * 0.5, 
     canvasHeight * 0.5,
@@ -42,8 +66,8 @@ export function createSoothingBackground(
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, canvasWidth, canvasHeight);
   
-  // Add subtle glow in the center - only create if canvas is big enough
-  if (canvasWidth > 100 && canvasHeight > 100) {
+  // Add subtle glow only on larger canvases and skip on small screens
+  if (canvasWidth > 400 && canvasHeight > 200) {
     const centerGlow = ctx.createRadialGradient(
       canvasWidth * 0.5, 
       canvasHeight * 0.4,
